@@ -189,7 +189,7 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
 </appSettings>
 ```
 
-## Structure des fichiers
+## Structure des données
 
 Auteurs.csv
 | Champ | Type |
@@ -244,12 +244,13 @@ Pour utilisation sur système Windows, il faut installer _Gtk3_.
 
 La publication de l’application dans _Visual Studio Code_ peut se faire de 2 manières:
 
-1. version autonome intégrant le _Runtime Dotnet 6.0_
-Linux: ```dotnet publish -c Release -r linux-x64 --self-contained true```
+1. version autonome intégrant le _Runtime Dotnet 6.0_</br>
+Linux: ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
 Windows: ```dotnet publish -c Release -r win-x64 --self-contained true```
-2. version minimale nécessitant l’installation du _Runtime Dotnet 6.0_ sur le PC de destination
-Linux: ```dotnet publish -c Release -r linux-x64```
-Windows: ```dotnet publish -c Release -r win-x64```
+2. version minimale nécessitant l’installation du _Runtime Dotnet 6.0_ sur le PC de destination</br>
+Linux: ```dotnet publish -c Release -r linux-x64```</br>
+Windows: ```dotnet publish -c Release -r win-x64```</br>
+
 Pour déployer l'application en dehors de _Visual Studio Code_:
 
 * récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
@@ -269,8 +270,7 @@ Sur Linux, l’imprimante est accessible par _/dev/usb/lp1_. Pour vérifier son 
 
 ![Recherche imprimante](images/markdown/recherche_imprimante.jpg)
 
-l’imprimante doit apparaître sous le nom de périphérique _lp0_, _lp1_ ou _lp2_.
-
+l’imprimante doit apparaître sous le nom de périphérique _lp0_, _lp1_ ou _lp2_.</br>
 Si différent de _lp1_ (valeur par défaut), modifier la valeur dans la zone suivante:
 
 ![Valeur imprimante](images/markdown/valeur_imprimante.jpg)
