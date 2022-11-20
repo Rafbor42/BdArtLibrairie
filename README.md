@@ -263,7 +263,7 @@ Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/
 Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données.
 
 Pour l’impression des tickets de caisse, on utilise le protocole ESC/POS développé par Epson. L’imprimante thermique TM-T20III est donc parfaitement adaptée.
-L’application utilise le package [ESC-POS_NET]((https://github.com/lukevp/ESC-POS-.NET)) pour imprimer.
+L’application utilise le package [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET) pour imprimer.
 Le fichier _readme_ du dépôt Git explique que le protocole ESC/POS ne nécessite pas d’installer un driver, il suffit de connecter l’imprimante en USB pour qu’elle soit utilisable.
 Sur Linux, l’imprimante est accessible par _/dev/usb/lp1_. Pour vérifier son fonctionnement, aller dans l’onglet _Paramètres_, cliquer sur le bouton _Rechercher_:
 
@@ -276,9 +276,13 @@ Si différent de _lp1_ (valeur par défaut), modifier la valeur dans la zone sui
 ![Valeur imprimante](images/markdown/valeur_imprimante.jpg)
 
 Faire un test d’impression à partir de l’onglet _Ventes_ ou rentrer via le terminal:
+
 ```echo "Hello" >> /dev/usb/lp1```
+
 Si message d’erreur _Permission denied_, il faut ajouter le username dans le groupe _lp_
+
 ```sudo usermod -a -G lp username```
+
 Fermer puis rouvrir la session pour que le changement soit effectif.
 Cf. [Mike's Software Blog](https://mike42.me/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux) pour plus d’explications.
 
@@ -291,4 +295,4 @@ lsblk -o name,mountpoint | grep sd
 
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
-Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET]((https://github.com/lukevp/ESC-POS-.NET)), il faut installer un port COM virtuel, et mapper l’imprimante sur ce port, ou alors utiliser un câble USB-Serie en utilisant le port série de l’imprimante.
+Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET), il faut installer un port COM virtuel, et mapper l’imprimante sur ce port, ou alors utiliser un câble USB-Serie en utilisant le port série de l’imprimante.
