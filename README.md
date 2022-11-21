@@ -1,5 +1,7 @@
 # BdArtLibrairie
 
+![Mainwin](images/markdown/mainwin.jpg)
+
 ## Présentation
 
 Cette application a été créée pour gérer les ventes de la librairie tenue par des bénévoles lors du festival de bandes dessinées BD’Art de Rive de Gier (42800). Elle permet de réaliser les ventes en scannant les code-barres des albums, d'éditer des tickets de paiements, et de calculer les sommes à reverser aux auteurs en fin de festival.
@@ -122,6 +124,14 @@ Si les montants renseignés ne correspondent pas avec le coût total, un message
 
 Corriger les valeurs avant de continuer.
 
+Si les stocks d'un ou plusieurs albums sont négatifs, un bouton _Erreur stock albums_ apparait:
+
+![Erreur stock albums](images/markdown/erreur_stock_albums.jpg)
+
+Un clic sur ce bouton affiche la liste des albums concernés:
+
+![Erreur qtes](images/markdown/erreur_qtes.jpg)
+
 ### Modification ou suppression
 
 Avant de terminer une vente (après ce n’est plus possible) sélectionner une ligne de vente dans la grille en cliquant dessus:
@@ -235,19 +245,19 @@ Paiements.csv
 
 ## Développement et installation
 
-En utilisation pendant le festival, un PC sous Xubuntu 20.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
+En pratique, pendant le festival BD'Art, un PC sous Xubuntu 20.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
 
-L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, elle utilise les frameworks _Dotnet Core 6.0_ et _Gtk3_ via la librairie [GtkSharp](https://github.com/GtkSharp/GtkSharp).
+L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, elle utilise les frameworks _.NET 6_ et _Gtk3_ via la librairie [GtkSharp](https://github.com/GtkSharp/GtkSharp).
 
 _Gtk3_ est installé par défaut sur les systèmes Linux Ubuntu et Xubuntu.
 Pour utilisation sur système Windows, il faut installer _Gtk3_.
 
 La publication de l’application dans _Visual Studio Code_ peut se faire de 2 manières:
 
-1. version autonome intégrant le _Runtime Dotnet 6.0_</br>
+1. version autonome intégrant le _Runtime .NET 6_</br>
 Linux: ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
 Windows: ```dotnet publish -c Release -r win-x64 --self-contained true```
-2. version minimale nécessitant l’installation du _Runtime Dotnet 6.0_ sur le PC de destination</br>
+2. version minimale nécessitant l’installation du _Runtime .NET 6_ sur le PC de destination</br>
 Linux: ```dotnet publish -c Release -r linux-x64```</br>
 Windows: ```dotnet publish -c Release -r win-x64```</br>
 
