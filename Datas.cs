@@ -1,4 +1,6 @@
-/* Ce fichier fait partie de BdArtLibrairie.
+/*  Copyright (c) Raphael Borrelli (@Rafbor)
+
+	Ce fichier fait partie de BdArtLibrairie.
 
     BdArtLibrairie est un logiciel libre: vous pouvez le redistribuer ou le modifier
     suivant les termes de la GNU General Public License telle que publiée par
@@ -44,6 +46,7 @@ namespace BdArtLibrairie
 		public Window pParentWindow=null;
 		public DataTable dtTableVentes, dtTableAlbums, dtTablePaiements, dtTableAuteurs;
 		public ListStore lstoreVentes, lstoreAlbums, lstoreUneVente, lstoreAuteurs, lstoreAlbumsMini;
+		public ListStore lstoreStatsAlbums, lstoreStatsPrix, lstoreStatsCommissions;
 		protected StreamReader strmReader = StreamReader.Null;
 		protected StreamWriter strmWriter = StreamWriter.Null;
 		private string strPremLigneAlbums = string.Empty;
@@ -110,6 +113,10 @@ namespace BdArtLibrairie
 			lstoreAuteurs = new ListStore(typeof(string), typeof(string), typeof(string));
 			// IsbnEan, auteur, titre
 			lstoreAlbumsMini = new ListStore(typeof(string), typeof(string), typeof(string));
+			//
+			lstoreStatsAlbums = new ListStore(typeof(string), typeof(string));
+			lstoreStatsPrix = new ListStore(typeof(string), typeof(string));
+			lstoreStatsCommissions = new ListStore(typeof(string), typeof(string));
 			//
 			Init();
 		}
@@ -1018,7 +1025,7 @@ namespace BdArtLibrairie
 				{
 					// total vendus
 					rowA["nQteTotalVendu"] = Convert.ToInt16(rowA["nQteTotalVendu"]) + nQteVendu;
-					rowA["dblPrixTotal"] = Convert.ToDouble(rowA["dblPrixVente"]) * Convert.ToInt16(rowA["nQteTotalVendu"]);
+					rowA["dblPrixTotal"] = Math.Round(Convert.ToDouble(rowA["dblPrixVente"]) * Convert.ToInt16(rowA["nQteTotalVendu"]), 2);
 					//
 					if (string.Compare(rowV["strPaiement"].ToString(), Global.eMoyenPaiement.AFacturer.ToString()) == 0)
 					{
@@ -1137,6 +1144,62 @@ namespace BdArtLibrairie
 			catch (Exception e)
 			{
 				throw (e);
+			}
+		}
+
+		public void CalculStatistiquesVentes(ref Int16 nQteTotalVendus, ref double dblTotalPrix, ref double dblTotalCommissions)
+		{
+			lstoreStatsAlbums.Clear();
+			lstoreStatsPrix.Clear();
+			lstoreStatsCommissions.Clear();
+			Int16 nQteVendus = 0;
+			double dblPrix = 0;
+			double dblCommissions = 0;
+
+			DataTable dtTableTemp = new DataTable("Temp");
+			dtTableTemp.Columns.Add("strAuteur", typeof(String));
+			dtTableTemp.Columns.Add("nQteVendus", typeof(Int16));
+			dtTableTemp.Columns.Add("dblPrix", typeof(Double));
+			dtTableTemp.Columns.Add("dblCommissions", typeof(Double));
+			//
+			dtTableTemp.Clear();
+			// pour chaque auteur
+			foreach (DataRow rowAU in dtTableAuteurs.Rows)
+			{
+				nQteVendus = 0;
+				dblPrix = 0;
+				dblCommissions = 0;
+				// pour chaque album de l'auteur
+				foreach (DataRow dtRow in dtTableAlbums.Select("nIdAuteur=" + rowAU["nIdAuteur"].ToString()))
+				{
+					nQteVendus += Convert.ToInt16(dtRow["nQteTotalVendu"]);
+					dblPrix += Convert.ToDouble(dtRow["dblPrixVente"]) * Convert.ToInt16(dtRow["nQteTotalVendu"]);
+					dblCommissions += Convert.ToDouble(dtRow["dblPrixVente"]) * Convert.ToInt16(dtRow["nQteTotalVendu"]) * (100 - Convert.ToDouble(rowAU["dblPourcentage"])) / 100;
+				}
+				DataRow dtNewRow = dtTableTemp.NewRow();
+				dtNewRow["strAuteur"] = rowAU["strAuteur"].ToString();
+				dtNewRow["nQteVendus"] = nQteVendus;
+				dtNewRow["dblPrix"] = dblPrix;
+				dtNewRow["dblCommissions"] = dblCommissions;
+				dtTableTemp.Rows.Add(dtNewRow);
+				nQteTotalVendus += nQteVendus;
+				dblTotalPrix += dblPrix;
+				dblTotalCommissions += dblCommissions;
+			}
+			// tri et remplissage des ListStore
+			foreach (DataRow dtRow in dtTableTemp.Select("1=1", "nQteVendus DESC"))
+			{
+				lstoreStatsAlbums.AppendValues(dtRow["strAuteur"].ToString(), dtRow["nQteVendus"].ToString());
+			}
+			//
+			foreach (DataRow dtRow in dtTableTemp.Select("1=1", "dblPrix DESC"))
+			{
+				lstoreStatsPrix.AppendValues(dtRow["strAuteur"].ToString(), Math.Round(Convert.ToDouble(dtRow["dblPrix"]), 2).ToString());
+			}
+			//
+			foreach (DataRow dtRow in dtTableTemp.Select("1=1", "dblCommissions DESC"))
+			{
+				lstoreStatsCommissions.AppendValues(dtRow["strAuteur"].ToString(), Math.Round(Convert.ToDouble(dtRow["dblCommissions"]), 2).ToString());
 			}
 		}
 	}

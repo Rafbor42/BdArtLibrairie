@@ -73,11 +73,7 @@ Les données ne sont pas modifiables.
 ![Onglet ventes](images/markdown/onglet_ventes.jpg)
 
 La grille affiche la liste des ventes effectuées, triées par ordre décroissant (la dernière vente effectuée est affichée en haut de grille).
-On peut afficher le numéro et le rang de la vente par le menu _Affichage→Toutes les colonnes_.
-Un rang correspond à un album.
-
-![Onglet ventes 2](images/markdown/onglet_ventes_2.jpg)
-
+Le numéro et le rang de la vente sont affichés par défaut mais peuvent être masqués par le menu _Affichage→Toutes les colonnes_. Un rang correspond à un album.</br>
 Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés en fonction du filtre _Auteur_.
 
 ![Onglet ventes totaux](images/markdown/onglet_ventes_totaux.jpg)
@@ -114,9 +110,12 @@ En cochant ou décochant un moyen de paiement, le montant du coût total s’aff
 Si plusieurs moyens de paiement sont cochés, il faut saisir les valeurs manuellement.
 Le bouton _Annuler_ quitte la fenêtre après demande de confirmation si des livres ont été ajoutés.
 Le bouton _Terminer_ imprime les tickets de caisse (sauf si la case _Imprimer les tickets en quittant_ est décoché) et enregistre la vente.
-Si la case _Ne pas imprimer les tickets_ est cochée dans les paramètres, le ticket n’est pas imprimé mais seulement affiché dans une fenêtre:
 
 ![Ticket](images/markdown/ticket.jpg)
+
+Si la case _Ne pas imprimer les tickets_ est cochée dans les paramètres, le ticket n’est pas imprimé mais seulement affiché dans une fenêtre:
+
+![Ticket2](images/markdown/ticket2.jpg)
 
 Si les montants renseignés ne correspondent pas avec le coût total, un message d’erreur s’affichera:
 
@@ -162,6 +161,12 @@ Après confirmation, saisir le mot de passe « Password01 » dans la zone sous
 Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés.
 Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _Fichiers_.
 Les fichiers de sauvegarde plus anciens sont conservés et renommés.
+
+### Statistiques des ventes
+
+Le menu _Affichage->Statistiques ventes_ affiche le classement des auteurs suivant 3 critères: le nombre d'albums vendus, le total des ventes (€) et la commission reversée à BD'Art (€):
+
+![Statistiques](images/markdown/statistiques.jpg)
 
 ### Sauvegarde des données
 
@@ -306,3 +311,12 @@ lsblk -o name,mountpoint | grep sd
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET), il faut installer un port COM virtuel, et mapper l’imprimante sur ce port, ou alors utiliser un câble USB-Serie en utilisant le port série de l’imprimante.
+
+## Notes de version
+
+* **1.0.1110.0**
+    Première version publiée.
+* **1.0.1212.1**</br>
+  1. Onglet Ventes: affichage par défaut des colonnes _Numéro_ et _Rang_.
+  2. Ajout de la fenêtre d'affichage des statistiques de ventes.
+  3. Mise à jour du fichier _Readme_ incluant l'ajout des notes de versions.

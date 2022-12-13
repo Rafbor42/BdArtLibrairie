@@ -1,4 +1,6 @@
-/* Ce fichier fait partie de BdArtLibrairie.
+/*  Copyright (c) Raphael Borrelli (@Rafbor)
+
+    Ce fichier fait partie de BdArtLibrairie.
 
     BdArtLibrairie est un logiciel libre: vous pouvez le redistribuer ou le modifier
     suivant les termes de la GNU General Public License telle que publiée par
@@ -53,6 +55,7 @@ namespace BdArtLibrairie
         [UI] private MenuItem mnuFichierResetVentes = null;
         [UI] private CheckMenuItem mnuAffichageTout = null;
         [UI] private MenuItem mnuAffichageVente = null;
+         [UI] private MenuItem mnuAffichageStatsVentes = null;
         [UI] private MenuItem mnuAideApropos = null;
         //
         [UI] private Button btnNouvelleVente = null;
@@ -169,6 +172,7 @@ namespace BdArtLibrairie
             mnuFichierResetVentes.Activated += OnMnuFichierResetVentes;
             mnuAffichageTout.Toggled += OnMnuAffichageTout;
             mnuAffichageVente.Activated += OnMnuAffichageVente;
+            mnuAffichageStatsVentes.Activated += OnMnuAffichageStatsVentes;
             mnuAideApropos.Activated += OnMnuAideApropos;
             //
             trvVentes.RowActivated += OnTrvVentesRowActivated;
@@ -190,6 +194,7 @@ namespace BdArtLibrairie
             UpdateData();
             datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
             datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
+            mnuAffichageTout.Active = true;
             //
             Global.ConfigModified = false;
         }
@@ -706,6 +711,12 @@ namespace BdArtLibrairie
                 venteBox.AfficherMasquerBoutons();
 			    venteBox.Run();
             }
+        }
+
+        private void OnMnuAffichageStatsVentes(object sender, EventArgs e)
+        {
+            StatistiquesBox statsBox = new StatistiquesBox(this, ref datas);
+            statsBox.Run();
         }
 
         private void OnBtnResetClicked(object sender, EventArgs a)

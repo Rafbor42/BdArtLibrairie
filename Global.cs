@@ -1,4 +1,6 @@
-/* Ce fichier fait partie de BdArtLibrairie.
+/*  Copyright (c) Raphael Borrelli (@Rafbor)
+
+	Ce fichier fait partie de BdArtLibrairie.
 
     BdArtLibrairie est un logiciel libre: vous pouvez le redistribuer ou le modifier
     suivant les termes de la GNU General Public License telle que publiée par
