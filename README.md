@@ -1,5 +1,26 @@
 # BdArtLibrairie
 
+- [BdArtLibrairie](#bdartlibrairie)
+  - [Présentation](#présentation)
+  - [Principe de fonctionnement](#principe-de-fonctionnement)
+    - [Filtre Auteur](#filtre-auteur)
+    - [Recherche de livre](#recherche-de-livre)
+  - [Onglet Auteurs](#onglet-auteurs)
+  - [Onglet Albums](#onglet-albums)
+  - [Onglet Ventes](#onglet-ventes)
+    - [Effectuer une vente](#effectuer-une-vente)
+    - [Modification ou suppression](#modification-ou-suppression)
+    - [Ré-impression des tickets](#ré-impression-des-tickets)
+    - [Effacer toutes les ventes](#effacer-toutes-les-ventes)
+    - [Statistiques des ventes](#statistiques-des-ventes)
+    - [Sauvegarde des données](#sauvegarde-des-données)
+  - [Onglet Paramètres](#onglet-paramètres)
+  - [Structure des données](#structure-des-données)
+  - [Développement et installation](#développement-et-installation)
+  - [Notes de version](#notes-de-version)
+  - [Téléchargements](#téléchargements)
+    - [Installation sur Linux](#installation-sur-linux)
+
 ![Mainwin](images/markdown/mainwin.jpg)
 
 ## Présentation
@@ -25,13 +46,17 @@ puis l'onglet _Albums_:
 **Important**: les chiffres de la colonne _IdAuteur_ de l’onglet _Albums_, doivent correspondre à ceux de la colonne _IdAuteur_ de l’onglet _Auteurs_.
 Les onglets _Ventes_ et _Paiements_ n’ont pas besoin d’être complétés.
 
-* Si le fichier est ouvert dans _Google Sheet_, il faut l’exporter au format _Excel_ ou _OpenDocument_ (menu _Fichier → Télécharger_),
-* Ouvrir le fichier dans _Excel_ ou _LibreOffice Calc_ puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans _LibreOffice Calc_, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
+- Si le fichier est ouvert dans _Google Sheet_, il faut l’exporter au format _Excel_ ou _OpenDocument_ (menu _Fichier → Télécharger_),
+- Ouvrir le fichier dans _Excel_ ou _LibreOffice Calc_ puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans _LibreOffice Calc_, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
 NB: faire un tri croissant sur la colonne _Nom auteur_ de l'onglet _Auteurs_ avant l'export.
-* Enregistrer les fichiers dans le dossier _Fichiers_ de l’application, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_.
-* Lancer l’application BdArtLibrairie (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
-* Lorsqu’une vente d’albums est effectuée, les données sont automatiquement enregistrées dans les fichiers _Ventes.csv_ et _Paiements.csv_ et les cumuls en quantités et en euros sont recalculés pour chaque auteur.
-* Par défaut, pour chaque vente, 2 tickets de caisse sont imprimés. On peut modifier ce choix dans l’ [onglet Paramètres](#onglet-paramètres).
+
+- Enregistrer les fichiers dans le dossier _Fichiers_ de l’application, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_.
+
+- Lancer l’application BdArtLibrairie (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
+
+- Lorsqu’une vente d’albums est effectuée, les données sont automatiquement enregistrées dans les fichiers _Ventes.csv_ et _Paiements.csv_ et les cumuls en quantités et en euros sont recalculés pour chaque auteur.
+
+- Par défaut, pour chaque vente, 2 tickets de caisse sont imprimés. On peut modifier ce choix dans l’ [onglet Paramètres](#onglet-paramètres).
 
 ### Filtre Auteur
 
@@ -182,12 +207,12 @@ On peut aussi exporter le fichier _Albums_ par le menu _Fichier->Exporter fichie
 
 Cet onglet permet de modifier certains paramètres:
 
-* le point de montage sous Linux de l’imprimante thermique: _dev/usb/lp1_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
-* le point de montage sous Linux de la clé USB: _/media/raf/4429-4124_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
-* le nombre de tickets à imprimer : 1 à 3 (défaut : 2).
-* la temporisation pendant l’impression : 0 à 5000 ms (défaut : 2000). Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
-* l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
-* avoir ou pas les messages d’infos en couleur.
+- le point de montage sous Linux de l’imprimante thermique: _dev/usb/lp1_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
+- le point de montage sous Linux de la clé USB: _/media/raf/4429-4124_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
+- le nombre de tickets à imprimer : 1 à 3 (défaut : 2).
+- la temporisation pendant l’impression : 0 à 5000 ms (défaut : 2000). Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
+- l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
+- avoir ou pas les messages d’infos en couleur.
 
 Les modifications sont perdues à la fermeture de l'application.
 
@@ -263,16 +288,16 @@ La publication de l’application dans _Visual Studio Code_ peut se faire de 2 m
 Linux: ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
 Windows: ```dotnet publish -c Release -r win-x64 --self-contained true```
 2. version minimale nécessitant l’installation du _Runtime .NET 6_ sur le PC de destination</br>
-Linux: ```dotnet publish -c Release -r linux-x64```</br>
-Windows: ```dotnet publish -c Release -r win-x64```</br>
+Linux: ```dotnet publish -c Release -r linux-x64 --self-contained false```</br>
+Windows: ```dotnet publish -c Release -r win-x64 --self-contained false```</br>
 
 Pour déployer l'application en dehors de _Visual Studio Code_:
 
-* récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
-* copier le dossier _Fichiers_ dans le dossier _BdArtLibrairie_.
-* copier le script _findusb.sh_ dans le dossier _BdArtLibrairie_.
-* après copie du dossier _BdArtLibrairie_ sur le support de destination, donner les droits d'exécution au fichier _BdArtLibrairie_ et au script _findusb.sh_.
-* créer un lanceur comprenant en exécutable le fichier _BdArtLibrairie_.
+- récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
+- copier le dossier _Fichiers_ dans le dossier _BdArtLibrairie_.
+- copier le script _findusb.sh_ dans le dossier _BdArtLibrairie_.
+- après copie du dossier _BdArtLibrairie_ sur le support de destination, donner les droits d'exécution au fichier _BdArtLibrairie_ et au script _findusb.sh_.
+- créer un lanceur comprenant en exécutable le fichier _BdArtLibrairie_.
 
 Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications.
 
@@ -314,9 +339,24 @@ Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](ht
 
 ## Notes de version
 
-* **1.0.1110.0**
+- **1.0.1110.0**
     Première version publiée.
-* **1.0.1212.1**</br>
+- **1.0.1212.1**</br>
   1. Onglet Ventes: affichage par défaut des colonnes _Numéro_ et _Rang_.
   2. Ajout de la fenêtre d'affichage des statistiques de ventes.
   3. Mise à jour du fichier _Readme_ incluant l'ajout des notes de versions.
+
+## Téléchargements
+
+- **Linux**: archive _tar.xz_ sans le Runtime _.NET 6_: [v1.0.1212.1](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_1.0.1212.1_sans_runtime.tar.xz)
+- **Linux**: archive _tar.xz_ incluant le Runtime _.NET 6_: [v1.0.1212.1](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_1.0.1212.1_avec_runtime.tar.xz)
+
+### Installation sur Linux
+
+- décompresser l'archive et se positionner dans le dossier.
+- rendre exécutable le fichier _BdArtLibrairie_:
+ ```chmod +x BdArtLibrairie```
+- lancer l'application:
+ ```./BdArtLibrairie```
+
+Installation du Runtime .NET 6: voir [Installer .NET sur Linux](https://learn.microsoft.com/fr-fr/dotnet/core/install/linux)
