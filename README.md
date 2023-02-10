@@ -14,6 +14,7 @@
     - [Effacer toutes les ventes](#effacer-toutes-les-ventes)
     - [Statistiques des ventes](#statistiques-des-ventes)
     - [Sauvegarde des données](#sauvegarde-des-données)
+    - [Impression des ventes par auteur](#impression-des-ventes-par-auteur)
   - [Onglet Paramètres](#onglet-paramètres)
   - [Structure des données](#structure-des-données)
   - [Développement et installation](#développement-et-installation)
@@ -28,7 +29,7 @@
 Cette application a été créée pour gérer les ventes de la librairie tenue par des bénévoles lors du festival de bandes dessinées BD’Art de Rive de Gier (42800). Elle permet de réaliser les ventes en scannant les code-barres des albums, d'éditer des tickets de paiements, et de calculer les sommes à reverser aux auteurs en fin de festival.
 
 Elle est composée de 4 onglets: _Ventes, Albums, Auteurs, Paramètres_.
-Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_). Les fichiers sont stockés dans le sous-dossier _Fichiers_, situé dans le dossier de l’application.
+Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_). Les fichiers sont stockés dans le dossier utilisateur, dans un dossier caché _.bdartlibrairie_.
 
 ## Principe de fonctionnement
 
@@ -46,13 +47,12 @@ puis l'onglet _Albums_:
 **Important**: les chiffres de la colonne _IdAuteur_ de l’onglet _Albums_, doivent correspondre à ceux de la colonne _IdAuteur_ de l’onglet _Auteurs_.
 Les onglets _Ventes_ et _Paiements_ n’ont pas besoin d’être complétés.
 
-- Si le fichier est ouvert dans _Google Sheet_, il faut l’exporter au format _Excel_ ou _OpenDocument_ (menu _Fichier → Télécharger_),
-- Ouvrir le fichier dans _Excel_ ou _LibreOffice Calc_ puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans _LibreOffice Calc_, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
-NB: faire un tri croissant sur la colonne _Nom auteur_ de l'onglet _Auteurs_ avant l'export.
+- Si le fichier est ouvert dans **Google Sheet**, il faut l’exporter au format **Excel** ou **OpenDocument** (menu _Fichier → Télécharger_),
+- Ouvrir le fichier dans **Excel** ou **LibreOffice Calc** puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans **LibreOffice Calc**, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
 
-- Enregistrer les fichiers dans le dossier _Fichiers_ de l’application, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_.
+- Enregistrer les fichiers dans le dossier _.bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_.
 
-- Lancer l’application BdArtLibrairie (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
+- Lancer l’application **BdArtLibrairie** (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
 
 - Lorsqu’une vente d’albums est effectuée, les données sont automatiquement enregistrées dans les fichiers _Ventes.csv_ et _Paiements.csv_ et les cumuls en quantités et en euros sont recalculés pour chaque auteur.
 
@@ -184,7 +184,7 @@ Utiliser des fichiers _Ventes.csv_ et _Paiements.csv_ nouvellement créés ou ef
 
 Après confirmation, saisir le mot de passe « Password01 » dans la zone sous la grille.
 Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés.
-Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _Fichiers_.
+Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _.bdartlibrairie_.
 Les fichiers de sauvegarde plus anciens sont conservés et renommés.
 
 ### Statistiques des ventes
@@ -196,10 +196,27 @@ Le menu _Affichage->Statistiques ventes_ affiche le classement des auteurs suiva
 ### Sauvegarde des données
 
 Les ventes sont enregistrées automatiquement. Seuls les fichiers _Ventes.csv_ et _Paiements.csv_ sont mis à jour.
-Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manuellement via le gestionnaire de fichier, ou alors utiliser le menu _Fichier->Copier les fichiers sur clé_. Cette action va compresser le dossier _Fichiers_ et le copier sur la clé USB. Voir l’ [onglet Paramètres](#onglet-paramètres) pour configurer le montage de la clé USB.
+Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manuellement via le gestionnaire de fichier, ou alors utiliser le menu _Fichier->Copier les fichiers sur clé_. Cette action va compresser le dossier _.bdartlibrairie_ et le copier sur la clé USB. Voir l’ [onglet Paramètres](#onglet-paramètres) pour configurer le montage de la clé USB.
 
-On peut aussi exporter le fichier _Albums_ par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte sera créé sur le modèle du fichier _Albums.csv_ et son contenu correspondra aux filtres actifs. Le nom du fichier sera composé comme ceci:
-```Albums_NomAuteur_LieuVente.```
+### Impression des ventes par auteur
+
+Deux méthodes possibles:
+
+- faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis d'imprimer la copie d'écran (via **Firefox** par exemple).
+
+- par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et son contenu correspondra aux filtres actifs. Le nom du fichier sera composé comme ceci:
+```Albums_NomAuteur_LieuVente.csv```
+si aucun filtre:
+```Albums_Tous_Tous.csv```
+
+A la fin de l'export, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire:
+
+![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
+
+- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_ exporté au paragraphe précédent.
+- Cliquer ensuite sur le bouton d'impression. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
+
+![Ventes_auteurs](images/markdown/ventes_auteur.png)
 
 ## Onglet Paramètres
 
@@ -293,15 +310,16 @@ Windows: ```dotnet publish -c Release -r win-x64 --self-contained false```</br>
 
 Pour déployer l'application en dehors de _Visual Studio Code_:
 
-- récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
-- copier le dossier _Fichiers_ dans le dossier _BdArtLibrairie_.
+- récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/linux-x64_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
 - copier le script _findusb.sh_ dans le dossier _BdArtLibrairie_.
+- copier le fichier _BdArtLib.odb_ dans le dossier caché _.bdartlibrairie_
 - après copie du dossier _BdArtLibrairie_ sur le support de destination, donner les droits d'exécution au fichier _BdArtLibrairie_ et au script _findusb.sh_.
 - créer un lanceur comprenant en exécutable le fichier _BdArtLibrairie_.
 
 Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications.
 
-Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données.
+Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données pour stocker les données, seulement **LibreOffice Base** pour générer les rapports de ventes par auteurs.
+Le fichier base _BdArtLib.odb_ doit être présent dans le dossier caché _.bdartlibrairie_
 
 Pour l’impression des tickets de caisse, on utilise le protocole ESC/POS développé par Epson. L’imprimante thermique TM-T20III est donc parfaitement adaptée.
 L’application utilise le package [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET) pour imprimer.
@@ -339,17 +357,22 @@ Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](ht
 
 ## Notes de version
 
+- **2.0.0210.0**
+  - Les données et la config utilisateur ne sont plus stockées dans le dossier de l'application mais dans le dossier utilisateur afin de faciliter l'installation des nouvelles versions.
+  - Modifié export des fichiers afin de pouvoir les importer dans les tables de la base de données _BdArtLib.odb_ pour générer les rapports.
+  - Le menu _Fichier->Exporter fichier albums_ ouvre directement la base de données après l'export.
+  - Inversion affichage du nom/prénom des auteurs.
+- **1.0.1212.1**</br>
+  - Onglet Ventes: affichage par défaut des colonnes _Numéro_ et _Rang_.
+  - Ajout de la fenêtre d'affichage des statistiques de ventes.
+  - Mise à jour du fichier _Readme_ incluant l'ajout des notes de versions.
 - **1.0.1110.0**
     Première version publiée.
-- **1.0.1212.1**</br>
-  1. Onglet Ventes: affichage par défaut des colonnes _Numéro_ et _Rang_.
-  2. Ajout de la fenêtre d'affichage des statistiques de ventes.
-  3. Mise à jour du fichier _Readme_ incluant l'ajout des notes de versions.
 
 ## Téléchargements
 
-- **Linux**: archive _tar.xz_ sans le Runtime _.NET 6_: [v1.0.1212.1](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_1.0.1212.1_sans_runtime.tar.xz)
-- **Linux**: archive _tar.xz_ incluant le Runtime _.NET 6_: [v1.0.1212.1](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_1.0.1212.1_avec_runtime.tar.xz)
+- **Linux**: archive _tar.xz_ sans le Runtime _.NET 6_: [v2.0.0210.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0210.0_sans_runtime.tar.xz)
+- **Linux**: archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0210.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0210.0_avec_runtime.tar.xz)
 
 ### Installation sur Linux
 

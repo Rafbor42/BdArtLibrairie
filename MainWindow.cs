@@ -36,6 +36,7 @@ using System;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 using System.Data;
+using System.Threading;
 using System.Diagnostics;
 
 namespace BdArtLibrairie
@@ -43,6 +44,7 @@ namespace BdArtLibrairie
     class MainWindow : Window
     {
         Datas datas;
+        private string strMsg = string.Empty;
         private double dblTotalVentes, dblPourcentAuteur, dblPartAuteur;
         private double dblTotalLibrairie, dblTotalMediatheques, dblTotalAFacturer;
         private double dblTotalCB, dblTotalCheques, dblTotalEspeces;
@@ -95,7 +97,21 @@ namespace BdArtLibrairie
         [UI] private TreeView trvAlbums = null;
         [UI] private TreeView trvAuteurs = null;
 
-        public MainWindow() : this(new Builder("MainWindow.glade")) { }
+        public MainWindow() : this(new Builder("MainWindow.glade"))
+        {
+            // timer pour afficher les messages d'erreurs au chargement
+            // après l'affichage de la fenêtre principale
+            GLib.Timeout.Add(1000, new GLib.TimeoutHandler(Update_status));
+        }
+        private bool Update_status()
+        {
+            if (strMsg != string.Empty)
+            {
+                Global.ShowMessage("Erreurs au chargement:", strMsg, this);
+            }
+            // returning false would terminate the timeout.
+            return false;
+        }
 
         private MainWindow(Builder builder) : base(builder.GetRawOwnedObject("MainWindow"))
         {
@@ -107,7 +123,6 @@ namespace BdArtLibrairie
             builder.Autoconnect(this);
             this.Title = "Librairie BD'Art";
             //
-            string strMsg = string.Empty;
             datas = new Datas(this);
             InitTrvVentes();
             InitTrvAlbums();
@@ -134,7 +149,7 @@ namespace BdArtLibrairie
             //
             Global.LireConfigLocal(ref strMsg);
 			if (strMsg != string.Empty)
-                Global.ShowMessage("BdArtLibrairie, lecture configuration:", strMsg, this);
+                strMsg = "Lecture configuration: " + strMsg + "\n\n";
             // events
             btnNouvelleVente.Clicked += OnBtnNouvelleVenteClicked;
             btnReset.Clicked += OnBtnResetClicked;
@@ -176,13 +191,14 @@ namespace BdArtLibrairie
             mnuAideApropos.Activated += OnMnuAideApropos;
             //
             trvVentes.RowActivated += OnTrvVentesRowActivated;
-			//
-			strMsg = string.Empty;
             // chargement des fichiers
-            datas.ChargeFichiers(ref strMsg);
-            if (strMsg != string.Empty)
+            string strMsg2 = string.Empty;
+            datas.ChargeFichiers(ref strMsg2);
+            if (strMsg2 != string.Empty)
             {
-				Global.ShowMessage("BdArtLibrairie, lecture fichiers:", strMsg, this);
+                if (strMsg != string.Empty)
+                    strMsg += "\n\n";
+                strMsg += "Lecture fichiers: " + strMsg2;
                 Global.AfficheInfo(txtInfo, "Erreur lors du chargement des fichiers", new Gdk.Color(255,0,0));
             }
             else
@@ -215,6 +231,16 @@ namespace BdArtLibrairie
 
         private void OnMnuFichierQuitter(object sender, EventArgs a)
         {
+            string strMsg = string.Empty;
+
+            if (Global.ConfigModified == true)
+            {
+                // écriture de la config locale
+                Global.EcrireConfigLocal(ref strMsg);
+                if (strMsg != string.Empty)
+                    Global.ShowMessage("Erreur écriture config:", strMsg, this);
+            }
+            //
             Application.Quit();
         }
 
@@ -591,7 +617,7 @@ namespace BdArtLibrairie
             cbListeAuteurs.Changed -= OnCbListeAuteursChanged;
 
             lsListeAuteurs.AppendValues("Tous");
-            foreach (DataRow row in datas.dtTableAuteurs.Rows)
+            foreach (DataRow row in datas.dtTableAuteurs.Select("1=1", "strAuteur ASC"))
             {
                 lsListeAuteurs.AppendValues(row["strAuteur"].ToString());
             }
@@ -754,7 +780,25 @@ namespace BdArtLibrairie
                 Global.AfficheInfo(txtInfo, "Problème lors de l'export des albums. Vérifier les fichiers", new Gdk.Color(255,0,0));
             }
             else
+            {
                 Global.AfficheInfo(txtInfo, "Les albums ont été exportés", new Gdk.Color(0,0,255));
+                // lancement de la base de données dans un process
+                try
+                {
+                    Process psBase = new Process();
+                    psBase.StartInfo.FileName = "/usr/bin/lobase";
+                    psBase.StartInfo.Arguments = "BdArtLib.odb";
+                    psBase.StartInfo.WorkingDirectory = Global.DossierFichiers;
+                    if (psBase.Start() == true)// nouveau process créé
+                    {
+                        psBase.WaitForExit(1000);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Global.ShowMessage("Erreur lancement BdArtLib:", ex.Message, this);
+                }
+            }
         }
 
         // Affiche ou masque toutes les colonnes des Treeview.
@@ -789,11 +833,13 @@ namespace BdArtLibrairie
         private void OnChkUseDialogForTicketPrintClicked(object sender, EventArgs a)
         {
             Global.UseDialogForTicketPrint = chkUseDialogForTicketPrint.Active;
+            Global.ConfigModified = true;
         }
 
         private void OnChkUseFgColorClicked(object sender, EventArgs a)
         {
             Global.UseFgColor = chkUseFgColor.Active;
+            Global.ConfigModified = true;
         }
 
         private void OnMnuFichierResetVentes(object sender, EventArgs a)
@@ -849,6 +895,7 @@ namespace BdArtLibrairie
         {
             Global.PrinterFilePath = txtPrinterFilePath.Text;
             btnFindPrinter.GrabFocus();
+            Global.ConfigModified = true;
         }
 
         // Action de la touche Entrée dans le controle.
@@ -861,6 +908,7 @@ namespace BdArtLibrairie
             Global.UsbDevicePath = txtUsbDevicePath.Text;
             btnFindUsbDevice.GrabFocus();
             //Global.ShowMessage("", Global.UsbDevicePath, this);
+            Global.ConfigModified = true;
         }
 
         private void OnTxtNombreTicketsActivated(object sender, EventArgs a)
@@ -883,6 +931,7 @@ namespace BdArtLibrairie
                 btnFindPrinter.GrabFocus();
             }
             txtNombreTickets.FocusOutEvent += OnTxtNombreTicketsFocusOut;
+            Global.ConfigModified = true;
         }
 
         private void OnTxtTempoActivated(object sender, EventArgs a)
@@ -905,6 +954,7 @@ namespace BdArtLibrairie
                 btnFindPrinter.GrabFocus();
             }
             txtTempo.FocusOutEvent += OnTxtTempoFocusOut;
+            Global.ConfigModified = true;
         }
 
         // Liste les périphériques usb situés dans /dev/usb.

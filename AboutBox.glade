@@ -11,7 +11,8 @@
     <property name="comments" translatable="yes">Gestion des ventes d'albums de la librairie indépendante de BD'Art, à partir de la liste des albums déposés par les auteurs.
 Création de ventes comprenant un ou plusieurs albums, avec pour chacun, un lieu de vente et un statut de paiement. Possibilité de répartir les paiements par type (CB, Chèque, Espèces).
 L'application recalcule après chaque vente, les cumuls en quantités et en euros pour chaque auteur.</property>
-    <property name="authors">Raphaël Borrelli (@Rafbor)</property>
+    <property name="authors">Raphaël Borrelli (@Rafbor)
+    https://github.com/Rafbor42/BdArtLibrairie</property>
     <property name="logo-icon-name">applications-libraries</property>
     <property name="license-type">gpl-3-0</property>
     <child internal-child="vbox">

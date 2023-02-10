@@ -287,13 +287,13 @@ namespace BdArtLibrairie
 					}
 					dtRow = dtTableAuteurs.NewRow();
 					dtRow["nIdAuteur"]		= strSplit[0];
-					dtRow["strAuteur"]		= strSplit[1] + " " + strSplit[2];// prénom nom
+					dtRow["strAuteur"]		= strSplit[2] + " " + strSplit[1];// nom prénom
 					dtRow["dblPourcentage"]	= Convert.ToDouble(strSplit[3]);//.Replace(',','.'));
 					//
 					dtTableAuteurs.Rows.Add(dtRow);
 					dtTableAuteurs.Rows[j++].AcceptChanges();
 					//
-					lstoreAuteurs.AppendValues(strSplit[0], strSplit[1] + " " + strSplit[2], strSplit[3]);
+					lstoreAuteurs.AppendValues(strSplit[0], strSplit[2] + " " + strSplit[1], strSplit[3]);
 				}
 			}
 			catch (Exception e)
@@ -1088,6 +1088,7 @@ namespace BdArtLibrairie
 			string strNomFichier = "Albums_" + strAuteur.Trim() + "_" + strListeLieuVente;
 			if (bAFacturer == true)
 				strNomFichier += "_AFacturer";
+			strNomFichier += ".csv";
 			//
 			try
 			{
@@ -1113,32 +1114,27 @@ namespace BdArtLibrairie
 
 		private void EcrireFichierAlbums()
 		{
-			TreeIter iter;
 			string strLigne;
 
 			try
 			{
-				strmWriter.WriteLine("Code Isbn/Ean;Auteur;Titre;Prix vente;Stock initial;Vendu librairie;Vendu médiat.;Offert;Stock final;A facturer;Total vendu;Prix total");
+				strmWriter.WriteLine("Code Isbn/Ean;IdAuteur;Titre;Prix vente;Stock initial;Vendu librairie;Vendu médiat.;Offert;Stock final;A facturer;Total vendu;Prix total");
 				// pour chaque album
-				if (lstoreAlbums.GetIterFirst(out iter) == true)
+				foreach(DataRow row in dtTableAlbums.Rows)
 				{
-					do
-					{
-						strLigne = lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.CodeIsbnEan)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.Auteur)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.Titre)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.PrixVente)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.StockInitial)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.QteVenduLibrairie)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.QteVenduMediatheque)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.QteOffert)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.StockFinal)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.QteAfacturer)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.QteTotalVendu)).ToString() + ";";
-						strLigne += lstoreAlbums.GetValue(iter, Convert.ToInt32(Global.eTrvAlbumsCols.PrixTotal)).ToString() + ";";
-						strmWriter.WriteLine(strLigne);
-					}
-					while (lstoreAlbums.IterNext(ref iter) == true);
+					strLigne = row["strIsbnEan"].ToString() + ";";
+					strLigne += row["nIdAuteur"].ToString() + ";";
+					strLigne += row["strTitre"].ToString() + ";";
+					strLigne += row["dblPrixVente"].ToString() + ";";
+					strLigne += row["nStockInitial"].ToString() + ";";
+					strLigne += row["nQteVenduLibrairie"].ToString() + ";";
+					strLigne += row["nQteVenduMediatheque"].ToString() + ";";
+					strLigne += row["nQteOffert"].ToString() + ";";
+					strLigne += row["nStockFinal"].ToString() + ";";
+					strLigne += row["nQteAfacturer"].ToString() + ";";
+					strLigne += row["nQteTotalVendu"].ToString() + ";";
+					strLigne += row["dblPrixTotal"].ToString() + ";";
+					strmWriter.WriteLine(strLigne);
 				}
 			}
 			catch (Exception e)

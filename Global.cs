@@ -33,6 +33,8 @@
     along with BdArtLibrairie.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.Xml;
+using System.Text;
 using System.Configuration;
 using Gtk;
 using System.IO;
@@ -120,11 +122,8 @@ namespace BdArtLibrairie
 		private static Int16 nNombreTickets;
 		private static bool bUseFgColor;
 		private static bool bUseDialogForTicketPrint;
-        public static bool ConfigModified {
-			get { return bConfigModified; }
-			set { bConfigModified = value; }
-		}
-
+		private static string strFichierConfigLocal;
+        public static bool ConfigModified {	get => bConfigModified; set => bConfigModified = value; }
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
         public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
 		public static string FichierPaiements { get => strFichierPaiements; set => strFichierPaiements = value; }
@@ -140,6 +139,7 @@ namespace BdArtLibrairie
         public static bool ImprimerTickets { get => bImprimerTickets; set => bImprimerTickets = value; }
         public static bool UseDialogForTicketPrint { get => bUseDialogForTicketPrint; set => bUseDialogForTicketPrint = value; }
         public static bool UseFgColor { get => bUseFgColor; set => bUseFgColor = value; }
+        public static string FichierConfigLocal { get => strFichierConfigLocal; set => strFichierConfigLocal = value; }
 
         /// <summary>
         /// Constructeur.
@@ -169,9 +169,11 @@ namespace BdArtLibrairie
 			UseFgColor = false;
 			UseDialogForTicketPrint = true;
 			UsbDevicePath = "/media/raf/4429-4124";
+			FichierConfigLocal = "app.config";
 			//
 			AppStartupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			DossierFichiers = AppStartupPath + Path.DirectorySeparatorChar + "Fichiers";
+			//DossierFichiers = AppStartupPath + Path.DirectorySeparatorChar + "Fichiers";
+			DossierFichiers = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".bdartlibrairie");
 			// création du dossier Fichiers, si pas présent
 			if (!Directory.Exists(DossierFichiers))
 				Directory.CreateDirectory(DossierFichiers);
@@ -182,54 +184,104 @@ namespace BdArtLibrairie
 		/// </summary>
 		public static void LireConfigLocal(ref string strMsg)
 		{
+			XmlTextReader reader = null;
         	try
         	{
-        		PrinterFilePath = ConfigurationManager.AppSettings["PrinterFilePath"];
-				Tempo = Convert.ToInt16(ConfigurationManager.AppSettings["Tempo"]);
-				NombreTickets = Convert.ToInt16(ConfigurationManager.AppSettings["NombreTickets"]);
-				UseFgColor = Convert.ToBoolean(ConfigurationManager.AppSettings["UseFgColor"]);
-				UseDialogForTicketPrint = Convert.ToBoolean(ConfigurationManager.AppSettings["UseDialogForTicketPrint"]);
-				UsbDevicePath = ConfigurationManager.AppSettings["UsbDevicePath"];
+				// config au niveau utilisateur
+				reader = new XmlTextReader(Path.Combine(DossierFichiers, FichierConfigLocal));
+				while (reader.Read())
+				{
+					if (reader.IsStartElement())
+					{
+						switch (reader.Name)
+						{
+							case "PrinterFilePath":
+								PrinterFilePath = reader.GetAttribute("value");
+								break;
+							case "Tempo":
+								Tempo = Convert.ToInt16(reader.GetAttribute("value"));
+								break;
+							case "NombreTickets":
+								NombreTickets = Convert.ToInt16(reader.GetAttribute("value"));
+								break;
+							case "UseFgColor":
+								UseFgColor = Convert.ToBoolean(reader.GetAttribute("value"));
+								break;
+							case "UseDialogForTicketPrint":
+								UseDialogForTicketPrint = Convert.ToBoolean(reader.GetAttribute("value"));
+								break;
+							case "UsbDevicePath":
+								UsbDevicePath = reader.GetAttribute("value");
+								break;
+						}
+					}
+				}
+			}
+        	catch (FileNotFoundException)
+			{
+				// le fichier sera créé par l'application
 			}
         	catch (Exception ex)
 			{
-				strMsg += ex.Message + "\r\n";
+				strMsg += ex.Message + Environment.NewLine;
+			}
+			finally
+			{
+				if (reader != null)
+					reader.Close();
 			}
 		}
 
         /// <summary>
-		/// Ecriture des paramètres dans le fichier de configuration.
+		/// Ecriture des paramètres utilisateur dans le fichier de configuration.
 		/// </summary>
 		public static void EcrireConfigLocal(ref string strMsg)
 		{
-			// try
-			// {
-			// 	XmlElement element;
-	        // 	XmlDocument xmlDoc = new XmlDocument();
-			// 	var conf = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
- 			// 	xmlDoc.Load(conf.FilePath);
-				
-			// 	//foreach (XmlElement element in xmlDoc.DocumentElement)
-			// 	for (int i = 0; i < xmlDoc.DocumentElement.ChildNodes.Count; i++)
-			// 	{
-			// 		element = (XmlElement)xmlDoc.DocumentElement.ChildNodes[i];
-			// 	    if (element.Name.Equals("appSettings"))
-			// 	    {
-			// 	    	foreach (XmlNode node in element.ChildNodes)
-			// 	        {
-			// 	            if (node.Attributes[0].Value.Equals("SylvainAimes"))
-			// 	            	node.Attributes[1].Value = SylvainAimes.ToString();
-			// 	            //
-			// 	    	}
-			// 	    }
-			// 	}
-			// 	xmlDoc.Save(conf.FilePath);
-			// 	ConfigurationManager.RefreshSection("appSettings");
-			// }
-			// catch (Exception ex)
-			// {
-			// 	strMsg += ex.Message + "\r\n";
-			// }
+			XmlTextWriter writer = null;
+			try
+			{
+				writer = new XmlTextWriter(Path.Combine(DossierFichiers, FichierConfigLocal), Encoding.UTF8);
+				writer.Formatting = Formatting.Indented;
+
+				writer.WriteStartDocument(true);
+				writer.WriteStartElement("configuration");
+					writer.WriteStartElement("userSettings");
+						writer.WriteStartElement("PrinterFilePath");
+						writer.WriteAttributeString("value", PrinterFilePath);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("Tempo");
+						writer.WriteAttributeString("value", Tempo.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("NombreTickets");
+						writer.WriteAttributeString("value", NombreTickets.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("UseFgColor");
+						writer.WriteAttributeString("value", UseFgColor.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("UseDialogForTicketPrint");
+						writer.WriteAttributeString("value", UseDialogForTicketPrint.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("UsbDevicePath");
+						writer.WriteAttributeString("value", UsbDevicePath);
+						writer.WriteEndElement();
+					writer.WriteEndElement();
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+			}
+			catch (Exception ex)
+			{
+				strMsg += ex.Message + Environment.NewLine;
+			}
+			finally
+			{
+				if (writer != null)
+					writer.Close();
+			}
 		}
 
 		// Affiche un message dans une boite de dialogue.
