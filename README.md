@@ -202,18 +202,18 @@ Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manue
 
 Deux méthodes possibles:
 
-- faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis d'imprimer la copie d'écran (via **Firefox** par exemple).
+- soit faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis imprimer la copie d'écran (via **Firefox** par exemple).
 
-- par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et son contenu correspondra aux filtres actifs. Le nom du fichier sera composé comme ceci:
-```Albums_NomAuteur_LieuVente.csv```
-si aucun filtre:
+- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et son contenu correspondra aux filtres actifs. Le nom du fichier sera composé comme ceci:
+```Albums_NomAuteur_LieuVente.csv```</BR>
+Pour l'impression des ventes, il ne faut mettre aucun filtre, le fichier sera nommé:
 ```Albums_Tous_Tous.csv```
 
 A la fin de l'export, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire:
 
 ![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
 
-- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_ exporté au paragraphe précédent.
+- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_Tous_Tous.csv_.
 - Cliquer ensuite sur le bouton d'impression. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
