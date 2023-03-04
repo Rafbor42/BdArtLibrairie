@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+	<id>${APP_ID}</id>
+	<metadata_license>CC0-1.0</metadata_license>
+	<project_license>GPL-2.0+</project_license>
+	<name>${DE_NAME}</name>
+	<summary>Gestion des ventes d'albums de BD</summary>
+	<description>
+		<p>Gestion des ventes d'albums de la librairie indépendante de BD'Art, à partir de la liste des albums déposés par les auteurs.
+Création de ventes comprenant un ou plusieurs albums, avec pour chacun, un lieu de vente et un statut de paiement. Possibilité de répartir les paiements par type (CB, Chèque, Espèces).
+L'application recalcule après chaque vente, les cumuls en quantités et en euros pour chaque auteur.</p>
+	</description>
+	<launchable type="desktop-id">${APP_ID}.desktop</launchable>
+	<url type="homepage">https://github.com/Rafbor42/BdArtLibrairie</url>
+	<screenshots>
+		<screenshot type="default">
+			<image>https://raw.githubusercontent.com/Rafbor42/BdArtLibrairie/main/images/markdown/mainwin.jpg</image>
+		</screenshot>
+	</screenshots>
+	<provides>
+		<id>BdArtLibrairie.desktop</id>
+	</provides>
+</component>

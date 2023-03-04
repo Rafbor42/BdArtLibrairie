@@ -1,5 +1,3 @@
-# BdArtLibrairie
-
 - [BdArtLibrairie](#bdartlibrairie)
   - [Présentation](#présentation)
   - [Principe de fonctionnement](#principe-de-fonctionnement)
@@ -21,6 +19,8 @@
   - [Notes de version](#notes-de-version)
   - [Téléchargements](#téléchargements)
     - [Installation sur Linux](#installation-sur-linux)
+
+# BdArtLibrairie
 
 ![Mainwin](images/markdown/mainwin.jpg)
 
@@ -299,22 +299,11 @@ L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, 
 _Gtk3_ est installé par défaut sur les systèmes Linux Ubuntu et Xubuntu.
 Pour utilisation sur système Windows, il faut installer _Gtk3_.
 
-La publication de l’application dans _Visual Studio Code_ peut se faire de 2 manières:
-
-1. version autonome intégrant le _Runtime .NET 6_</br>
-Linux: ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
-Windows: ```dotnet publish -c Release -r win-x64 --self-contained true```
-2. version minimale nécessitant l’installation du _Runtime .NET 6_ sur le PC de destination</br>
-Linux: ```dotnet publish -c Release -r linux-x64 --self-contained false```</br>
-Windows: ```dotnet publish -c Release -r win-x64 --self-contained false```</br>
-
-Pour déployer l'application en dehors de _Visual Studio Code_:
-
-- récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/linux-x64_ du projet) et le renommer en _BdArtLibrairie_ (ou autre nom à votre convenance).
-- copier le script _findusb.sh_ dans le dossier _BdArtLibrairie_.
-- copier le fichier _BdArtLib.odb_ dans le dossier caché _.bdartlibrairie_
-- après copie du dossier _BdArtLibrairie_ sur le support de destination, donner les droits d'exécution au fichier _BdArtLibrairie_ et au script _findusb.sh_.
-- créer un lanceur comprenant en exécutable le fichier _BdArtLibrairie_.
+Publication pour Linux de l’application dans _Visual Studio Code_, 2 solutions retenues:
+1. au format AppImage pour Linux, en lançant le script _publish-appimage_ (cf [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage) pour explications sur la configuration et l'utilisation). Le fichier AppImage généré se trouve dans le dossier _AppImages_.
+2. sous forme d'archive compressée, version autonome intégrant le _Runtime .NET 6_:</br>
+  ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
+  Récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/linux-x64/_ du projet), le renommer en _BdArtLibrairie_, puis le compresser au format _tar.xz_.
 
 Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications.
 
@@ -344,19 +333,16 @@ Si message d’erreur _Permission denied_, il faut ajouter le username dans le g
 Fermer puis rouvrir la session pour que le changement soit effectif.
 Cf. [Mike's Software Blog](https://mike42.me/blog/2015-03-getting-a-usb-receipt-printer-working-on-linux) pour plus d’explications.
 
-Pour l'accès à la clé USB sur Linux, on utilise un script bash via le fichier _findusb.sh_ pour détecter le point de montage. Cliquer sur le bouton _Rechercher_ pour lancer le script (le fichier _findusb.sh_ doit être configuré comme exécutable):
-
-```bash
-#!/bin/bash
-lsblk -o name,mountpoint | grep sd
-```
-
-Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
-
 Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET), il faut installer un port COM virtuel, et mapper l’imprimante sur ce port, ou alors utiliser un câble USB-Serie en utilisant le port série de l’imprimante.
+
+Pour l'accès à la clé USB sur Linux, on utilise la commande _lsblk_ pour détecter le point de montage. Cliquer sur le bouton _Rechercher_ pour lancer la recherche.</br>
+Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
 
+- **2.0.0304.0**
+  - Publication sous forme d'AppImage.
+  - Suppression du script _findusb.sh_.
 - **2.0.0210.0**
   - Les données et la config utilisateur ne sont plus stockées dans le dossier de l'application mais dans le dossier utilisateur afin de faciliter l'installation des nouvelles versions.
   - Modifié export des fichiers afin de pouvoir les importer dans les tables de la base de données _BdArtLib.odb_ pour générer les rapports.
@@ -371,15 +357,14 @@ Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](ht
 
 ## Téléchargements
 
-- **Linux**: archive _tar.xz_ sans le Runtime _.NET 6_: [v2.0.0210.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0210.0_sans_runtime.tar.xz)
-- **Linux**: archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0210.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0210.0_avec_runtime.tar.xz)
+- **Linux**:
+  - fichier AppImage: voir [Releases](https://github.com/Rafbor42/BdArtLibrairie/releases).
+  - archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0304.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0304.0_avec_runtime.tar.xz)
 
 ### Installation sur Linux
 
-- décompresser l'archive et se positionner dans le dossier.
-- rendre exécutable le fichier _BdArtLibrairie_:
- ```chmod +x BdArtLibrairie```
-- lancer l'application:
- ```./BdArtLibrairie```
-
-Installation du Runtime .NET 6: voir [Installer .NET sur Linux](https://learn.microsoft.com/fr-fr/dotnet/core/install/linux)
+- fichier AppImage: consulter cette [documentation](https://doc.ubuntu-fr.org/appimage) pour savoir comment installer des fichiers AppImage.
+- archive _tar.xz_:
+  - décompresser l'archive et se positionner dans le dossier.
+  - rendre exécutable le fichier _BdArtLibrairie_: ```chmod +x BdArtLibrairie```
+  - lancer l'application: ```./BdArtLibrairie```

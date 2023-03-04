@@ -38,6 +38,7 @@ using UI = Gtk.Builder.ObjectAttribute;
 using System.Data;
 using System.Threading;
 using System.Diagnostics;
+using System.IO;
 
 namespace BdArtLibrairie
 {
@@ -1001,19 +1002,27 @@ namespace BdArtLibrairie
         {
             Process psExec = null;
             txtPathResult.Buffer.Clear();
+            string strResult, strLigne;
             try
             {
                 ProcessStartInfo myInfo = new ProcessStartInfo();
                 myInfo.CreateNoWindow = true;
-                myInfo.WorkingDirectory = Global.AppStartupPath;
-                myInfo.FileName = "findusb.sh";
-                myInfo.Arguments = "";
+                myInfo.WorkingDirectory = Global.DossierFichiers;
+                myInfo.FileName = "lsblk";
+                myInfo.Arguments = "-o name,mountpoint";
                 myInfo.RedirectStandardOutput = true;
                 myInfo.UseShellExecute = false;
                 psExec = new Process();
 	     		psExec.StartInfo = myInfo;
 	     		psExec.Start();
-                txtPathResult.Buffer.Text = psExec.StandardOutput.ReadToEnd();
+                strResult = psExec.StandardOutput.ReadToEnd();
+                // filtrage
+                StringReader strgReader = new StringReader(strResult);
+                while ( (strLigne = strgReader.ReadLine()) != null )
+                {
+                    if (strLigne.Contains("sd"))
+                        txtPathResult.Buffer.Text += strLigne + Environment.NewLine;
+                }
                 psExec.WaitForExit(5000); // 5 secondes maxi pour que le process se termine
             }
             catch (Exception ex)
