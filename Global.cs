@@ -35,10 +35,11 @@
 using System;
 using System.Xml;
 using System.Text;
-using System.Configuration;
 using Gtk;
 using System.IO;
 using System.IO.Compression;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace BdArtLibrairie
 {
@@ -178,6 +179,33 @@ namespace BdArtLibrairie
 			if (!Directory.Exists(DossierFichiers))
 				Directory.CreateDirectory(DossierFichiers);
         }
+
+		// Téléchargement d'un fichier.
+		// D'après la réponse de Tony dans https://stackoverflow.com/questions/45711428/download-file-with-webclient-or-httpclient
+		public static async void DownloadFile(Uri uriSource, string strFileDest, Window pWindow)
+		{
+			try
+			{
+				using (var client = new HttpClient()) // WebClient
+				{
+					await client.DownloadFileTaskAsync(uriSource, strFileDest);
+				}
+			}
+			catch(Exception e)
+			{
+				ShowMessage("Téléchargement", "Fichier " + uriSource.ToString() + Environment.NewLine + e.Message, pWindow);
+			}
+		}
+		public static async Task DownloadFileTaskAsync(this HttpClient client, Uri uri, string strFileDest)
+		{
+			using (var s = await client.GetStreamAsync(uri))
+			{
+				using (var fs = new FileStream(strFileDest, FileMode.CreateNew))
+				{
+					await s.CopyToAsync(fs);
+				}
+			}
+		}
 
         /// <summary>
 		/// Récupère les paramètres de l'application dans le fichier de configuration.

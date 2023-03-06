@@ -231,19 +231,17 @@ Cet onglet permet de modifier certains paramètres:
 - l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
 - avoir ou pas les messages d’infos en couleur.
 
-Les modifications sont perdues à la fermeture de l'application.
-
-Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_. Vous devez les modifier manuellement
+Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier caché _.bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
 
 ```text
-<appSettings>
-    <add key="PrinterFilePath" value="/dev/usb/lp1" />
-    <add key="Tempo" value="2000" />
-    <add key="NombreTickets" value="2" />
-    <add key="UseFgColor" value="false" />
-    <add key="UseDialogForTicketPrint" value="true" />
-    <add key="UsbDevicePath" value="/media/raf/4429-4124" />
-</appSettings>
+<userSettings>
+    <PrinterFilePath value="/dev/usb/lp0" />
+    <Tempo value="2000" />
+    <NombreTickets value="2" />
+    <UseFgColor value="False" />
+    <UseDialogForTicketPrint value="True" />
+    <UsbDevicePath value="/media/raf/4429-4124" />
+  </userSettings>
 ```
 
 ## Structure des données
@@ -308,7 +306,7 @@ Publication pour Linux de l’application dans _Visual Studio Code_, 2 solutions
 Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications.
 
 Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données pour stocker les données, seulement **LibreOffice Base** pour générer les rapports de ventes par auteurs.
-Le fichier base _BdArtLib.odb_ doit être présent dans le dossier caché _.bdartlibrairie_
+Le fichier base _BdArtLib.odb_ doit être présent dans le dossier caché _.bdartlibrairie_, s'il n'est pas présent au lancement de l'application, l'application tente de le télécharger depuis le dépôt Github.
 
 Pour l’impression des tickets de caisse, on utilise le protocole ESC/POS développé par Epson. L’imprimante thermique TM-T20III est donc parfaitement adaptée.
 L’application utilise le package [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET) pour imprimer.
@@ -340,6 +338,8 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 ## Notes de version
 
+- **2.0.0306.0**
+  - Au lancement et si non trouvé, le fichier _BdArtLib.odb_ est téléchargé à partir du dépôt Github.
 - **2.0.0304.0**
   - Publication sous forme d'AppImage.
   - Suppression du script _findusb.sh_.

@@ -36,7 +36,6 @@ using System;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 using System.Data;
-using System.Threading;
 using System.Diagnostics;
 using System.IO;
 
@@ -198,10 +197,18 @@ namespace BdArtLibrairie
             if (strMsg2 != string.Empty)
             {
                 if (strMsg != string.Empty)
-                    strMsg += "\n\n";
+                    strMsg += Environment.NewLine + Environment.NewLine;
                 strMsg += "Lecture fichiers: " + strMsg2;
-                Global.AfficheInfo(txtInfo, "Erreur lors du chargement des fichiers", new Gdk.Color(255,0,0));
             }
+            // fichier BdArtLib.odb
+            Uri uriSource = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/BdArtLib.odb");
+            string strFileDest = System.IO.Path.Combine(Global.DossierFichiers, "BdArtLib.odb");
+            if (!File.Exists(strFileDest))
+            {
+                Global.DownloadFile(uriSource, strFileDest, this);
+            }
+            if (strMsg != string.Empty)
+                Global.AfficheInfo(txtInfo, "Erreur lors du chargement des fichiers", new Gdk.Color(255,0,0));
             else
                 Global.AfficheInfo(txtInfo, "Tous les fichiers ont été correctement chargés", new Gdk.Color(0,0,255));
             //
