@@ -359,7 +359,7 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 - **Linux**:
   - fichier AppImage: voir [Releases](https://github.com/Rafbor42/BdArtLibrairie/releases).
-  - archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0304.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0304.0_avec_runtime.tar.xz)
+  - archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0306.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0306.0_avec_runtime.tar.xz)
 
 ### Installation sur Linux
 
