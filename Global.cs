@@ -110,20 +110,27 @@ namespace BdArtLibrairie
         private static bool bConfigModified;
 		private static bool bImprimerTickets;
 		private static string strFichierAlbums;
+		private static string strFichierAlbumsWoExt;
 		private static string strFichierVentes;
 		private static string strFichierVentesWoExt;
 		private static string strFichierPaiements;
 		private static string strFichierPaiementsWoExt;
 		private static string strFichierAuteurs;
+		private static string strFichierAuteursWoExt;
 		private static string strDossierFichiers;
         private static string strAppStartupPath;
 		private static string strPrinterFilePath;
 		private static string strUsbDevicePath;
+		private static string strNomFestival;
+		private static string strFichierEcartsVentes;
+		private static string strFichierEcartsVentesWoExt;
 		private static Int16 nTempo;
 		private static Int16 nNombreTickets;
 		private static bool bUseFgColor;
 		private static bool bUseDialogForTicketPrint;
 		private static string strFichierConfigLocal;
+		private static bool bLaunchBaseFile;
+		private static double dblPartAuteurDefaut;
         public static bool ConfigModified {	get => bConfigModified; set => bConfigModified = value; }
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
         public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
@@ -133,6 +140,8 @@ namespace BdArtLibrairie
         public static string DossierFichiers { get => strDossierFichiers; set => strDossierFichiers = value; }
         public static string FichierVentesWoExt { get => strFichierVentesWoExt; set => strFichierVentesWoExt = value; }
         public static string FichierPaiementsWoExt { get => strFichierPaiementsWoExt; set => strFichierPaiementsWoExt = value; }
+		public static string FichierAuteursWoExt { get => strFichierAuteursWoExt; set => strFichierAuteursWoExt = value; }
+		public static string FichierAlbumsWoExt { get => strFichierAlbumsWoExt; set => strFichierAlbumsWoExt = value; }
         public static string PrinterFilePath { get => strPrinterFilePath; set => strPrinterFilePath = value; }
 		public static string UsbDevicePath { get => strUsbDevicePath; set => strUsbDevicePath = value; }
         public static short Tempo { get => nTempo; set => nTempo = value; }
@@ -141,6 +150,11 @@ namespace BdArtLibrairie
         public static bool UseDialogForTicketPrint { get => bUseDialogForTicketPrint; set => bUseDialogForTicketPrint = value; }
         public static bool UseFgColor { get => bUseFgColor; set => bUseFgColor = value; }
         public static string FichierConfigLocal { get => strFichierConfigLocal; set => strFichierConfigLocal = value; }
+		public static string NomFestival { get => strNomFestival; set => strNomFestival = value; }
+		public static bool LaunchBaseFile { get => bLaunchBaseFile; set => bLaunchBaseFile = value; }
+        public static double PartAuteurDefaut { get => dblPartAuteurDefaut; set => dblPartAuteurDefaut = value; }
+        public static string FichierEcartsVentes { get => strFichierEcartsVentes; set => strFichierEcartsVentes = value; }
+        public static string FichierEcartsVentesWoExt { get => strFichierEcartsVentesWoExt; set => strFichierEcartsVentesWoExt = value; }
 
         /// <summary>
         /// Constructeur.
@@ -163,6 +177,10 @@ namespace BdArtLibrairie
 			FichierAuteurs = "Auteurs.csv";
 			FichierVentesWoExt = "Ventes";
 			FichierPaiementsWoExt = "Paiements";
+			FichierAuteursWoExt = "Auteurs";
+			FichierAlbumsWoExt = "Albums";
+			FichierEcartsVentes = "EcartsVentes.txt";
+			FichierEcartsVentesWoExt = "EcartsVentes";
 			// params écrasés par fichier de config
 			PrinterFilePath = "/dev/usb/lp0";
 			Tempo = 2000;
@@ -171,6 +189,9 @@ namespace BdArtLibrairie
 			UseDialogForTicketPrint = true;
 			UsbDevicePath = "/media/raf/4429-4124";
 			FichierConfigLocal = "app.config";
+			NomFestival = "BD'Art";
+			LaunchBaseFile = true;
+			PartAuteurDefaut = 90;
 			//
 			AppStartupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			//DossierFichiers = AppStartupPath + Path.DirectorySeparatorChar + "Fichiers";
@@ -241,6 +262,15 @@ namespace BdArtLibrairie
 							case "UsbDevicePath":
 								UsbDevicePath = reader.GetAttribute("value");
 								break;
+							case "NomFestival":
+								NomFestival = reader.GetAttribute("value");
+								break;
+							case "LaunchBaseFile":
+								LaunchBaseFile = Convert.ToBoolean(reader.GetAttribute("value"));
+								break;
+							case "PartAuteurDefaut":
+								PartAuteurDefaut = Convert.ToDouble(reader.GetAttribute("value"));
+								break;
 						}
 					}
 				}
@@ -297,6 +327,18 @@ namespace BdArtLibrairie
 						writer.WriteStartElement("UsbDevicePath");
 						writer.WriteAttributeString("value", UsbDevicePath);
 						writer.WriteEndElement();
+
+						writer.WriteStartElement("NomFestival");
+						writer.WriteAttributeString("value", NomFestival);
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("LaunchBaseFile");
+						writer.WriteAttributeString("value", LaunchBaseFile.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("PartAuteurDefaut");
+						writer.WriteAttributeString("value", PartAuteurDefaut.ToString());
+						writer.WriteEndElement();
 					writer.WriteEndElement();
 				writer.WriteEndElement();
 				writer.WriteEndDocument();
@@ -322,8 +364,8 @@ namespace BdArtLibrairie
         }
 
 		// Controle du format de la valeur saisie dans la zone de texte.
-		// NB: sur les appels à cette méthode, pour éviter les appels en boucle
-		// il faut désactiver l'évenement TextChanged sur le controle source.
+		// NB: sur les appels à cette méthode à partir de l'évenement TextChanged, pour éviter les
+		// appels en boucle, il faut désactiver l'évenement TextChanged sur le controle source.
         public static bool CheckValeurs(Window pParent, object sender)
 		{
 			Entry txtBox = (Entry)sender;
@@ -341,7 +383,7 @@ namespace BdArtLibrairie
 			catch// (Exception ex)
 			{
 				if (txtBox.Text != string.Empty)
-					ShowMessage("Erreur", "Erreur format", pParent);
+					ShowMessage("Erreur", txtBox.Text + ": format incorrect.", pParent);
 			}
 			return false;
 		}
@@ -365,11 +407,35 @@ namespace BdArtLibrairie
 					// seulement si saisie incorrecte
 					if (txtBox.Text != string.Empty)
 					{
-						ShowMessage("Erreur", txtBox.Text + ": le nombre saisi n'est pas dans le bon format.", pParent);
+						ShowMessage("Erreur", txtBox.Text + ": format incorrect.", pParent);
 					}
 				}
 			}
 			return dblValue;
+		}
+
+		public static Int16 GetValueIntOrZero(Window pParent, object sender, bool bShowMessage=false)
+		{
+			Int16 nValue = 0;
+			Entry txtBox = (Entry)sender;
+			
+			try
+			{
+				// on tente une conversion en short
+				nValue = Convert.ToInt16(txtBox.Text);
+			}
+			catch (Exception)
+			{
+				if (bShowMessage == true)
+				{
+					// seulement si saisie incorrecte
+					if (txtBox.Text != string.Empty)
+					{
+						ShowMessage("Erreur", txtBox.Text + ": format incorrect.", pParent);
+					}
+				}
+			}
+			return nValue;
 		}
 
 		public static void AfficheInfo(Entry txtInfo, string strMsg, Gdk.Color color)
@@ -409,7 +475,7 @@ namespace BdArtLibrairie
 			catch// (Exception ex)
 			{
 				if (txtBox.Text != string.Empty)
-					ShowMessage("Erreur", "Erreur format", pParent);
+					ShowMessage("Erreur", txtBox.Text + ": format incorrect.", pParent);
 			}
 			return false;
 		}

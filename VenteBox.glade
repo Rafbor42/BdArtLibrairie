@@ -1,68 +1,66 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 -->
+<!-- Generated with glade 3.40.0 -->
 <interface>
   <requires lib="gtk+" version="3.24"/>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-edit</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-print</property>
   </object>
   <object class="GtkImage" id="image4">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-undo</property>
   </object>
   <object class="GtkImage" id="image5">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-apply</property>
   </object>
   <object class="GtkImage" id="image6">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-close</property>
   </object>
   <object class="GtkImage" id="image7">
     <property name="visible">True</property>
-    <property name="can_focus">False</property>
+    <property name="can-focus">False</property>
     <property name="stock">gtk-find</property>
   </object>
   <object class="GtkDialog" id="VenteBox">
-    <property name="width_request">720</property>
-    <property name="height_request">470</property>
-    <property name="can_focus">False</property>
-    <property name="type_hint">dialog</property>
+    <property name="width-request">720</property>
+    <property name="height-request">470</property>
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Détails Vente</property>
+    <property name="type-hint">dialog</property>
     <property name="deletable">False</property>
-    <child type="titlebar">
-      <placeholder/>
-    </child>
     <child internal-child="vbox">
       <object class="GtkBox">
-        <property name="can_focus">False</property>
+        <property name="can-focus">False</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox">
-            <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="can-focus">False</property>
+            <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="btnImprimerTicket">
                 <property name="label" translatable="yes">Imprimer tickets</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image3</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -74,11 +72,11 @@
               <object class="GtkButton" id="btnAnnuler">
                 <property name="label" translatable="yes">Annuler</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Annuler la vente</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Annuler la vente</property>
                 <property name="image">image4</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -89,13 +87,13 @@
             <child>
               <object class="GtkButton" id="btnTerminer">
                 <property name="label" translatable="yes">Terminer</property>
-                <property name="width_request">110</property>
+                <property name="width-request">110</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Enregistrer et quitter la vente</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Enregistrer et quitter la vente</property>
                 <property name="image">image5</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -107,10 +105,10 @@
               <object class="GtkButton" id="btnFermer">
                 <property name="label" translatable="yes">Fermer</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
                 <property name="image">image6</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="expand">True</property>
@@ -128,13 +126,13 @@
         <child>
           <object class="GtkScrolledWindow">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="shadow_type">in</property>
+            <property name="can-focus">True</property>
+            <property name="shadow-type">in</property>
             <child>
               <object class="GtkTreeView" id="trvListeLivres">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="enable_grid_lines">both</property>
+                <property name="can-focus">True</property>
+                <property name="enable-grid-lines">both</property>
                 <child internal-child="selection">
                   <object class="GtkTreeSelection"/>
                 </child>
@@ -150,18 +148,18 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkButton" id="btnSupprimer">
                 <property name="label" translatable="yes">Supprimer</property>
-                <property name="width_request">150</property>
-                <property name="height_request">34</property>
+                <property name="width-request">150</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Supprimer la vente du livre sélectionné</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Supprimer la vente du livre sélectionné</property>
                 <property name="image">image1</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="x">124</property>
@@ -170,14 +168,14 @@
             <child>
               <object class="GtkButton" id="btnModifier">
                 <property name="label" translatable="yes">Modifier</property>
-                <property name="width_request">150</property>
-                <property name="height_request">34</property>
+                <property name="width-request">150</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Modifier la vente du livre sélectionné</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Modifier la vente du livre sélectionné</property>
                 <property name="image">image2</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="x">275</property>
@@ -185,15 +183,15 @@
             </child>
             <child>
               <object class="GtkSearchEntry" id="txtAjouteAlbum">
-                <property name="width_request">156</property>
-                <property name="height_request">34</property>
+                <property name="width-request">156</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="tooltip_text" translatable="yes">Scanner un code barre pour ajouter un livre</property>
-                <property name="primary_icon_name">edit-find-symbolic</property>
-                <property name="primary_icon_activatable">False</property>
-                <property name="primary_icon_sensitive">False</property>
-                <property name="placeholder_text" translatable="yes">Ajouter livre</property>
+                <property name="can-focus">True</property>
+                <property name="tooltip-text" translatable="yes">Scanner un code barre pour ajouter un livre</property>
+                <property name="primary-icon-name">edit-find-symbolic</property>
+                <property name="primary-icon-activatable">False</property>
+                <property name="primary-icon-sensitive">False</property>
+                <property name="placeholder-text" translatable="yes">Ajouter livre</property>
               </object>
               <packing>
                 <property name="x">425</property>
@@ -202,14 +200,14 @@
             <child>
               <object class="GtkButton" id="btnChercheAlbum">
                 <property name="label" translatable="yes">Albums</property>
-                <property name="width_request">85</property>
-                <property name="height_request">34</property>
+                <property name="width-request">85</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <property name="tooltip_text" translatable="yes">Rechercher dans la liste d'albums</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">True</property>
+                <property name="tooltip-text" translatable="yes">Rechercher dans la liste d'albums</property>
                 <property name="image">image7</property>
-                <property name="always_show_image">True</property>
+                <property name="always-show-image">True</property>
               </object>
               <packing>
                 <property name="x">600</property>
@@ -225,13 +223,13 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkComboBoxText" id="cbListeLieuVente">
-                <property name="width_request">151</property>
-                <property name="height_request">34</property>
+                <property name="width-request">151</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="active">0</property>
               </object>
               <packing>
@@ -240,10 +238,10 @@
             </child>
             <child>
               <object class="GtkComboBoxText" id="cbListeStatutPaiement">
-                <property name="width_request">151</property>
-                <property name="height_request">34</property>
+                <property name="width-request">151</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="active">0</property>
               </object>
               <packing>
@@ -252,10 +250,10 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblStatutPaiement">
-                <property name="width_request">110</property>
-                <property name="height_request">34</property>
+                <property name="width-request">110</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Statut paiement</property>
               </object>
               <packing>
@@ -264,10 +262,10 @@
             </child>
             <child>
               <object class="GtkLabel" id="lblLieuVente">
-                <property name="width_request">75</property>
-                <property name="height_request">34</property>
+                <property name="width-request">75</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Lieu vente</property>
               </object>
               <packing>
@@ -284,16 +282,16 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkEntry" id="txtCoutTotal">
-                <property name="width_request">100</property>
-                <property name="height_request">42</property>
+                <property name="width-request">100</property>
+                <property name="height-request">42</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="editable">False</property>
-                <property name="width_chars">8</property>
-                <property name="max_width_chars">8</property>
+                <property name="width-chars">8</property>
+                <property name="max-width-chars">8</property>
               </object>
               <packing>
                 <property name="x">425</property>
@@ -301,10 +299,10 @@
             </child>
             <child>
               <object class="GtkLabel">
-                <property name="width_request">100</property>
-                <property name="height_request">42</property>
+                <property name="width-request">100</property>
+                <property name="height-request">42</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="label" translatable="yes">Coût Total (€)</property>
               </object>
               <packing>
@@ -321,16 +319,16 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="chkPartCB">
                 <property name="label" translatable="yes">CB (€)</property>
-                <property name="width_request">100</property>
-                <property name="height_request">34</property>
+                <property name="width-request">100</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
                 <property name="x">325</property>
@@ -338,13 +336,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="txtPartCB">
-                <property name="width_request">100</property>
-                <property name="height_request">34</property>
+                <property name="width-request">100</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="editable">False</property>
-                <property name="width_chars">8</property>
-                <property name="max_width_chars">8</property>
+                <property name="width-chars">8</property>
+                <property name="max-width-chars">8</property>
               </object>
               <packing>
                 <property name="x">425</property>
@@ -360,16 +358,16 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="chkPartCheque">
                 <property name="label" translatable="yes">Chèque (€)</property>
-                <property name="width_request">100</property>
-                <property name="height_request">34</property>
+                <property name="width-request">100</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
                 <property name="x">325</property>
@@ -377,13 +375,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="txtPartCheque">
-                <property name="width_request">100</property>
-                <property name="height_request">34</property>
+                <property name="width-request">100</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="editable">False</property>
-                <property name="width_chars">8</property>
-                <property name="max_width_chars">8</property>
+                <property name="width-chars">8</property>
+                <property name="max-width-chars">8</property>
               </object>
               <packing>
                 <property name="x">425</property>
@@ -392,12 +390,12 @@
             <child>
               <object class="GtkCheckButton" id="chkImprimerTicket">
                 <property name="label" translatable="yes">Imprimer les tickets en quittant</property>
-                <property name="width_request">193</property>
-                <property name="height_request">34</property>
+                <property name="width-request">193</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
                 <property name="x">9</property>
@@ -413,16 +411,16 @@
         <child>
           <object class="GtkFixed">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
+            <property name="can-focus">False</property>
             <child>
               <object class="GtkCheckButton" id="chkPartEspeces">
                 <property name="label" translatable="yes">Espèces (€)</property>
-                <property name="width_request">101</property>
-                <property name="height_request">34</property>
+                <property name="width-request">101</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <property name="draw_indicator">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
               </object>
               <packing>
                 <property name="x">325</property>
@@ -430,13 +428,13 @@
             </child>
             <child>
               <object class="GtkEntry" id="txtPartEspeces">
-                <property name="width_request">100</property>
-                <property name="height_request">34</property>
+                <property name="width-request">100</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="editable">False</property>
-                <property name="width_chars">8</property>
-                <property name="max_width_chars">8</property>
+                <property name="width-chars">8</property>
+                <property name="max-width-chars">8</property>
               </object>
               <packing>
                 <property name="x">425</property>
@@ -444,14 +442,28 @@
             </child>
             <child>
               <object class="GtkEntry" id="txtInfo">
-                <property name="width_request">302</property>
-                <property name="height_request">34</property>
+                <property name="width-request">302</property>
+                <property name="height-request">34</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
+                <property name="can-focus">False</property>
                 <property name="editable">False</property>
               </object>
               <packing>
                 <property name="x">6</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="chkModifiable">
+                <property name="label" translatable="yes">Modifiable</property>
+                <property name="width-request">105</property>
+                <property name="height-request">34</property>
+                <property name="visible">True</property>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="draw-indicator">True</property>
+              </object>
+              <packing>
+                <property name="x">611</property>
               </packing>
             </child>
           </object>

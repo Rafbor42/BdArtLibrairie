@@ -38,7 +38,7 @@ using UI = Gtk.Builder.ObjectAttribute;
 
 namespace BdArtLibrairie
 {
-    public class StatistiquesBox : Dialog
+    public class BilanVentesBox : Dialog
     {
         private Datas mdatas;
         [UI] private Entry txtTotalAlbums = null;
@@ -49,12 +49,12 @@ namespace BdArtLibrairie
         [UI] private TreeView trvStatsCommissions = null;
         [UI] private Button btnFermer = null;
 
-        public StatistiquesBox(Window ParentWindow, ref Datas datas) : this(new Builder("StatistiquesBox.glade"))
+        public BilanVentesBox(Window ParentWindow, ref Datas datas) : this(new Builder("BilanVentesBox.glade"))
         {
             this.TransientFor = ParentWindow;
             this.SetPosition(WindowPosition.CenterOnParent);
             this.Modal = true;
-            this.Title = "Statistiques des ventes";
+            this.Title = "Bilan des ventes";
             //
             mdatas = datas;
             InitTrvStatsAlbums();
@@ -63,7 +63,7 @@ namespace BdArtLibrairie
             UpdateData();
         }
 
-        private StatistiquesBox(Builder builder) : base(builder.GetRawOwnedObject("StatistiquesBox"))
+        private BilanVentesBox(Builder builder) : base(builder.GetRawOwnedObject("BilanVentesBox"))
         {
             builder.Autoconnect(this);
             DeleteEvent += delegate { OnBtnFermerClicked(this, new EventArgs()); };

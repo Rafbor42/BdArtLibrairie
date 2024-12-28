@@ -49,10 +49,10 @@ namespace BdArtLibrairie
 		public ListStore lstoreStatsAlbums, lstoreStatsPrix, lstoreStatsCommissions;
 		protected StreamReader strmReader = StreamReader.Null;
 		protected StreamWriter strmWriter = StreamWriter.Null;
-		private string strPremLigneAlbums = string.Empty;
-		private string  strPremLigneVentes = string.Empty;
-		private string  strPremLignePaiements = string.Empty;
-		private string  strPremLigneAuteurs = string.Empty;
+		private string strPremLigneAlbums = "Code ISBN / EAN;IdAuteur;Titre;Prix vente;Stock initial";
+		private string  strPremLigneVentes = "Numéro;Rang;Date;Code ISBN / EAN;Quantité;Lieu;Paiement";
+		private string  strPremLignePaiements = "NuméroVente;PourcentCB;PourcentChèque;PourcentEspèces";
+		private string  strPremLigneAuteurs = "IdAuteur;Prénom auteur;Nom auteur;Pourcentage";
 		private string strErreurStockAlbums;
 
         public string ErreurStockAlbums { get => strErreurStockAlbums; set => strErreurStockAlbums = value; }
@@ -99,7 +99,9 @@ namespace BdArtLibrairie
 			//
 			dtTableAuteurs = new DataTable("Auteurs");
 			dtTableAuteurs.Columns.Add("nIdAuteur", typeof(Int16));
-			dtTableAuteurs.Columns.Add("strAuteur", typeof(string));
+			dtTableAuteurs.Columns.Add("strPrenomAuteur", typeof(string));
+			dtTableAuteurs.Columns.Add("strNomAuteur", typeof(string));
+			dtTableAuteurs.Columns.Add("strAuteur", typeof(string));// champ conservé après ajout des 2 précédents pour éviter de modifier trop de code
 			dtTableAuteurs.Columns.Add("dblPourcentage", typeof(double));
 			dtTableAuteurs.PrimaryKey = new DataColumn[] { dtTableAuteurs.Columns["nIdAuteur"] };
 			//
@@ -124,25 +126,24 @@ namespace BdArtLibrairie
 		public void Init()
 		{
 			dtTableAlbums.Clear();
+			dtTableAuteurs.Clear();
 			dtTableVentes.Clear();
 			dtTablePaiements.Clear();
 			lstoreAlbums.Clear();
 			lstoreVentes.Clear();
+			lstoreAuteurs.Clear();
 			strErreurStockAlbums = string.Empty;
 		}
 
 		/// <summary>
-		/// Retourne le status de la table passé en paramètre.
+		/// Retourne le status de la table passée en paramètre.
 		/// </summary>
 		/// <returns></returns>
 		public DataRowState GetTableState(ref DataTable dtTable)
 		{
 			DataRowState eStatus = DataRowState.Unchanged;
 
-// test
-//return DataRowState.Modified;
-//
-			foreach(DataRow row in dtTable.Rows)
+			foreach (DataRow row in dtTable.Rows)
 			{
 				// si ligne ajoutée
 				if (row.RowState == DataRowState.Added)
@@ -159,18 +160,31 @@ namespace BdArtLibrairie
 			return eStatus;
 		}
 
-		public void ChargeFichiers(ref string strMsg)
+		public void ChargerFichiers(ref string strMsg)
 		{
 			bool bContinu = false;
 			//
 			try
 			{
-				FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAuteurs), FileMode.Open, FileAccess.Read);
-				strmReader = new StreamReader(fs, Encoding.UTF8);
+				// fichier Auteur existe ?
+				if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierAuteurs)) == false)
+				{
+					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAuteurs),	FileMode.Create, FileAccess.Write);
+					strmWriter = new StreamWriter(fs, Encoding.UTF8);
 
-				// lecture du fichier
-				if (LireFichierAuteurs())
+					// création du fichier
+					strmWriter.WriteLine(strPremLigneAuteurs);
 					bContinu = true;
+				}
+				else
+				{
+					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAuteurs), FileMode.Open, FileAccess.Read);
+					strmReader = new StreamReader(fs, Encoding.UTF8);
+
+					// lecture du fichier
+					if (LireFichierAuteurs())
+						bContinu = true;
+				}
 			}
 			catch (Exception e)
 			{
@@ -183,6 +197,8 @@ namespace BdArtLibrairie
 			{
 				if (!strmReader.Equals(StreamReader.Null))
 					strmReader.Close();
+				if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
 			}
 			//
 			if (bContinu == true)
@@ -190,12 +206,25 @@ namespace BdArtLibrairie
 				bContinu = false;
 				try
 				{
-					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAlbums), FileMode.Open, FileAccess.Read);
-					strmReader = new StreamReader(fs, Encoding.UTF8);
+					// fichier Album existe ?
+					if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierAlbums)) == false)
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAlbums),	FileMode.Create, FileAccess.Write);
+						strmWriter = new StreamWriter(fs, Encoding.UTF8);
 
-					// lecture du fichier
-					if (LireFichierAlbums())
+						// création du fichier
+						strmWriter.WriteLine(strPremLigneAlbums);
 						bContinu = true;
+					}
+					else
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAlbums), FileMode.Open, FileAccess.Read);
+						strmReader = new StreamReader(fs, Encoding.UTF8);
+
+						// lecture du fichier
+						if (LireFichierAlbums())
+							bContinu = true;
+					}
 				}
 				catch (Exception e)
 				{
@@ -208,6 +237,8 @@ namespace BdArtLibrairie
 				{
 					if (!strmReader.Equals(StreamReader.Null))
 						strmReader.Close();
+					if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
 				}
 			}
 			//
@@ -216,12 +247,25 @@ namespace BdArtLibrairie
 				bContinu = false;
 				try
 				{
-					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierVentes), FileMode.Open, FileAccess.Read);
-					strmReader = new StreamReader(fs, Encoding.UTF8);
+					// fichier Ventes existe ?
+					if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierVentes)) == false)
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierVentes),	FileMode.Create, FileAccess.Write);
+						strmWriter = new StreamWriter(fs, Encoding.UTF8);
 
-					// lecture du fichier
-					if (LireFichierVentes())
+						// création du fichier
+						strmWriter.WriteLine(strPremLigneVentes);
 						bContinu = true;
+					}
+					else
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierVentes), FileMode.Open, FileAccess.Read);
+						strmReader = new StreamReader(fs, Encoding.UTF8);
+
+						// lecture du fichier
+						if (LireFichierVentes())
+							bContinu = true;
+					}
 				}
 				catch (Exception e)
 				{
@@ -234,6 +278,8 @@ namespace BdArtLibrairie
 				{
 					if (!strmReader.Equals(StreamReader.Null))
 						strmReader.Close();
+					if (!strmWriter.Equals(StreamWriter.Null))
+						strmWriter.Close();
 				}
 			}
 			//
@@ -241,24 +287,37 @@ namespace BdArtLibrairie
 			{
 				try
 				{
-					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierPaiements), FileMode.Open, FileAccess.Read);
-					strmReader = new StreamReader(fs, Encoding.UTF8);
+					// fichier Paiements existe ?
+					if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierPaiements)) == false)
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierPaiements),	FileMode.Create, FileAccess.Write);
+						strmWriter = new StreamWriter(fs, Encoding.UTF8);
 
-					// lecture du fichier
-					if (LireFichierPaiements())
+						// création du fichier
+						strmWriter.WriteLine(strPremLignePaiements);
 						bContinu = true;
+					}
+					else
+					{
+						FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierPaiements), FileMode.Open, FileAccess.Read);
+						strmReader = new StreamReader(fs, Encoding.UTF8);
+
+						// lecture du fichier
+						LireFichierPaiements();
+					}
 				}
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
 						strMsg += "\r\n";
 					strMsg += e.Message + "\r\n";
-					bContinu = false;
 				}
 				finally
 				{
 					if (!strmReader.Equals(StreamReader.Null))
 						strmReader.Close();
+					if (!strmWriter.Equals(StreamWriter.Null))
+						strmWriter.Close();
 				}
 			}
 		}
@@ -276,7 +335,7 @@ namespace BdArtLibrairie
 			try
 			{
 				// 1ère ligne
-				strPremLigneAuteurs = strmReader.ReadLine();
+				strmReader.ReadLine();
 				// lignes suivantes
 				while ( (strLigne = strmReader.ReadLine()) != null )
 				{
@@ -287,6 +346,8 @@ namespace BdArtLibrairie
 					}
 					dtRow = dtTableAuteurs.NewRow();
 					dtRow["nIdAuteur"]		= strSplit[0];
+					dtRow["strPrenomAuteur"]= strSplit[1];
+					dtRow["strNomAuteur"]	= strSplit[2];
 					dtRow["strAuteur"]		= strSplit[2] + " " + strSplit[1];// nom prénom
 					dtRow["dblPourcentage"]	= Convert.ToDouble(strSplit[3]);//.Replace(',','.'));
 					//
@@ -296,9 +357,9 @@ namespace BdArtLibrairie
 					lstoreAuteurs.AppendValues(strSplit[0], strSplit[2] + " " + strSplit[1], strSplit[3]);
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw(e);
+				throw;
 			}
 			return true;
 		}
@@ -316,12 +377,13 @@ namespace BdArtLibrairie
 			try
 			{
 				// 1ère ligne
-				strPremLigneAlbums = strmReader.ReadLine();
+				strmReader.ReadLine();
 				// lignes suivantes
 				while ( (strLigne = strmReader.ReadLine()) != null )
 				{
 					strSplit = strLigne.Split(new Char [] {';'});
-					if (strSplit.Length < 12)
+					//if (strSplit.Length < 12) ancienne version du fichier
+					if (strSplit.Length < 5)
 					{
 						throw new Exception("Fichier ALBUMS, ligne " + (j + 1).ToString() + ", " + Global.m_strMsgFileFormatNotOk);
 					}
@@ -331,13 +393,13 @@ namespace BdArtLibrairie
 					dtRow["strTitre"]		= strSplit[2];
 					dtRow["dblPrixVente"]	= Convert.ToDouble(strSplit[3]);//.Replace(',','.'));
 					dtRow["nStockInitial"]	= Convert.ToInt16(strSplit[4]);
-					dtRow["nQteVenduLibrairie"]		= Convert.ToInt16(strSplit[5]);
-					dtRow["nQteVenduMediatheque"]		= Convert.ToInt16(strSplit[6]);
-					dtRow["nQteOffert"]		= Convert.ToInt16(strSplit[7]);
-					dtRow["nStockFinal"]	= Convert.ToInt16(strSplit[8]);
-					dtRow["nQteAfacturer"]	= Convert.ToInt16(strSplit[9]);
-					dtRow["nQteTotalVendu"]	= Convert.ToInt16(strSplit[10]);
-					dtRow["dblPrixTotal"]	= Convert.ToDouble(strSplit[11]);
+					dtRow["nQteVenduLibrairie"]		= 0;
+					dtRow["nQteVenduMediatheque"]	= 0;
+					dtRow["nQteOffert"]		= 0;
+					dtRow["nStockFinal"]	= Convert.ToInt16(strSplit[4]); //=stock initial
+					dtRow["nQteAfacturer"]	= 0;
+					dtRow["nQteTotalVendu"]	= 0;
+					dtRow["dblPrixTotal"]	= 0;
 					//
 					dtTableAlbums.Rows.Add(dtRow);
 					dtTableAlbums.Rows[j++].AcceptChanges();
@@ -351,20 +413,20 @@ namespace BdArtLibrairie
 							strSplit[2],
 							strSplit[3],
 							strSplit[4],
-							strSplit[5],
-							strSplit[6],
-							strSplit[7],
-							strSplit[8],
-							strSplit[9],
-							strSplit[10],
-							strSplit[11]
+							"0",
+							"0",
+							"0",
+							strSplit[4], //=stock initial
+							"0",
+							"0",
+							"0"
 						);
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw(e);
+				throw;
 			}
 			return true;
 		}
@@ -383,7 +445,7 @@ namespace BdArtLibrairie
 			try
 			{
 				// 1ère ligne
-				strPremLigneVentes = strmReader.ReadLine();
+				strmReader.ReadLine();
 				// lignes suivantes
 				while ( (strLigne = strmReader.ReadLine()) != null )
 				{
@@ -425,9 +487,9 @@ namespace BdArtLibrairie
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw(e);
+				throw;
 			}
 			return true;
 		}
@@ -445,7 +507,7 @@ namespace BdArtLibrairie
 			try
 			{
 				// 1ère ligne
-				strPremLignePaiements = strmReader.ReadLine();
+				strmReader.ReadLine();
 				// lignes suivantes
 				while ( (strLigne = strmReader.ReadLine()) != null )
 				{
@@ -464,9 +526,9 @@ namespace BdArtLibrairie
 					dtTablePaiements.Rows[j++].AcceptChanges();
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw(e);
+				throw;
 			}
 			return true;
 		}
@@ -709,7 +771,7 @@ namespace BdArtLibrairie
 
 		}
 
-		public bool EnregistrerFichiers(ref string strMsg)
+		public bool EnregistrerFichiersVentesPaiements(ref string strMsg)
 		{
 			bool bContinu = false;
 			FileMode eMode;
@@ -725,7 +787,7 @@ namespace BdArtLibrairie
 				else
 				{
 					eMode = FileMode.Create;
-					DoCopieFichierVentes();
+					DoCopieFichierSauve(Global.FichierVentes, Global.FichierVentesWoExt);
 				}
 
 				FileStream fs = new FileStream(
@@ -749,7 +811,7 @@ namespace BdArtLibrairie
 			{
 				if (strMsg != String.Empty)
 					strMsg += "\r\n";
-				strMsg = e.Message + "\r\n";
+				strMsg += e.Message + "\r\n";
 				bContinu = false;
 			}
 			finally
@@ -774,7 +836,7 @@ namespace BdArtLibrairie
 					else
 					{
 						eMode = FileMode.Create;
-						DoCopieFichierPaiements();
+						DoCopieFichierSauve(Global.FichierPaiements, Global.FichierPaiementsWoExt);
 					}
 
 					FileStream fs = new FileStream(
@@ -798,7 +860,7 @@ namespace BdArtLibrairie
 				{
 					if (strMsg != String.Empty)
 						strMsg += "\r\n";
-					strMsg = e.Message + "\r\n";
+					strMsg += e.Message + "\r\n";
 					bContinu = false;
 				}
 				finally
@@ -815,30 +877,29 @@ namespace BdArtLibrairie
 		private bool EcrireFichierVentesAppend()
 		{
 			string strLigne;
-			int i;
 
 			try
 			{
-				for (i = 0; i < dtTableVentes.Rows.Count; i++)
+				foreach (DataRow row in dtTableVentes.Rows)
 				{
-					if (dtTableVentes.Rows[i].RowState == DataRowState.Deleted)
+					if (row.RowState == DataRowState.Deleted)
 						continue;
-					if (dtTableVentes.Rows[i].RowState == DataRowState.Added)
+					if (row.RowState == DataRowState.Added)
 					{
-						strLigne = dtTableVentes.Rows[i]["nNumero"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["nRang"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["dtDate"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["strIsbnEan"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["nQteVendu"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["strLieu"].ToString() + ";";
-						strLigne += dtTableVentes.Rows[i]["strPaiement"].ToString();
+						strLigne = row["nNumero"].ToString() + ";";
+						strLigne += row["nRang"].ToString() + ";";
+						strLigne += row["dtDate"].ToString() + ";";
+						strLigne += row["strIsbnEan"].ToString() + ";";
+						strLigne += row["nQteVendu"].ToString() + ";";
+						strLigne += row["strLieu"].ToString() + ";";
+						strLigne += row["strPaiement"].ToString();
 						strmWriter.WriteLine(strLigne);
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw (e);
+				throw;
 			}
 			return true;
 		}
@@ -846,29 +907,28 @@ namespace BdArtLibrairie
 		private bool EcrireFichierVentesComplet()
 		{
 			string strLigne;
-			int i;
 
 			try
 			{
 				strmWriter.WriteLine(strPremLigneVentes);
-				for (i = 0; i < dtTableVentes.Rows.Count; i++)
+				foreach (DataRow row in dtTableVentes.Rows)
 				{
-					if (dtTableVentes.Rows[i].RowState == DataRowState.Deleted)
+					if (row.RowState == DataRowState.Deleted)
 						continue;
 					// on écrit toutes les lignes
-					strLigne = dtTableVentes.Rows[i]["nNumero"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["nRang"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["dtDate"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["strIsbnEan"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["nQteVendu"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["strLieu"].ToString() + ";";
-					strLigne += dtTableVentes.Rows[i]["strPaiement"].ToString();
+					strLigne = row["nNumero"].ToString() + ";";
+					strLigne += row["nRang"].ToString() + ";";
+					strLigne += row["dtDate"].ToString() + ";";
+					strLigne += row["strIsbnEan"].ToString() + ";";
+					strLigne += row["nQteVendu"].ToString() + ";";
+					strLigne += row["strLieu"].ToString() + ";";
+					strLigne += row["strPaiement"].ToString();
 					strmWriter.WriteLine(strLigne);
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw (e);
+				throw;
 			}			
 			return true;
 		}
@@ -876,27 +936,26 @@ namespace BdArtLibrairie
 		private bool EcrireFichierPaiementsAppend()
 		{
 			string strLigne;
-			int i;
 
 			try
 			{
-				for (i = 0; i < dtTablePaiements.Rows.Count; i++)
+				foreach (DataRow row in dtTablePaiements.Rows)
 				{
-					if (dtTablePaiements.Rows[i].RowState == DataRowState.Deleted)
+					if (row.RowState == DataRowState.Deleted)
 						continue;
-					if (dtTablePaiements.Rows[i].RowState == DataRowState.Added)
+					if (row.RowState == DataRowState.Added)
 					{
-						strLigne = dtTablePaiements.Rows[i]["nNumeroVente"].ToString() + ";";
-						strLigne += dtTablePaiements.Rows[i]["dblPourcentCB"].ToString() + ";";
-						strLigne += dtTablePaiements.Rows[i]["dblPourcentCheque"].ToString() + ";";
-						strLigne += dtTablePaiements.Rows[i]["dblPourcentEspeces"].ToString();
+						strLigne = row["nNumeroVente"].ToString() + ";";
+						strLigne += row["dblPourcentCB"].ToString() + ";";
+						strLigne += row["dblPourcentCheque"].ToString() + ";";
+						strLigne += row["dblPourcentEspeces"].ToString();
 						strmWriter.WriteLine(strLigne);
 					}
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw (e);
+				throw;
 			}
 			return true;
 		}
@@ -904,86 +963,27 @@ namespace BdArtLibrairie
 		private bool EcrireFichierPaiementsComplet()
 		{
 			string strLigne;
-			int i;
 
 			try
 			{
 				strmWriter.WriteLine(strPremLignePaiements);
-				for (i = 0; i < dtTablePaiements.Rows.Count; i++)
+				foreach (DataRow row in dtTablePaiements.Rows)
 				{
-					if (dtTablePaiements.Rows[i].RowState == DataRowState.Deleted)
+					if (row.RowState == DataRowState.Deleted)
 						continue;
 					// on écrit toutes les lignes
-					strLigne = dtTablePaiements.Rows[i]["nNumeroVente"].ToString() + ";";
-					strLigne += dtTablePaiements.Rows[i]["dblPourcentCB"].ToString() + ";";
-					strLigne += dtTablePaiements.Rows[i]["dblPourcentCheque"].ToString() + ";";
-					strLigne += dtTablePaiements.Rows[i]["dblPourcentEspeces"].ToString();
+					strLigne = row["nNumeroVente"].ToString() + ";";
+					strLigne += row["dblPourcentCB"].ToString() + ";";
+					strLigne += row["dblPourcentCheque"].ToString() + ";";
+					strLigne += row["dblPourcentEspeces"].ToString();
 					strmWriter.WriteLine(strLigne);
 				}
 			}
-			catch (Exception e)
+			catch (Exception)
 			{
-				throw (e);
+				throw;
 			}
 			return true;
-		}
-
-		private void DoCopieFichierVentes()
-		{
-			string strFichier = Path.Combine(Global.DossierFichiers, Global.FichierVentes);
-			string strDirSauve = Path.Combine(Global.DossierFichiers, "Sauve");
-			string strFichierSauve = string.Empty;
-
-			try
-			{
-				// création du dossier de sauvegarde, si pas présent
-				if (!Directory.Exists(strDirSauve))
-					Directory.CreateDirectory(strDirSauve);
-
-				// incrémentation du n° de fichier dans le nom
-				string[] allFiles = Directory.GetFiles(strDirSauve).Select(filename => Path.GetFileNameWithoutExtension(filename)).ToArray();
-				string tempFileName = Global.FichierVentesWoExt;
-				int count = 1;
-				while (allFiles.Contains(tempFileName))
-				{
-					tempFileName = String.Format("{0}({1})", Global.FichierVentesWoExt, count++); 
-				}
-				strFichierSauve = Path.Combine(strDirSauve, tempFileName) + ".csv";
-				File.Copy(strFichier, strFichierSauve);
-			}
-			catch (Exception e)
-			{
-				Global.ShowMessage("Erreur copie du fichier VENTES", e.Message, pParentWindow);
-			}
-		}
-
-		private void DoCopieFichierPaiements()
-		{
-			string strFichier = Path.Combine(Global.DossierFichiers, Global.FichierPaiements);
-			string strDirSauve = Path.Combine(Global.DossierFichiers, "Sauve");
-			string strFichierSauve = string.Empty;
-
-			try
-			{
-				// création du dossier de sauvegarde, si pas présent
-				if (!Directory.Exists(strDirSauve))
-					Directory.CreateDirectory(strDirSauve);
-
-				// incrémentation du n° de fichier dans le nom
-				string[] allFiles = Directory.GetFiles(strDirSauve).Select(filename => Path.GetFileNameWithoutExtension(filename)).ToArray();
-				string tempFileName = Global.FichierPaiementsWoExt;
-				int count = 1;
-				while (allFiles.Contains(tempFileName))
-				{
-					tempFileName = String.Format("{0}({1})", Global.FichierPaiementsWoExt, count++); 
-				}
-				strFichierSauve = Path.Combine(strDirSauve, tempFileName) + ".csv";
-				File.Copy(strFichier, strFichierSauve);
-			}
-			catch (Exception e)
-			{
-				Global.ShowMessage("Erreur copie du fichier PAIEMENTS", e.Message, pParentWindow);
-			}
 		}
 
 		// RAZ des valeurs à recalculer d'après les ventes, de la table Albums.
@@ -1048,6 +1048,10 @@ namespace BdArtLibrairie
 
 		public void RAZVentesPaiements()
 		{
+			// Ne pas utiliser Clear car le statut des tables est aussi réinitialisé et n'entraine pas la sauvegarde
+			// complète de la table dans la méthode EnregistrerFichiers
+			// dtTablePaiements.Clear();
+			// dtTableVentes.Clear();
 			foreach (DataRow rowP in dtTablePaiements.Rows)
 				rowP.Delete();
 			foreach (DataRow rowV in dtTableVentes.Rows)
@@ -1068,27 +1072,32 @@ namespace BdArtLibrairie
 			lstoreUneVente.Remove(ref iter);
 		}
 
-		// Supprime définitivement dans le dataTable et dans le listStore, la vente dont la clé est passée en paramètre.
-		// TODO: en cours de réflexion car il faut supprimer / modifier la ligne liée dans la table Paiements...
-		public void SupprimerVente(TreeIter iter)
+		// Supprime définitivement dans le dataTable, la vente dont la clé est passée en paramètre.
+		public void SupprimerVente(Int16 nNumVente)
 		{
-			Int16 nNumVente = Convert.ToInt16(lstoreVentes.GetValue(iter, Convert.ToInt16(Global.eTrvVentesCols.Numero)));
-			Int16 nRang = Convert.ToInt16(lstoreVentes.GetValue(iter, Convert.ToInt16(Global.eTrvVentesCols.Rang)));
-			foreach(DataRow row in dtTableVentes.Select("nNumero=" + nNumVente.ToString() + " AND nRang=" + nRang.ToString()))
+			// suppression de la table Paiements
+			foreach (DataRow row in dtTablePaiements.Select("nNumeroVente=" + nNumVente.ToString()))
 			{
 				if (row.RowState == DataRowState.Deleted)
 					continue;
 				row.Delete();
 			}
-			lstoreVentes.Remove(ref iter);
+			// suppression de la table Ventes
+			foreach (DataRow row in dtTableVentes.Select("nNumero=" + nNumVente.ToString()))
+			{
+				if (row.RowState == DataRowState.Deleted)
+					continue;
+				row.Delete();
+			}
 		}
 
-		public void ExportAlbums(string strAuteur, string strListeLieuVente, bool bAFacturer, ref string strMsg)
+		// Méthode utilisée pour l'export des données Albums.
+		public void ExportAlbums(string strAuteur, ref string strMsg)
 		{
-			string strNomFichier = "Albums_" + strAuteur.Trim() + "_" + strListeLieuVente;
-			if (bAFacturer == true)
-				strNomFichier += "_AFacturer";
-			strNomFichier += ".csv";
+			// nom de fichier unique quelque soit le filtre actif pour ouverture dans LO_Base
+			string strNomFichier = "Albums_export.csv";
+			string strLigne, strFiltre="1=1";
+			Int16 nIdAuteur;
 			//
 			try
 			{
@@ -1097,31 +1106,23 @@ namespace BdArtLibrairie
 					FileMode.Create, FileAccess.Write);
 				strmWriter = new StreamWriter(fs, Encoding.UTF8);
 				//
-				EcrireFichierAlbums();
-			}
-			catch (IOException e)
-			{
-				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg = e.Message + "\r\n";
-			}
-			finally
-			{
-				if (!strmWriter.Equals(StreamWriter.Null))
-					strmWriter.Close();
-			}
-		}
-
-		private void EcrireFichierAlbums()
-		{
-			string strLigne;
-
-			try
-			{
-				strmWriter.WriteLine("Code Isbn/Ean;IdAuteur;Titre;Prix vente;Stock initial;Vendu librairie;Vendu médiat.;Offert;Stock final;A facturer;Total vendu;Prix total");
-				// pour chaque album
-				foreach(DataRow row in dtTableAlbums.Rows)
+				strmWriter.WriteLine("Code Isbn/Ean;IdAuteur;Titre;Prix vente;Stock initial;Vendu librairie;Vendu médiat.;Offert;Stock final;A facturer;Total vendu;Prix total;Nom auteur;Pourcentage;Part auteur;Part librairie");
+				//
+				if (strAuteur.Trim() != "Tous")
 				{
+					// recherche IdAuteur
+					foreach (DataRow rowAU in dtTableAuteurs.Select("strAuteur='" + strAuteur + "'"))
+					{
+						nIdAuteur = Convert.ToInt16(rowAU["nIdAuteur"]);
+						strFiltre = "nIdAuteur=" + nIdAuteur.ToString();
+					}
+				}
+				// pour chaque album
+				foreach (DataRow row in dtTableAlbums.Select(strFiltre))
+				{
+					if (row.RowState == DataRowState.Deleted)
+						continue;
+					// champs nécessaires pour BdArtLib.odb
 					strLigne = row["strIsbnEan"].ToString() + ";";
 					strLigne += row["nIdAuteur"].ToString() + ";";
 					strLigne += row["strTitre"].ToString() + ";";
@@ -1134,12 +1135,28 @@ namespace BdArtLibrairie
 					strLigne += row["nQteAfacturer"].ToString() + ";";
 					strLigne += row["nQteTotalVendu"].ToString() + ";";
 					strLigne += row["dblPrixTotal"].ToString() + ";";
+					// champs supplémentaires pour exploitation dans un tableur
+					// nom auteur, pourcentage, part auteur, part librairie
+					foreach (DataRow rowAU in dtTableAuteurs.Select("nIdAuteur=" + row["nIdAuteur"].ToString()))
+					{
+						strLigne += rowAU["strAuteur"].ToString() + ";";
+						strLigne += rowAU["dblPourcentage"].ToString() + ";";
+						strLigne += Math.Round(Convert.ToDouble(row["dblPrixVente"]) * Convert.ToInt16(row["nQteTotalVendu"]) * (Convert.ToDouble(rowAU["dblPourcentage"])) / 100, 2) + ";";
+						strLigne += Math.Round(Convert.ToDouble(row["dblPrixVente"]) * Convert.ToInt16(row["nQteTotalVendu"]) * (100 - Convert.ToDouble(rowAU["dblPourcentage"])) / 100, 2) + ";";
+					}
 					strmWriter.WriteLine(strLigne);
 				}
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
-				throw (e);
+				if (strMsg != String.Empty)
+					strMsg += "\r\n";
+				strMsg += e.Message + "\r\n";
+			}
+			finally
+			{
+				if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
 			}
 		}
 
@@ -1148,9 +1165,9 @@ namespace BdArtLibrairie
 			lstoreStatsAlbums.Clear();
 			lstoreStatsPrix.Clear();
 			lstoreStatsCommissions.Clear();
-			Int16 nQteVendus = 0;
-			double dblPrix = 0;
-			double dblCommissions = 0;
+			Int16 nQteVendus;
+			double dblPrix;
+			double dblCommissions;
 
 			DataTable dtTableTemp = new DataTable("Temp");
 			dtTableTemp.Columns.Add("strAuteur", typeof(String));
@@ -1162,6 +1179,8 @@ namespace BdArtLibrairie
 			// pour chaque auteur
 			foreach (DataRow rowAU in dtTableAuteurs.Rows)
 			{
+				if (rowAU.RowState == DataRowState.Deleted)
+					continue;
 				nQteVendus = 0;
 				dblPrix = 0;
 				dblCommissions = 0;
@@ -1198,5 +1217,415 @@ namespace BdArtLibrairie
 				lstoreStatsCommissions.AppendValues(dtRow["strAuteur"].ToString(), Math.Round(Convert.ToDouble(dtRow["dblCommissions"]), 2).ToString());
 			}
 		}
-	}
+
+        public void DoRefreshLstoreAuteurs()
+        {
+			lstoreAuteurs.Clear();
+            foreach (DataRow row in dtTableAuteurs.Rows)
+			{
+				if (row.RowState == DataRowState.Deleted)
+					continue;
+				lstoreAuteurs.AppendValues(	row["nIdAuteur"].ToString(),
+											row["strAuteur"].ToString(),
+											row["dblPourcentage"].ToString());
+			}
+        }
+
+        internal void EnregistrerFichierAuteurs(ref string strMsg)
+        {
+            FileMode eMode;
+			// fichier Auteurs
+			try
+			{
+				if (GetTableState(ref dtTableAuteurs) == DataRowState.Unchanged)
+					return;
+				// ligne ajoutée
+				else if (GetTableState(ref dtTableAuteurs) == DataRowState.Added)
+					eMode = FileMode.Append;
+				// ligne modifiée ou supprimée, il faut réécrire le fichier
+				else
+				{
+					eMode = FileMode.Create;
+					DoCopieFichierSauve(Global.FichierAuteurs, Global.FichierAuteursWoExt);
+				}
+
+				FileStream fs = new FileStream(
+					Path.Combine(Global.DossierFichiers, Global.FichierAuteurs),
+					eMode, FileAccess.Write);
+				//
+				strmWriter = new StreamWriter(fs, Encoding.UTF8);
+				// écriture du fichier
+				if (GetTableState(ref dtTableAuteurs) == DataRowState.Added)
+				{
+					if (EcrireFichierAuteursAppend() == true)
+					{
+						dtTableAuteurs.AcceptChanges();
+						Console.WriteLine("Fichier Auteurs: ligne ajoutée");
+					}
+				}
+				else
+				{
+					if (EcrireFichierAuteursComplet() == true)
+					{
+						dtTableAuteurs.AcceptChanges();
+						Console.WriteLine("Fichier Auteurs: réécrit");
+					}
+				}
+			}
+			catch (IOException e)
+			{
+				if (strMsg != String.Empty)
+					strMsg += "\r\n";
+				strMsg += e.Message + "\r\n";
+			}
+			finally
+			{
+				if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
+			}
+        }
+
+        private bool EcrireFichierAuteursComplet()
+        {
+			string strLigne;
+
+			try
+			{
+				strmWriter.WriteLine(strPremLigneAuteurs);
+				foreach (DataRow row in 	dtTableAuteurs.Rows)
+				{
+					if (row.RowState == DataRowState.Deleted)
+						continue;
+					// on écrit toutes les lignes
+					strLigne = row["nIdAuteur"].ToString() + ";";
+					strLigne += row["strPrenomAuteur"].ToString() + ";";
+					strLigne += row["strNomAuteur"].ToString() + ";";
+					strLigne += row["dblPourcentage"].ToString();
+					strmWriter.WriteLine(strLigne);
+				}
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			return true;	
+		}
+
+        private bool EcrireFichierAuteursAppend()
+        {
+			string strLigne;
+
+			try
+			{
+				foreach (DataRow row in dtTableAuteurs.Rows)
+				{
+					if (row.RowState == DataRowState.Deleted)
+						continue;
+					if (row.RowState == DataRowState.Added)
+					{
+						strLigne = row["nIdAuteur"].ToString() + ";";
+						strLigne += row["strPrenomAuteur"].ToString() + ";";
+						strLigne += row["strNomAuteur"].ToString() + ";";
+						strLigne += row["dblPourcentage"].ToString();
+						strmWriter.WriteLine(strLigne);
+					}
+				}
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			return true;
+		}
+
+        private void DoCopieFichierSauve(string strNomFichier, string strNomFichierWoExt, string strExt=".csv")
+        {
+			string strFichier = Path.Combine(Global.DossierFichiers, strNomFichier);
+			string strDirSauve = Path.Combine(Global.DossierFichiers, "Sauve");
+			string strFichierSauve = string.Empty;
+
+			try
+			{
+				// création du dossier de sauvegarde, si pas présent
+				if (!Directory.Exists(strDirSauve))
+					Directory.CreateDirectory(strDirSauve);
+
+				// incrémentation du n° de fichier dans le nom
+				string[] allFiles = Directory.GetFiles(strDirSauve).Select(filename => Path.GetFileNameWithoutExtension(filename)).ToArray();
+				string tempFileName = strNomFichierWoExt;
+				int count = 1;
+				while (allFiles.Contains(tempFileName))
+				{
+					tempFileName = String.Format("{0}({1})", strNomFichierWoExt, count++); 
+				}
+				strFichierSauve = Path.Combine(strDirSauve, tempFileName) + strExt;
+				File.Copy(strFichier, strFichierSauve);
+			}
+			catch (Exception e)
+			{
+				Global.ShowMessage("Erreur copie du fichier " + strNomFichierWoExt, e.Message, pParentWindow);
+			}
+		}
+
+        internal void EnregistrerFichierAlbums(ref string strMsg)
+        {
+            FileMode eMode;
+			try
+			{
+				if (GetTableState(ref dtTableAlbums) == DataRowState.Unchanged)
+					return;
+				// ligne ajoutée
+				else if (GetTableState(ref dtTableAlbums) == DataRowState.Added)
+					eMode = FileMode.Append;
+				// ligne modifiée ou supprimée, il faut réécrire le fichier
+				else
+				{
+					eMode = FileMode.Create;
+					DoCopieFichierSauve(Global.FichierAlbums, Global.FichierAlbumsWoExt);
+				}
+
+				FileStream fs = new FileStream(
+					Path.Combine(Global.DossierFichiers, Global.FichierAlbums),
+					eMode, FileAccess.Write);
+				//
+				strmWriter = new StreamWriter(fs, Encoding.UTF8);
+				// écriture du fichier
+				if (GetTableState(ref dtTableAlbums) == DataRowState.Added)
+				{
+					if (EcrireFichierAlbumsAppend() == true)
+					{
+						dtTableAlbums.AcceptChanges();
+						Console.WriteLine("Fichier Albums: ligne ajoutée");
+					}
+				}
+				else
+				{
+					if (EcrireFichierAlbumsComplet() == true)
+					{
+						dtTableAlbums.AcceptChanges();
+						Console.WriteLine("Fichier Albums: réécrit");
+					}
+				}
+			}
+			catch (IOException e)
+			{
+				if (strMsg != String.Empty)
+					strMsg += "\r\n";
+				strMsg += e.Message + "\r\n";
+			}
+			finally
+			{
+				if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
+			}
+        }
+
+        private bool EcrireFichierAlbumsComplet()
+        {
+            string strLigne;
+
+			try
+			{
+				strmWriter.WriteLine(strPremLigneAlbums);
+				foreach (DataRow row in dtTableAlbums.Rows)
+				{
+					if (row.RowState == DataRowState.Deleted)
+						continue;
+					// on écrit toutes les lignes
+					strLigne = row["strIsbnEan"].ToString() + ";";
+					strLigne += row["nIdAuteur"].ToString() + ";";
+					strLigne += row["strTitre"].ToString() + ";";
+					strLigne += row["dblPrixVente"].ToString() + ";";
+					strLigne += row["nStockInitial"].ToString();
+					strmWriter.WriteLine(strLigne);
+				}
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			return true;
+        }
+
+        private bool EcrireFichierAlbumsAppend()
+        {
+            string strLigne;
+
+			try
+			{
+				foreach (DataRow row in dtTableAlbums.Rows)
+				{
+					if (row.RowState == DataRowState.Deleted)
+						continue;
+					if (row.RowState == DataRowState.Added)
+					{
+						strLigne = row["strIsbnEan"].ToString() + ";";
+						strLigne += row["nIdAuteur"].ToString() + ";";
+						strLigne += row["strTitre"].ToString() + ";";
+						strLigne += row["dblPrixVente"].ToString() + ";";
+						strLigne += row["nStockInitial"].ToString();
+						strmWriter.WriteLine(strLigne);
+					}
+				}
+			}
+			catch (Exception)
+			{
+				throw;
+			}
+			return true;
+        }
+
+		public void SupprimerAuteur(TreeIter iter, Int16 nIdAuteur)
+		{
+			foreach (DataRow row in dtTableAuteurs.Select("nIdAuteur=" + nIdAuteur.ToString()))
+			{
+				if (row.RowState == DataRowState.Deleted)
+					continue;
+				row.Delete();
+			}
+			// lstoreVentes.Remove(ref iter);// /!\ ne pas supprimer du ListStore sinon erreur:
+			// gtk_list_store_remove: assertion 'iter_is_valid (iter, list_store)' failed
+			// on recharge le ListStore
+			DoRefreshLstoreAuteurs();
+		}
+
+        internal short GetNewIdAuteur()
+        {
+            // détermination de la clé
+			Int16 nKey = 0;
+			foreach(DataRow row in dtTableAuteurs.Rows)
+			{
+				if (row.RowState == DataRowState.Deleted)
+						continue;
+				if (Convert.ToInt16(row["nIdAuteur"]) > nKey)
+					nKey = Convert.ToInt16(row["nIdAuteur"]);
+			}
+			return ++nKey;
+        }
+
+		public void SupprimerAlbum(TreeIter iter, string strCode)
+		{
+			foreach (DataRow row in dtTableAlbums.Select("strIsbnEan='" + strCode + "'"))
+			{
+				if (row.RowState == DataRowState.Deleted)
+					continue;
+				row.Delete();
+			}
+			// lstoreVentes.Remove(ref iter);// /!\ ne pas supprimer du ListStore sinon erreur:
+			// gtk_list_store_remove: assertion 'iter_is_valid (iter, list_store)' failed
+			// on recharge le ListStore après l'appel de cette méthode
+		}
+
+        internal void AjouteAlbum(string strCode, short nIdAuteur, string strTitre, double dblPrixVente, short nStockInital, short nStockFinal)
+        {
+            DataRow row = dtTableAlbums.NewRow();
+			row["strIsbnEan"] = strCode;
+			row["nIdAuteur"] = nIdAuteur;
+			row["strTitre"] = strTitre;
+			row["dblPrixVente"] = dblPrixVente;
+			row["nStockInitial"] = nStockInital;
+			row["nStockFinal"] = nStockFinal;
+			row["nQteVenduLibrairie"] = 0;
+			row["nQteVenduMediatheque"] = 0;
+			row["nQteOffert"] = 0;
+			row["nQteAfacturer"] = 0;
+			row["nQteTotalVendu"] = 0;
+			dtTableAlbums.Rows.Add(row);
+        }
+
+        internal void AjouteAuteur(short nIdAuteur)
+        {
+            DataRow rowAU = dtTableAuteurs.NewRow();
+			rowAU["nIdAuteur"] = nIdAuteur;
+			dtTableAuteurs.Rows.Add(rowAU);
+        }
+
+		public void EnregistrerFichierEcartsVentes(ref string strMsg, string strMsg2)
+		{
+			FileMode eMode;
+			try
+			{
+				if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes)) == true)
+					eMode = FileMode.Append;
+				else
+					eMode = FileMode.Create;
+				
+				FileStream fs = new FileStream(
+					Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes),
+					eMode, FileAccess.Write);
+				
+				strmWriter = new StreamWriter(fs, Encoding.UTF8);
+				strmWriter.WriteLine(strMsg2);
+			}
+			catch (IOException e)
+			{
+				if (strMsg != String.Empty)
+					strMsg += "\r\n";
+				strMsg += e.Message + "\r\n";
+			}
+			finally
+			{
+				if (!strmWriter.Equals(StreamWriter.Null))
+					strmWriter.Close();
+			}
+		}
+
+        internal void ChargerFicErrEcartVentes(ref string strMsg)
+        {
+			string strLigne, strContenu = string.Empty;
+
+            // fichier EcartsVentes existe ?
+			if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes)) == false)
+			{
+				Global.ShowMessage("Charger fichier", "Le fichier EcartsVentes n'a pas été trouvé.", pParentWindow);
+			}
+			else
+			{
+				try
+				{
+					FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes), FileMode.Open, FileAccess.Read);
+					strmReader = new StreamReader(fs, Encoding.UTF8);
+
+					while ( (strLigne = strmReader.ReadLine()) != null )
+					{
+						strContenu += strLigne + "\r\n";
+					}
+					//Global.ShowMessage("Ecarts Ventes", strContenu, pParentWindow);
+					LireFichierBox lireBox = new LireFichierBox(pParentWindow, strContenu);
+					lireBox.Run();
+				}
+				catch (Exception e)
+				{
+					if (strMsg != String.Empty)
+						strMsg += "\r\n";
+					strMsg += e.Message + "\r\n";
+				}
+				finally
+				{
+					if (!strmReader.Equals(StreamReader.Null))
+						strmReader.Close();
+				}
+			}
+		}
+
+        internal void SupprimerFichierEcartVentes(ref string strMsg)
+        {
+			string strFilename = Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes);
+
+            if (File.Exists(strFilename) == true)
+			{
+				DoCopieFichierSauve(Global.FichierEcartsVentes, Global.FichierEcartsVentesWoExt, ".txt");
+				try
+				{
+					File.Delete(strFilename);
+				}
+				catch (Exception e)
+				{
+					if (strMsg != String.Empty)
+						strMsg += "\r\n";
+					strMsg += e.Message + "\r\n";
+				}
+			}
+        }
+    }
 }

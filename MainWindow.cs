@@ -55,9 +55,12 @@ namespace BdArtLibrairie
         [UI] private MenuItem mnuFichierExportFichiers = null;
         [UI] private MenuItem mnuFichierQuitter = null;
         [UI] private MenuItem mnuFichierResetVentes = null;
+        [UI] private MenuItem mnuFichierRecharger = null;
         [UI] private CheckMenuItem mnuAffichageTout = null;
         [UI] private MenuItem mnuAffichageVente = null;
-         [UI] private MenuItem mnuAffichageStatsVentes = null;
+        [UI] private MenuItem mnuAffichageAuteur = null;
+        [UI] private MenuItem mnuAffichageAlbum = null;
+        [UI] private MenuItem mnuAffichageBilanVentes = null;
         [UI] private MenuItem mnuAideApropos = null;
         //
         [UI] private Button btnNouvelleVente = null;
@@ -65,9 +68,19 @@ namespace BdArtLibrairie
         [UI] private Button btnFindPrinter = null;
         [UI] private Button btnFindUsbDevice = null;
         [UI] private Button btnInfoErreurQtes = null;
+        [UI] private Button btnAjouterAuteur = null;
+        [UI] private Button btnSupprimerAuteur = null;
+        [UI] private Button btnDetailsAuteur = null;
+        [UI] private Button btnAjouterAlbum = null;
+        [UI] private Button btnSupprimerAlbum = null;
+        [UI] private Button btnDetailsAlbum = null;
+        [UI] private Button btnDetailsVente = null;
+        [UI] private Button btnBilanVentes = null;
+        [UI] private Button btnErreurEcartVentes = null;
         [UI] private CheckButton chkAFacturer = null;
         [UI] private CheckButton chkUseDialogForTicketPrint = null;
         [UI] private CheckButton chkUseFgColor = null;
+        [UI] private CheckButton chkLaunchBaseFile = null;
         //
         [UI] private ComboBoxText cbListeLieuVente = null;
         [UI] private ComboBoxText cbListeAuteurs = null;
@@ -92,6 +105,8 @@ namespace BdArtLibrairie
         [UI] private Entry txtNombreTickets = null;
         [UI] private Entry txtTempo = null;
         [UI] private TextView txtPathResult = null;
+        [UI] private Entry txtNomFestival = null;
+        [UI] private Entry txtPartAuteurDefaut = null;
         //
         [UI] private TreeView trvVentes = null;
         [UI] private TreeView trvAlbums = null;
@@ -121,7 +136,6 @@ namespace BdArtLibrairie
 //			Thread.CurrentThread.CurrentCulture = ci;
             //
             builder.Autoconnect(this);
-            this.Title = "Librairie BD'Art";
             //
             datas = new Datas(this);
             InitTrvVentes();
@@ -161,6 +175,17 @@ namespace BdArtLibrairie
             chkUseDialogForTicketPrint.Clicked += OnChkUseDialogForTicketPrintClicked;
             chkUseFgColor.Active = Global.UseFgColor;
             chkUseFgColor.Clicked += OnChkUseFgColorClicked;
+            chkLaunchBaseFile.Active = Global.LaunchBaseFile;
+            chkLaunchBaseFile.Clicked += OnChkLaunchBaseFileClicked;
+            btnAjouterAuteur.Clicked += OnBtnAjouterAuteurClicked;
+            btnSupprimerAuteur.Clicked += OnBtnSupprimerAuteurClicked;
+            btnAjouterAlbum.Clicked += OnBtnAjouterAlbumClicked;
+            btnSupprimerAlbum.Clicked += OnBtnSupprimerAlbumClicked;
+            btnDetailsAlbum.Clicked += OnBtnDetailsAlbumClicked;
+            btnDetailsAuteur.Clicked += OnBtnDetailsAuteurClicked;
+            btnDetailsVente.Clicked += OnBtnDetailsVenteClicked;
+            btnBilanVentes.Clicked += OnBtnBilanVentesClicked;
+            btnErreurEcartVentes.Clicked += OnBtnErreurEcartVentes;
             //
             cbListeLieuVente.Changed += OnCbListeLieuVenteChanged;
             cbListeAuteurs.Changed += OnCbListeAuteursChanged;
@@ -173,11 +198,15 @@ namespace BdArtLibrairie
             txtPrinterFilePath.FocusOutEvent += OnTxtPrinterFilePathFocusOut;
             txtPrinterFilePath.Activated += OnTxtPrinterFilePathActivated;
             txtNombreTickets.FocusOutEvent += OnTxtNombreTicketsFocusOut;
-            txtNombreTickets.Activated += OnTxtNombreTicketsActivated;
+            txtNombreTickets.Changed += OnTxtNombreTicketsChanged;
             txtTempo.FocusOutEvent += OnTxtTempoFocusOut;
-            txtTempo.Activated += OnTxtTempoActivated;
+            txtTempo.Changed += OnTxtTempoChanged;
             txtUsbDevicePath.FocusOutEvent += OnTxtUsbDevicePathFocusOut;
             txtUsbDevicePath.Activated += OnTxtUsbDevicePathActivated;
+            txtNomFestival.FocusOutEvent += OnTxtNomFestivalFocusOut;
+            txtNomFestival.Activated += OnTxtNomFestivalActivated;
+            txtPartAuteurDefaut.FocusOutEvent += OnTxtPartAuteurDefautFocusOut;
+            txtPartAuteurDefaut.Changed += OnTxtPartAuteurDefautChanged;
             //
             DeleteEvent += delegate { OnMnuFichierQuitter(this, new EventArgs()); };
             //
@@ -185,15 +214,20 @@ namespace BdArtLibrairie
             mnuFichierExportFichiers.Activated += OnMnuFichierExportFichiers;
             mnuFichierQuitter.Activated += OnMnuFichierQuitter;
             mnuFichierResetVentes.Activated += OnMnuFichierResetVentes;
+            mnuFichierRecharger.Activated += OnMnuFichierRecharger;
             mnuAffichageTout.Toggled += OnMnuAffichageTout;
             mnuAffichageVente.Activated += OnMnuAffichageVente;
-            mnuAffichageStatsVentes.Activated += OnMnuAffichageStatsVentes;
+            mnuAffichageAuteur.Activated += OnMnuAffichageAuteur;
+            mnuAffichageAlbum.Activated += OnMnuAffichageAlbum;
+            mnuAffichageBilanVentes.Activated += OnMnuAffichageBilanVentes;
             mnuAideApropos.Activated += OnMnuAideApropos;
             //
             trvVentes.RowActivated += OnTrvVentesRowActivated;
+            trvAuteurs.RowActivated += OnTrvAuteursRowActivated;
+            trvAlbums.RowActivated += OnTrvAlbumsRowActivated;
             // chargement des fichiers
             string strMsg2 = string.Empty;
-            datas.ChargeFichiers(ref strMsg2);
+            datas.ChargerFichiers(ref strMsg2);
             if (strMsg2 != string.Empty)
             {
                 if (strMsg != string.Empty)
@@ -220,7 +254,334 @@ namespace BdArtLibrairie
             datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
             mnuAffichageTout.Active = true;
             //
+            CheckErreurEcartVentes();
             Global.ConfigModified = false;
+        }
+
+        private void OnBtnErreurEcartVentes(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+
+            datas.ChargerFicErrEcartVentes(ref strMsg);
+            if (strMsg != string.Empty)
+            {
+                Global.ShowMessage("BdArtLibrairie, lecture fichier EcartsVentes:", strMsg, this);
+            }
+        }
+
+        private void OnBtnBilanVentesClicked(object sender, EventArgs e)
+        {
+            OnMnuAffichageBilanVentes(sender, e);
+        }
+
+        private void OnTxtPartAuteurDefautChanged(object sender, EventArgs e)
+        {
+            txtPartAuteurDefaut.Changed -= OnTxtPartAuteurDefautChanged;
+            Global.CheckValeurs(this, sender);
+            txtPartAuteurDefaut.Changed += OnTxtPartAuteurDefautChanged;
+        }
+
+        private void OnTxtPartAuteurDefautFocusOut(object o, EventArgs args)
+        {
+            double dblVal;
+            txtPartAuteurDefaut.FocusOutEvent -= OnTxtPartAuteurDefautFocusOut;
+            dblVal = Global.GetValueOrZero(this, o, true);
+            if (dblVal < 0) dblVal = 0;
+            if (dblVal > 100) dblVal = 100;
+            Global.PartAuteurDefaut = dblVal;
+            txtPartAuteurDefaut.Text = Global.PartAuteurDefaut.ToString();
+            txtPartAuteurDefaut.FocusOutEvent += OnTxtPartAuteurDefautFocusOut;
+            Global.ConfigModified = true;
+        }
+
+        private void OnBtnDetailsAlbumClicked(object sender, EventArgs e)
+        {
+            OnMnuAffichageAlbum(sender, e);
+        }
+
+        private void OnBtnSupprimerAlbumClicked(object sender, EventArgs e)
+        {
+            TreeIter iter;
+            TreePath chemin;
+            TreePath[] chemins;
+            chemins = trvAlbums.Selection.GetSelectedRows();
+            string strCode;
+            string strMsg = string.Empty, strMsg2;
+
+            // si aucune ligne sélectionnée
+            if (chemins.Length == 0)
+            {
+                Global.ShowMessage("Album", "Vous devez sélectionner un album", this);
+                return;
+            }
+            //
+            chemin = chemins[0];
+            if (datas.lstoreAlbums.GetIter(out iter, chemin) == true)
+            {
+                strCode = datas.lstoreAlbums.GetValue(iter, Convert.ToInt16(Global.eTrvAlbumsCols.CodeIsbnEan)).ToString();
+                if (Global.Confirmation(this, "Suppression Album", "Etes-vous certain de vouloir supprimer l'album " + strCode + "\r\n") == false)
+                    return;
+                // on vérifie d'abord si l'album a déjà été vendu
+                foreach(DataRow rowV in datas.dtTableVentes.Select("strIsbnEan='" + strCode + "'"))
+                {
+                    strMsg += "Vente:" + rowV["nNumero"].ToString() + " Rang:" + rowV["nRang"].ToString() + "\r\n";
+                }
+                if (strMsg != string.Empty)
+                {
+                    strMsg2 = "L'album ne peut pas être supprimé car déjà présent dans les ventes suivantes:\r\n" + strMsg;
+                    Global.ShowMessage("Suppression album", strMsg2, this, MessageType.Error);
+                }
+                else
+                {
+                    datas.SupprimerAlbum(iter, strCode);
+                    datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                    datas.EnregistrerFichierAlbums(ref strMsg);
+                    if (strMsg != string.Empty)
+                    {
+                        Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+                    }
+                    else
+                        Global.AfficheInfo(txtInfo, "L'album a été supprimé", new Gdk.Color(0,0,255));
+                }
+            }
+        }
+
+        private void OnBtnAjouterAlbumClicked(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+            Int16 nIdAuteur=0;
+
+            // il faut préalablement sélectionner l'auteur
+            if (cbListeAuteurs.ActiveText == "Tous")
+            {
+                Global.ShowMessage("Ajout d'un album:", "Vous devez d'abord sélectionner l'auteur de l'album", this);
+                return;
+            }
+            else
+            {
+                // recherche IdAuteur
+                foreach (DataRow rowAU in datas.dtTableAuteurs.Select("strAuteur='" + cbListeAuteurs.ActiveText + "'"))
+                    nIdAuteur = Convert.ToInt16(rowAU["nIdAuteur"]);
+            }
+            //
+            AlbumBox albumBox = new AlbumBox(this, ref datas, string.Empty, true, nIdAuteur, cbListeAuteurs.ActiveText);
+            albumBox.Run();
+            if (albumBox.rResponse == ResponseType.Apply)
+            {
+                DoCalcul();
+                datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                datas.EnregistrerFichierAlbums(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                    Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+                }
+                else
+                    Global.AfficheInfo(txtInfo, "L'album a été ajouté", new Gdk.Color(0,0,255));
+            }
+        }
+
+        private void OnBtnSupprimerAuteurClicked(object sender, EventArgs e)
+        {
+            TreeIter iter;
+            TreePath chemin;
+            TreePath[] chemins;
+            chemins = trvAuteurs.Selection.GetSelectedRows();
+            string strMsg = string.Empty;
+            Int16 nIdAuteur, nNbAlbums=0;
+
+            // si aucune ligne sélectionnée
+            if (chemins.Length == 0)
+            {
+                Global.ShowMessage("Auteur", "Vous devez sélectionner un auteur", this);
+                return;
+            }
+            //
+            chemin = chemins[0];
+            if (datas.lstoreAuteurs.GetIter(out iter, chemin) == true)
+            {
+                nIdAuteur = Convert.ToInt16(datas.lstoreAuteurs.GetValue(iter, Convert.ToInt16(Global.eTrvAuteursCols.IdAuteur)));
+                if (Global.Confirmation(this, "Suppression Auteur", "Etes-vous certain de vouloir supprimer l'auteur n°" + nIdAuteur.ToString() + "\r\n") == false)
+                    return;
+                // on vérifie que l'auteur n'a pas d'albums
+                foreach (DataRow row in datas.dtTableAlbums.Select("nIdAuteur=" + nIdAuteur.ToString()))
+                    nNbAlbums++;
+                if (nNbAlbums == 0)
+                {
+                    datas.SupprimerAuteur(iter, nIdAuteur);                    
+                    datas.EnregistrerFichierAuteurs(ref strMsg);
+                    if (strMsg != string.Empty)
+                    {
+                        Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                    }
+                    else
+                        Global.AfficheInfo(txtInfo, "Les auteurs ont été mis à jour", new Gdk.Color(0,0,255));
+                }
+                else
+                    Global.ShowMessage("Suppression Auteur", "Cet auteur ne peut pas être supprimé car il possède " + nNbAlbums.ToString() + " albums", this);
+            }
+        }
+
+        private void OnBtnAjouterAuteurClicked(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+            
+            Int16 nIdAuteur = datas.GetNewIdAuteur();
+            AuteurBox auteurBox = new AuteurBox(this, ref datas, nIdAuteur, true);
+            auteurBox.Run();
+            if (auteurBox.rResponse == ResponseType.Apply)
+            {
+                datas.DoRefreshLstoreAuteurs();
+                InitCbListeAuteurs();
+                datas.EnregistrerFichierAuteurs(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                    Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                }
+                else
+                    Global.AfficheInfo(txtInfo, "L'auteur a été ajouté", new Gdk.Color(0,0,255));
+            }
+        }
+
+        // Double-clic sur ligne album.
+        private void OnTrvAlbumsRowActivated(object o, RowActivatedArgs args)
+        {
+            OnMnuAffichageAlbum(o, args);
+        }
+
+        private void OnMnuAffichageAlbum(object sender, EventArgs e)
+        {
+            TreeIter iter;
+            TreePath chemin;
+            TreePath[] chemins;
+            chemins = trvAlbums.Selection.GetSelectedRows();
+            string strCode;
+
+            // si aucune ligne sélectionnée
+            if (chemins.Length == 0)
+            {
+                Global.ShowMessage("Infos album", "Vous devez sélectionner un album", this);
+                return;
+            }
+            chemin = chemins[0];
+            if (datas.lstoreAlbums.GetIter(out iter, chemin) == true)
+            {
+                strCode = datas.lstoreAlbums.GetValue(iter, Convert.ToInt16(Global.eTrvAlbumsCols.CodeIsbnEan)).ToString();
+                AlbumBox AlbumBox = new AlbumBox(this, ref datas, strCode);
+                AlbumBox.Run();
+                if (AlbumBox.rResponse == ResponseType.Apply)
+                    AppliquerModifAlbum();
+            }
+        }
+
+        private void AppliquerModifAlbum()
+        {
+            string strMsg = string.Empty;
+
+            DoCalcul();
+            UpdateData();
+            datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+            datas.EnregistrerFichierAlbums(ref strMsg);
+            if (strMsg != string.Empty)
+            {
+                Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+            }
+            else
+                Global.AfficheInfo(txtInfo, "Les albums ont été mis à jour", new Gdk.Color(0,0,255));
+            CheckErreurEcartVentes();
+        }
+
+        private void OnBtnDetailsAuteurClicked(object sender, EventArgs e)
+        {
+            OnMnuAffichageAuteur(sender, e);
+        }
+
+        // Double-clic sur ligne auteur.
+        private void OnTrvAuteursRowActivated(object o, RowActivatedArgs args)
+        {
+            OnMnuAffichageAuteur(o, args);
+        }
+
+        // Affiche dans une boite de dialogue les données liées à l'auteur sélectionné.
+        private void OnMnuAffichageAuteur(object sender, EventArgs e)
+        {
+            TreeIter iter;
+            TreePath chemin;
+            TreePath[] chemins;
+            chemins = trvAuteurs.Selection.GetSelectedRows();
+            Int16 nIdAuteur;
+            string strMsg = string.Empty;
+
+            // si aucune ligne sélectionnée
+            if (chemins.Length == 0)
+            {
+                Global.ShowMessage("Infos auteur", "Vous devez sélectionner un auteur", this);
+                return;
+            }
+            chemin = chemins[0];
+            if (datas.lstoreAuteurs.GetIter(out iter, chemin) == true)
+            {
+                nIdAuteur = Convert.ToInt16(datas.lstoreAuteurs.GetValue(iter, Convert.ToInt16(Global.eTrvAuteursCols.IdAuteur)));
+                AuteurBox auteurBox = new AuteurBox(this, ref datas, nIdAuteur);
+			    auteurBox.Run();
+                if (auteurBox.rResponse == ResponseType.Apply)
+                {
+                    datas.DoRefreshLstoreAuteurs();
+                    DoCalcul();
+                    UpdateData();
+                    datas.EnregistrerFichierAuteurs(ref strMsg);
+                    if (strMsg != string.Empty)
+                    {
+                        Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                    }
+                    else
+                        Global.AfficheInfo(txtInfo, "Les auteurs ont été mis à jour", new Gdk.Color(0,0,255));
+                }
+            }
+        }
+
+        private void OnMnuFichierRecharger(object sender, EventArgs e)
+        {
+            if (Global.Confirmation(this, "Recharger:", "Voulez-vous vraiment recharger les fichiers de données ?") == false)
+				return;
+            datas.Init();
+            string strMsg = string.Empty;
+            datas.ChargerFichiers(ref strMsg);
+            if (strMsg != string.Empty)
+            {
+                strMsg = "Lecture fichiers: " + strMsg;
+                Global.ShowMessage("Erreurs au chargement:", strMsg, this);
+            }
+            InitCbListeAuteurs();
+            DoCalcul();
+            UpdateData();
+            datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+            datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
+            CheckErreurEcartVentes();
+        }
+
+        private void OnChkLaunchBaseFileClicked(object sender, EventArgs e)
+        {
+            Global.LaunchBaseFile = chkLaunchBaseFile.Active;
+            Global.ConfigModified = true;
+        }
+
+        private void OnTxtNomFestivalActivated(object sender, EventArgs e)
+        {
+            OnTxtNomFestivalFocusOut(sender, e);
+        }
+
+        private void OnTxtNomFestivalFocusOut(object o, EventArgs args)
+        {
+            Global.NomFestival = txtNomFestival.Text;
+            this.Title = "Librairie " + Global.NomFestival;
+            btnFindUsbDevice.GrabFocus();
+            Global.ConfigModified = true;
         }
 
         private void OnMnuFichierExportFichiers(object sender, EventArgs e)
@@ -253,7 +614,6 @@ namespace BdArtLibrairie
         }
 
         // Mise à jour des données.
-        // <param name="bVersIHM"></param>
         private void UpdateData()
         {
             // données vers IHM
@@ -276,6 +636,9 @@ namespace BdArtLibrairie
             txtNombreTickets.Text = Global.NombreTickets.ToString();
             txtTempo.Text = Global.Tempo.ToString();
             txtUsbDevicePath.Text = Global.UsbDevicePath;
+            txtNomFestival.Text = Global.NomFestival;
+            this.Title = "Librairie " + Global.NomFestival;
+            txtPartAuteurDefaut.Text = Global.PartAuteurDefaut.ToString();
         }
 
         // Calculs.
@@ -623,7 +986,7 @@ namespace BdArtLibrairie
             string strNom = string.Empty;
 
             cbListeAuteurs.Changed -= OnCbListeAuteursChanged;
-
+            lsListeAuteurs.Clear();
             lsListeAuteurs.AppendValues("Tous");
             foreach (DataRow row in datas.dtTableAuteurs.Select("1=1", "strAuteur ASC"))
             {
@@ -649,8 +1012,7 @@ namespace BdArtLibrairie
             Application.Quit();
         }
 
-        // Désactivé: TODO réfléchir à l'utilité de cette fonction, il faut aussi
-        // supprimer / modifier la ligne liée dans la table Paiements...
+        // Désactivé: pour supprimer une vente, on passe par VenteBox.
         private void OnBtnSupprimerVenteClicked(object sender, EventArgs a)
         {
             TreeIter iter;
@@ -670,12 +1032,13 @@ namespace BdArtLibrairie
             chemin = chemins[0];
             if (datas.lstoreVentes.GetIter(out iter, chemin) == true)
             {
-                datas.SupprimerVente(iter);
+                Int16 nNumVente = Convert.ToInt16(datas.lstoreVentes.GetValue(iter, Convert.ToInt16(Global.eTrvVentesCols.Numero)));
+                datas.SupprimerVente(nNumVente);
                 DoCalcul();
                 UpdateData();
                 trvVentes.GrabFocus();
                 //
-                datas.EnregistrerFichiers(ref strMsg);
+                datas.EnregistrerFichiersVentesPaiements(ref strMsg);
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
@@ -692,7 +1055,7 @@ namespace BdArtLibrairie
 
             txtInfo.Text = string.Empty;
 
-            VenteBox venteBox = new VenteBox(this, ref datas);
+            VenteBox venteBox = new VenteBox(this, ref datas, true);
 			venteBox.Run();
             if (venteBox.rResponse == ResponseType.Cancel)
                 return;
@@ -703,7 +1066,7 @@ namespace BdArtLibrairie
             datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
             trvVentes.GrabFocus();
             //
-            datas.EnregistrerFichiers(ref strMsg);
+            datas.EnregistrerFichiersVentesPaiements(ref strMsg);
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
@@ -719,8 +1082,13 @@ namespace BdArtLibrairie
             OnMnuAffichageVente(sender, a);
         }
 
+        private void OnBtnDetailsVenteClicked(object sender, EventArgs e)
+        {
+            OnMnuAffichageVente(sender, e);
+        }
+
         // Affiche dans une boite de dialogue les données liées à la vente sélectionnée.
-        // But: réimprimer un ticket de caisse.
+        // Buts: modifier ou supprimer la vente, réimprimer un ticket de caisse.
         private void OnMnuAffichageVente(object sender, EventArgs a)
         {
             TreeIter iter;
@@ -741,16 +1109,32 @@ namespace BdArtLibrairie
             {
                 nNumVente = Convert.ToInt16(datas.lstoreVentes.GetValue(iter, Convert.ToInt16(Global.eTrvVentesCols.Numero)));
                 dtDate = Convert.ToDateTime(datas.lstoreVentes.GetValue(iter, Convert.ToInt16(Global.eTrvVentesCols.Date)));
-                VenteBox venteBox = new VenteBox(this, ref datas, nNumVente, dtDate);
-                venteBox.AfficherMasquerBoutons();
+                VenteBox venteBox = new VenteBox(this, ref datas, false, nNumVente, dtDate);
 			    venteBox.Run();
+                if (venteBox.rResponse == ResponseType.Apply)
+                {
+                    DoCalcul();
+                    UpdateData();
+                    datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                    datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
+                    trvVentes.GrabFocus();
+                    //
+                    datas.EnregistrerFichiersVentesPaiements(ref strMsg);
+                    if (strMsg != string.Empty)
+                    {
+                        Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                        Global.AfficheInfo(txtInfo, "Problème lors de l'enregistrement de la vente. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                    }
+                    else
+                        Global.AfficheInfo(txtInfo, "La vente a été mise à jour", new Gdk.Color(0,0,255));
+                }
             }
         }
 
-        private void OnMnuAffichageStatsVentes(object sender, EventArgs e)
+        private void OnMnuAffichageBilanVentes(object sender, EventArgs e)
         {
-            StatistiquesBox statsBox = new StatistiquesBox(this, ref datas);
-            statsBox.Run();
+            BilanVentesBox bilanBox = new BilanVentesBox(this, ref datas);
+            bilanBox.Run();
         }
 
         private void OnBtnResetClicked(object sender, EventArgs a)
@@ -766,8 +1150,10 @@ namespace BdArtLibrairie
         {
             Entry txtCode = (Entry)sender;
             // Affichage des infos dans une boite de dialogue
-            InfoLivreBox infolivreBox = new InfoLivreBox(this, ref datas, txtCode.Text);
-			infolivreBox.ShowAll();
+            AlbumBox AlbumBox = new AlbumBox(this, ref datas, txtCode.Text);
+			AlbumBox.Run();
+            if (AlbumBox.rResponse == ResponseType.Apply)
+                AppliquerModifAlbum();
 
             txtCode.Text = string.Empty;
         }
@@ -781,7 +1167,13 @@ namespace BdArtLibrairie
         {
             string strMsg = string.Empty;
 
-            datas.ExportAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active, ref strMsg);
+            // Confirmation si un filtre est actif
+            if (cbListeAuteurs.ActiveText != "Tous")
+            {
+                if (Global.Confirmation(this, "Export Albums", "Vous allez exporter la liste d'albums de " + cbListeAuteurs.ActiveText + ". Continuer ?") == false)
+                    return;
+            }
+            datas.ExportAlbums(cbListeAuteurs.ActiveText, ref strMsg);
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, export albums:", strMsg, this);
@@ -790,21 +1182,24 @@ namespace BdArtLibrairie
             else
             {
                 Global.AfficheInfo(txtInfo, "Les albums ont été exportés", new Gdk.Color(0,0,255));
-                // lancement de la base de données dans un process
-                try
+                if (Global.LaunchBaseFile == true)
                 {
-                    Process psBase = new Process();
-                    psBase.StartInfo.FileName = "/usr/bin/lobase";
-                    psBase.StartInfo.Arguments = "BdArtLib.odb";
-                    psBase.StartInfo.WorkingDirectory = Global.DossierFichiers;
-                    if (psBase.Start() == true)// nouveau process créé
+                    // lancement de la base de données dans un process
+                    try
                     {
-                        psBase.WaitForExit(1000);
+                        Process psBase = new Process();
+                        psBase.StartInfo.FileName = "/usr/bin/lobase";
+                        psBase.StartInfo.Arguments = "BdArtLib.odb";
+                        psBase.StartInfo.WorkingDirectory = Global.DossierFichiers;
+                        if (psBase.Start() == true)// nouveau process créé
+                        {
+                            psBase.WaitForExit(1000);
+                        }
                     }
-                }
-                catch (Exception ex)
-                {
-                    Global.ShowMessage("Erreur lancement BdArtLib:", ex.Message, this);
+                    catch (Exception ex)
+                    {
+                        Global.ShowMessage("Erreur lancement BdArtLib.odb:", ex.Message, this);
+                    }
                 }
             }
         }
@@ -879,14 +1274,23 @@ namespace BdArtLibrairie
                 UpdateData();
                 datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
                 datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
-                datas.EnregistrerFichiers(ref strMsg);
+                datas.EnregistrerFichiersVentesPaiements(ref strMsg);
                 if (strMsg != string.Empty)
                 {
-                    Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this, MessageType.Question);
+                    Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
                     Global.AfficheInfo(txtInfo, "Problème lors de l'enregistrement des ventes. Vérifier les fichiers", new Gdk.Color(255,0,0));
                 }
                 else
                     Global.AfficheInfo(txtInfo, "Toutes les ventes ont été supprimées", new Gdk.Color(0,0,255));
+                strMsg = string.Empty;
+                datas.SupprimerFichierEcartVentes(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, supprimer fichier:", strMsg, this);
+                    Global.AfficheInfo(txtInfo, "Problème lors de la suppression du fichier EcartsVentes.txt", new Gdk.Color(255,0,0));
+                }
+                else
+                    CheckErreurEcartVentes();
             }
             else
                 Global.AfficheInfo(txtInfo, "Password incorrect. RAZ des ventes annulé", new Gdk.Color(255,0,0));
@@ -919,48 +1323,44 @@ namespace BdArtLibrairie
             Global.ConfigModified = true;
         }
 
-        private void OnTxtNombreTicketsActivated(object sender, EventArgs a)
+        private void OnTxtNombreTicketsChanged(object sender, EventArgs e)
         {
-            OnTxtNombreTicketsFocusOut(sender, a);
+            txtNombreTickets.Changed -= OnTxtNombreTicketsChanged;
+            Global.CheckValeurInt16(this, sender);
+            txtNombreTickets.Changed += OnTxtNombreTicketsChanged;
         }
+
         private void OnTxtNombreTicketsFocusOut(object sender, EventArgs a)
         {
-            Int16 nVal = Global.NombreTickets;
+            Int16 nVal;
             txtNombreTickets.FocusOutEvent -= OnTxtNombreTicketsFocusOut;
-            if (Global.CheckValeurInt16(this, txtNombreTickets) == true)
-            {
-                nVal = Convert.ToInt16(txtNombreTickets.Text);
-                if (nVal < 1)
-                    nVal = 1;
-                if (nVal > 3)
-                    nVal = 3;
-                Global.NombreTickets = nVal;
-                UpdateData();
-                btnFindPrinter.GrabFocus();
-            }
+            nVal = Global.GetValueIntOrZero(this, sender, true);
+            if (nVal < 1) nVal = 1;
+            if (nVal > 3) nVal = 3;
+            Global.NombreTickets = nVal;
+            UpdateData();
+            btnFindPrinter.GrabFocus();
             txtNombreTickets.FocusOutEvent += OnTxtNombreTicketsFocusOut;
             Global.ConfigModified = true;
         }
 
-        private void OnTxtTempoActivated(object sender, EventArgs a)
+        private void OnTxtTempoChanged(object sender, EventArgs e)
         {
-            OnTxtTempoFocusOut(sender, a);
+            txtTempo.Changed -= OnTxtTempoChanged;
+            Global.CheckValeurInt16(this, sender);
+            txtTempo.Changed += OnTxtTempoChanged;
         }
+
         private void OnTxtTempoFocusOut(object sender, EventArgs a)
         {
-            Int16 nVal = Global.Tempo;
+            Int16 nVal;
             txtTempo.FocusOutEvent -= OnTxtTempoFocusOut;
-            if (Global.CheckValeurInt16(this, txtTempo) == true)
-            {
-                nVal = Convert.ToInt16(txtTempo.Text);
-                if (nVal < 0)
-                    nVal = 0;
-                if (nVal > 5000)
-                    nVal = 5000;
-                Global.Tempo = nVal;
-                UpdateData();
-                btnFindPrinter.GrabFocus();
-            }
+            nVal = Global.GetValueIntOrZero(this, sender, true);
+            if (nVal < 0) nVal = 0;
+            if (nVal > 5000) nVal = 5000;
+            Global.Tempo = nVal;
+            UpdateData();
+            btnFindPrinter.GrabFocus();
             txtTempo.FocusOutEvent += OnTxtTempoFocusOut;
             Global.ConfigModified = true;
         }
@@ -1048,6 +1448,14 @@ namespace BdArtLibrairie
 					// no process associated
 				}
             }
+        }
+
+        private void CheckErreurEcartVentes()
+        {
+            if (File.Exists(System.IO.Path.Combine(Global.DossierFichiers, Global.FichierEcartsVentes)) == true)
+                btnErreurEcartVentes.Visible = true;
+            else
+                btnErreurEcartVentes.Visible = false;
         }
     }
 }

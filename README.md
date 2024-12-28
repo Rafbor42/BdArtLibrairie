@@ -4,13 +4,15 @@
     - [Filtre Auteur](#filtre-auteur)
     - [Recherche de livre](#recherche-de-livre)
   - [Onglet Auteurs](#onglet-auteurs)
+    - [Modification ou suppression d'un auteur](#modification-ou-suppression-dun-auteur)
   - [Onglet Albums](#onglet-albums)
+    - [Modification ou suppression d'un album](#modification-ou-suppression-dun-album)
   - [Onglet Ventes](#onglet-ventes)
     - [Effectuer une vente](#effectuer-une-vente)
-    - [Modification ou suppression](#modification-ou-suppression)
+    - [Modification ou suppression d'une vente](#modification-ou-suppression-dune-vente)
     - [Ré-impression des tickets](#ré-impression-des-tickets)
     - [Effacer toutes les ventes](#effacer-toutes-les-ventes)
-    - [Statistiques des ventes](#statistiques-des-ventes)
+    - [Bilan des ventes](#bilan-des-ventes)
     - [Sauvegarde des données](#sauvegarde-des-données)
     - [Impression des ventes par auteur](#impression-des-ventes-par-auteur)
   - [Onglet Paramètres](#onglet-paramètres)
@@ -33,8 +35,9 @@ Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_A
 
 ## Principe de fonctionnement
 
-On utilise le fichier de calcul _Modèle_librairie.ods_ dans un tableur pour d'abord créer la liste des auteurs et la liste des albums, puis générer les fichiers _csv_.
-Renseigner l'onglet _Auteurs_:
+Au lancement de l'application, si les fichiers _Auteurs.csv_ et _Albums.csv_ ne sont pas présents, ils sont automatiquement créés. Il faut ensuite ajouter un auteur avant de pouvoir ajouter ses albums.</br>
+On peut utiliser le fichier de calcul _Modèle_librairie.ods_ dans un tableur pour d'abord créer la liste des auteurs puis la liste des albums, puis générer les fichiers _csv_.</br>
+Pour cela, renseigner l'onglet _Auteurs_:
 
 ![Auteurs](images/markdown/auteurs.jpg)
 
@@ -45,12 +48,11 @@ puis l'onglet _Albums_:
 ![Albums](images/markdown/albums.jpg)
 
 **Important**: les chiffres de la colonne _IdAuteur_ de l’onglet _Albums_, doivent correspondre à ceux de la colonne _IdAuteur_ de l’onglet _Auteurs_.
-Les onglets _Ventes_ et _Paiements_ n’ont pas besoin d’être complétés.
 
 - Si le fichier est ouvert dans **Google Sheet**, il faut l’exporter au format **Excel** ou **OpenDocument** (menu _Fichier → Télécharger_),
 - Ouvrir le fichier dans **Excel** ou **LibreOffice Calc** puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans **LibreOffice Calc**, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
 
-- Enregistrer les fichiers dans le dossier _.bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_.
+- Enregistrer les fichiers dans le dossier _.bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_.
 
 - Lancer l’application **BdArtLibrairie** (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
 
@@ -62,9 +64,9 @@ Les onglets _Ventes_ et _Paiements_ n’ont pas besoin d’être complétés.
 
 ![Filtre auteur](images/markdown/filtre_auteur.jpg)
 
-Présent dans la partie inférieure de l’application, il permet de filtrer les données des onglets _Ventes_ et _Albums_ en fonction de l’auteur choisi.
-Le total vente (€) ainsi que la part auteur (€) sont aussi recalculés.
-La zone _% Auteur_ n’affiche une valeur que si un auteur est sélectionné.
+Présent dans la partie inférieure de l’application, il permet de filtrer les données des onglets _Ventes_ et _Albums_ en fonction de l’auteur choisi.</br>
+Le total vente (€) ainsi que la part auteur (€) sont aussi recalculés.</br>
+La zone _% Auteur_ n’affiche une valeur que si un auteur est sélectionné.</br>
 Le bouton _Reset_ annule tous les filtres.
 
 ### Recherche de livre
@@ -73,33 +75,68 @@ La zone _Recherche livre_ permet de retrouver les infos sur un livre en scannant
 
 ![Recherche livre](images/markdown/recherche_livre.jpg)
 
+Certaines données sont modifiables, voir § [Modification ou suppression d'un album](#modification-ou-suppression-dun-album)
+
 ## Onglet Auteurs
 
 ![Onglet auteurs](images/markdown/onglet_auteurs.jpg)
 
-On y retrouve les données du fichier _Auteurs.csv_.
-Les données ne sont pas modifiables.
+On y retrouve les données du fichier _Auteurs.csv_.</br>
+Il est possible d'ajouter, supprimer ou modifier un auteur via les boutons présents en bas:
+
+![Boutons auteurs](images/markdown/boutons_auteur.jpg)
+
+### Modification ou suppression d'un auteur
+
+Dans l'onglet _Auteurs_, sélectionner un auteur dans la grille.</br>
+Pour supprimer un auteur, cliquer sur le bouton _Supprimer_. Un auteur ne peut pas être supprimé s'il possède des albums.
+
+Pour modifier un auteur, menu _Affichage→Détails auteur sélectionné_, ou faire double-clic sur la ligne, ou cliquer sur le bouton _Détails_. Dans la boite de dialogue _Auteur_ cocher la case _Modifiable_:</br>
+
+![Modif auteur](images/markdown/modif_auteur.jpg)
+
+Seuls les champs _Prénom_, _Nom_ et _Part auteur_ sont modifiables.
 
 ## Onglet Albums
 
 ![Onglet albums](images/markdown/onglet_albums.jpg)
 
-On y retrouve les données du fichier _Albums.csv_, la colonne _Auteur_ contenant le nom de l’auteur, remplace la colonne _IdAuteur_ du fichier.
-Les données de la grille ne sont pas modifiables, elles sont calculées automatiquement après chaque vente.
-Dans la partie inférieure, on trouve les nombres de livres vendus en médiathèque, librairie, et les livres offerts.
-On trouve également 2 filtres _Lieu vente_ et _A facturer_. Le contenu de la grille et les totaux sont adaptés en fonction des filtres (y compris le filtre _Auteur_):
+On y retrouve les données du fichier _Albums.csv_, la colonne _Auteur_ contenant le nom de l’auteur, remplace la colonne _IdAuteur_ du fichier. Les données sont calculées automatiquement après chaque vente.</br>
+Dans la partie inférieure, on trouve les nombres de livres vendus en médiathèque, librairie, et les livres offerts.</br>
 
 ![Filtre auteurs](images/markdown/filtre_auteur_2.jpg)
 
-## Onglet Ventes
+Il est possible d'ajouter, supprimer ou modifier un album via les boutons présents. Pour ajouter un album, il faut au préalable sélectionner son auteur dans la liste déroulante du filtre _Auteur_.</br>
+On trouve également 2 filtres _Lieu vente_ et _A facturer_. Le contenu de la grille et les totaux sont adaptés en fonction des filtres (y compris le filtre _Auteur_).
 
-Les données ne sont pas modifiables.
+### Modification ou suppression d'un album
+
+Dans l'onglet _Albums_, sélectionner un album dans la grille.</br>
+Pour supprimer un album, cliquer sur le bouton _Supprimer_.
+Un album ne peut pas être supprimé si des ventes de cet album sont enregistrées.
+
+Pour modifier un album, menu _Affichage→Détails album sélectionné_, ou faire double-clic sur la ligne, ou cliquer sur le bouton _Détails_. Dans la boite de dialogue _Albums_ cocher la case _Modifiable_:</br>
+
+![Modif album](images/markdown/modif_album.jpg)
+
+Seuls les champs _Titre_, _Prix Vente_ et _Stock initial_ peuvent être modifiés.</br>
+En cas de modification du prix de vente, si des ventes ont été enregistrées, un message indiquera les impacts sur les ventes, l'écart sera recalculé:
+
+![Erreur écart ventes](images/markdown/erreur_ecart_ventes.jpg)
+
+Ce message est enregistré dans le fichier _EcartsVentes.txt_, dans le dossier caché _.BdArtLibrairie_. Un bouton _Erreur écarts ventes_ apparait, permettant de réafficher les messages:
+
+![Bouton écart ventes](images/markdown/bouton_ecart_ventes.jpg)
+
+Pour supprimer ces messages, supprimer le fichier _EcartsVentes.txt_.
+
+## Onglet Ventes
 
 ![Onglet ventes](images/markdown/onglet_ventes.jpg)
 
 La grille affiche la liste des ventes effectuées, triées par ordre décroissant (la dernière vente effectuée est affichée en haut de grille).
 Le numéro et le rang de la vente sont affichés par défaut mais peuvent être masqués par le menu _Affichage→Toutes les colonnes_. Un rang correspond à un album.</br>
-Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés en fonction du filtre _Auteur_.
+Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés en fonction du filtre _Auteur_, ainsi que des boutons d'action.
 
 ![Onglet ventes totaux](images/markdown/onglet_ventes_totaux.jpg)
 
@@ -116,7 +153,7 @@ Tant que l’imprimante ne sera pas reconnue, un rappel _L'imprimante n'est pas 
 ![Rappel imprimante](images/markdown/rappel_imprimante.jpg)
 
 Le focus est placé sur la zone d’ajout de livre, il suffit de scanner les code-barres des livres, l’un après l’autre, pour les ajouter.
-Sélectionner le lieu de vente et le statut de paiement **avant d’ajouter un livre** (sinon voir au § [Modification ou suppression](#modification-ou-suppression) comment les modifier).
+Sélectionner le lieu de vente et le statut de paiement avant d’ajouter un livre (sinon voir au § [Modification ou suppression d'une vente](#modification-ou-suppression-dune-vente) comment les modifier).
 
 ![Nouvelle vente](images/markdown/nouvelle_vente.jpg)
 
@@ -156,25 +193,32 @@ Un clic sur ce bouton affiche la liste des albums concernés:
 
 ![Erreur qtes](images/markdown/erreur_qtes.jpg)
 
-### Modification ou suppression
+### Modification ou suppression d'une vente
 
-Avant de terminer une vente (après ce n’est plus possible) sélectionner une ligne de vente dans la grille en cliquant dessus:
+Avant de terminer une vente, sélectionner une ligne de vente dans la grille en cliquant dessus:
 
 ![New vente select](images/markdown/new_vente_select.jpg)
 
 Pour supprimer la ligne, cliquer sur _Supprimer_.
 Pour modifier le lieu de vente et/ou le statut de paiement, sélectionner les valeurs dans les listes déroulantes, puis cliquer sur _Modifier_.
 
-### Ré-impression des tickets
-
-Sélectionner une ligne dans la grille des ventes:
+Pour modifier ou supprimer une vente enregistrée, sélectionner une ligne dans la grille des ventes:
 
 ![Vente select](images/markdown/vente_select.jpg)
 
-puis menu _Affichage→Détails vente sélectionnée_, ou faire double-clic sur la ligne.
-Cela affiche les détails de la vente et permet seulement de ré-imprimer les tickets de caisse.
+puis menu _Affichage→Détails vente sélectionnée_, ou faire double-clic sur la ligne, ou cliquer sur le bouton _Détails vente_.
+Cela affiche les détails de la vente. Pour passer en mode modification, cocher la case _Modifiable_:
+
 
 ![Détails vente](images/markdown/details_vente.jpg)
+
+Cela affichera les boutons de modifications et suppression.</br>
+Pour supprimer la vente, supprimer chaque ligne une par une.</br>
+Le numéro de vente ainsi que les date et heure de la vente initiale seront conservées en cas de modification.
+
+### Ré-impression des tickets
+
+Pour ré-imprimer les tickets de caisse, afficher les détails d'une vente (voir § [Modification ou suppression d'une vente](#modification-ou-suppression-dune-vente) ) et cliquer sur le bouton _Imprimer tickets_.
 
 ### Effacer toutes les ventes
 
@@ -183,19 +227,18 @@ Utiliser des fichiers _Ventes.csv_ et _Paiements.csv_ nouvellement créés ou ef
 ![RAZ ventes](images/markdown/raz_ventes.jpg)
 
 Après confirmation, saisir le mot de passe « Password01 » dans la zone sous la grille.
-Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés.
-Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _.bdartlibrairie_.
-Les fichiers de sauvegarde plus anciens sont conservés et renommés.
+Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés et le fichier _EcartsVentes.txt_ est supprimé.
+Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _.bdartlibrairie_ avec un numéro de version. Les fichiers de sauvegarde plus anciens sont conservés.
 
-### Statistiques des ventes
+### Bilan des ventes
 
-Le menu _Affichage->Statistiques ventes_ affiche le classement des auteurs suivant 3 critères: le nombre d'albums vendus, le total des ventes (€) et la commission reversée à BD'Art (€):
+Le menu _Affichage->Bilan des ventes auteur_ ou un clic sur le bouton _Bilan des ventes_ affiche le classement des auteurs suivant 3 critères: le nombre d'albums vendus, le total des ventes (€) et la commission reversée à BD'Art (€):
 
-![Statistiques](images/markdown/statistiques.jpg)
+![Bilan des ventes](images/markdown/bilan_ventes.jpg)
 
 ### Sauvegarde des données
 
-Les ventes sont enregistrées automatiquement. Seuls les fichiers _Ventes.csv_ et _Paiements.csv_ sont mis à jour.
+Les ventes sont enregistrées automatiquement. Seuls les fichiers _Ventes.csv_ et _Paiements.csv_ sont mis à jour après chaque vente.
 Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manuellement via le gestionnaire de fichier, ou alors utiliser le menu _Fichier->Copier les fichiers sur clé_. Cette action va compresser le dossier _.bdartlibrairie_ et le copier sur la clé USB. Voir l’ [onglet Paramètres](#onglet-paramètres) pour configurer le montage de la clé USB.
 
 ### Impression des ventes par auteur
@@ -204,17 +247,15 @@ Deux méthodes possibles:
 
 - soit faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis imprimer la copie d'écran (via **Firefox** par exemple).
 
-- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et son contenu correspondra aux filtres actifs. Le nom du fichier sera composé comme ceci:
-```Albums_NomAuteur_LieuVente.csv```</BR>
-Pour l'impression des ventes, il ne faut mettre aucun filtre, le fichier sera nommé:
-```Albums_Tous_Tous.csv```
-
-A la fin de l'export, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire:
+- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
+```Albums_export.csv```</BR>
+Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique.</br>
+A la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire:
 
 ![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
 
-- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_Tous_Tous.csv_.
-- Cliquer ensuite sur le bouton d'impression. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
+- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_export.csv_.
+- Cliquer ensuite sur le bouton d'actualisation puis sur le bouton d'impression. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
 
@@ -229,7 +270,10 @@ Cet onglet permet de modifier certains paramètres:
 - le nombre de tickets à imprimer : 1 à 3 (défaut : 2).
 - la temporisation pendant l’impression : 0 à 5000 ms (défaut : 2000). Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
 - l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
-- avoir ou pas les messages d’infos en couleur.
+- l'ouverture ou pas du fichier, après l'export du fichier albums, **LibreOffice Base** _Bdartlib.odb_ pour imprimer les ventes par auteur.
+- renseigner le nom du festival qui apparaitra dans la barre de titre de l'application et dans les tickets.
+- la part auteur par défaut, en %.
+- en bas, on peut aussi choisir d'avoir ou pas les messages d’infos en couleur.
 
 Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier caché _.bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
 
@@ -241,6 +285,9 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
     <UseFgColor value="False" />
     <UseDialogForTicketPrint value="True" />
     <UsbDevicePath value="/media/raf/4429-4124" />
+    <NomFestival value="BD'Art" />
+    <LaunchBaseFile value="False" />
+    <PartAuteurDefaut value="90" />
   </userSettings>
 ```
 
@@ -290,20 +337,16 @@ Paiements.csv
 
 ## Développement et installation
 
-En pratique, pendant le festival BD'Art, un PC sous Xubuntu 20.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
+En pratique, pendant le festival BD'Art, un PC sous Xubuntu 22.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
 
-L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, elle utilise les frameworks _.NET 6_ et _Gtk3_ via la librairie [GtkSharp](https://github.com/GtkSharp/GtkSharp).
+L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, elle utilise les frameworks _.NET 8_ et _Gtk3_ via la librairie [GtkSharp](https://github.com/GtkSharp/GtkSharp).
 
 _Gtk3_ est installé par défaut sur les systèmes Linux Ubuntu et Xubuntu.
 Pour utilisation sur système Windows, il faut installer _Gtk3_.
 
-Publication pour Linux de l’application dans _Visual Studio Code_, 2 solutions retenues:
-1. au format AppImage pour Linux, en lançant le script _publish-appimage_ (cf [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage) pour explications sur la configuration et l'utilisation). Le fichier AppImage généré se trouve dans le dossier _AppImages_.
-2. sous forme d'archive compressée, version autonome intégrant le _Runtime .NET 6_:</br>
-  ```dotnet publish -c Release -r linux-x64 --self-contained true```</br>
-  Récupérer le dossier _publish_ (situé dans le dossier _/bin/Release/net6.0/linux-x64/_ du projet), le renommer en _BdArtLibrairie_, puis le compresser au format _tar.xz_.
+La publication pour Linux de l’application dans _Visual Studio Code_ se fait au format _AppImage_, en lançant le script _publish-appimage_ (cf [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage) pour explications sur la configuration et l'utilisation). Le fichier AppImage généré intègre le _Runtime .NET 8_ et se trouve dans le dossier _AppImages_.
 
-Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications.
+Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications sur le déploiement d'applications _.NET_.
 
 Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données pour stocker les données, seulement **LibreOffice Base** pour générer les rapports de ventes par auteurs.
 Le fichier base _BdArtLib.odb_ doit être présent dans le dossier caché _.bdartlibrairie_, s'il n'est pas présent au lancement de l'application, l'application tente de le télécharger depuis le dépôt Github.
@@ -338,6 +381,19 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 ## Notes de version
 
+- **3.0.1228.0**
+  - On lance BdArtLib.odb seulement si coché dans les paramètres.
+  - Nom du festival modifiable dans les paramètres: affiché dans titre de l'appli et dans les tickets.
+  - Ajout de champs dans l'export albums pour exploitation directe dans un tableur.
+  - Ajout menu pour recharger les fichiers sans quitter le programme.
+  - Ajout possibilité d'ajouter, supprimer un auteur et modifier les données auteur.
+  - Ajout possibilité d'ajouter, supprimer un album et modifier des données pour les albums.
+  - Ajout contrôle et sauvegarde des répercussions lors du changement du prix d'un album.
+  - Au lancement de l'application, tout fichier d'entrée non trouvé est créé.
+  - Les fichiers Ventes et Paiements vides ne sont plus nécessaires.
+  - Ajout possibilité de modifier et supprimer les données d'une vente.
+  - Lors de l'export du fichier albums, si un auteur est sélectionné, seuls les albums de cet auteur sont exportés.
+  - Macro de BdArtLib.odb entièrement réécrite.
 - **2.0.0306.0**
   - Au lancement et si non trouvé, le fichier _BdArtLib.odb_ est téléchargé à partir du dépôt Github.
 - **2.0.0304.0**
@@ -359,12 +415,7 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 - **Linux**:
   - fichier AppImage: voir [Releases](https://github.com/Rafbor42/BdArtLibrairie/releases).
-  - archive _tar.xz_ incluant le Runtime _.NET 6_: [v2.0.0306.0](https://e-nautia.com/rafbor/disk/BdArtLibrairie/BdArtLibrairie_2.0.0306.0_avec_runtime.tar.xz)
 
 ### Installation sur Linux
 
 - fichier AppImage: consulter cette [documentation](https://doc.ubuntu-fr.org/appimage) pour savoir comment installer des fichiers AppImage.
-- archive _tar.xz_:
-  - décompresser l'archive et se positionner dans le dossier.
-  - rendre exécutable le fichier _BdArtLibrairie_: ```chmod +x BdArtLibrairie```
-  - lancer l'application: ```./BdArtLibrairie```

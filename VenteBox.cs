@@ -48,11 +48,12 @@ namespace BdArtLibrairie
     {
         private Datas mdatas;
         private Int16 nNumeroVente;
-        private DateTime dtDate;
+        private DateTime dtDateVente;
         private double dblPrixTotal, dblPartCB, dblPartCheque, dblPartEspeces;
-        private Gdk.Color CouleurFondTxt;
         private BasePrinter printer;
         public ResponseType rResponse;
+        private bool bModified;
+        private bool bNewVente;
         [UI] private Label lblLieuVente = null;
         [UI] private Label lblStatutPaiement = null;
         [UI] private Entry txtCoutTotal = null;
@@ -75,24 +76,51 @@ namespace BdArtLibrairie
         [UI] private ComboBoxText cbListeLieuVente = null;
         [UI] private ComboBoxText cbListeStatutPaiement = null;
         [UI] private CheckButton chkImprimerTicket = null;
+        [UI] private CheckButton chkModifiable = null;
 
-        public VenteBox(Window ParentWindow, ref Datas datas, Int16 nNumVente=0, DateTime dtDateVente=new DateTime()) : this(new Builder("VenteBox.glade"))
+        public VenteBox(Window ParentWindow, ref Datas datas, bool bNew=false, Int16 nNumVente=0, DateTime dtDaVente=new DateTime()) : this(new Builder("VenteBox.glade"))
         {
             this.TransientFor = ParentWindow;
             this.SetPosition(WindowPosition.CenterOnParent);
             this.Modal = true;
-            this.Title = "Nouvelle vente";
+            if (bNew == true)
+            {
+                this.Title = "Nouvelle vente";
+                chkModifiable.Visible = false;
+            }
             txtInfo.Visible = false;
             //
             mdatas = datas;
             nNumeroVente = nNumVente;
-            dtDate = dtDateVente;
+            bModified = false;
+            bNewVente = bNew;
+            dtDateVente = dtDaVente;
             dblPrixTotal = dblPartCB = dblPartCheque = dblPartEspeces = 0;
             InitCbListeLieuVente();
             InitcbListeStatutPaiement();
             InitTrvVentes();
             UpdateData();
             InitPrinter();
+            // on crée les events des champs modifiables après les avoir renseignés
+            if (bNewVente == true)
+                chkModifiable.Active = true;
+            else
+                chkModifiable.Active = false;
+            cbListeLieuVente.Changed += OnCbListeLieuVenteChanged;
+            cbListeStatutPaiement.Changed += OnCbListeStatutPaiementChanged;
+            //
+            chkPartCB.Clicked += OnchkPartCBClicked;
+            chkPartCheque.Clicked += OnchkPartChequeClicked;
+            chkPartEspeces.Clicked += OnchkPartEspecesClicked;
+            chkImprimerTicket.Active = true;
+            chkImprimerTicket.Clicked += OnChkImprimerTicketClicked;
+            //
+            txtPartCB.Changed += OnTxtPartCBChanged;
+            txtPartCheque.Changed += OnTxtPartChequeChanged;
+            txtPartEspeces.Changed += OnTxtPartEspecesChanged;
+            txtPartCB.FocusOutEvent += OnTxtPartCBFocusOutEvent;
+            txtPartCheque.FocusOutEvent += OnTxtPartChequeFocusOutEvent;
+            txtPartEspeces.FocusOutEvent += OnTxtPartEspecesFocusOutEvent;
             //
             chkImprimerTicket.Active = Global.ImprimerTickets;
             txtAjouteAlbum.GrabFocus();
@@ -114,22 +142,9 @@ namespace BdArtLibrairie
             btnFermer.Clicked += OnBtnFermerClicked;
             btnFermer.Visible = false;
             btnChercheAlbum.Clicked += OnBtnChercheAlbumClicked;
-            //
-            cbListeLieuVente.Changed += OnCbListeLieuVenteChanged;
-            cbListeStatutPaiement.Changed += OnCbListeStatutPaiementChanged;
-            //
-            chkPartCB.Clicked += OnchkPartCBClicked;
-            chkPartCheque.Clicked += OnchkPartChequeClicked;
-            chkPartEspeces.Clicked += OnchkPartEspecesClicked;
-            chkImprimerTicket.Active = true;
-            chkImprimerTicket.Clicked += OnChkImprimerTicketClicked;
-            //
-            txtPartCB.Changed += OnTxtPartCBChanged;
-            txtPartCheque.Changed += OnTxtPartChequeChanged;
-            txtPartEspeces.Changed += OnTxtPartEspecesChanged;
-            txtPartCB.FocusOutEvent += OnTxtPartCBFocusOutEvent;
-            txtPartCheque.FocusOutEvent += OnTxtPartChequeFocusOutEvent;
-            txtPartEspeces.FocusOutEvent += OnTxtPartEspecesFocusOutEvent;
+            SetControlesEditable(false);
+            chkModifiable.Active = false;
+            chkModifiable.Clicked += OnChkModifiableClicked;
             //
             // txtCoutTotal.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
             // txtPartCB.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
@@ -142,13 +157,25 @@ namespace BdArtLibrairie
             // txtCoutTotal.ModifyFont(tpf);
         }
 
+        private void OnChkModifiableClicked(object sender, EventArgs e)
+        {
+            if (chkModifiable.Active == true)
+                SetControlesEditable();
+            else
+                SetControlesEditable(false);
+            txtAjouteAlbum.GrabFocus();
+        }
+
         private void OnBtnChercheAlbumClicked(object sender, EventArgs e)
         {
             SelectAlbumBox selectAlbumBox = new SelectAlbumBox(this, ref mdatas, cbListeLieuVente.ActiveText, cbListeStatutPaiement.ActiveText);
 			selectAlbumBox.Run();
             // si Ok, recalcul des prix
             if (selectAlbumBox.rResponse == ResponseType.Ok)
+            {
+                bModified = true;
                 UpdateData();
+            }
             //
             txtAjouteAlbum.GrabFocus();
         }
@@ -156,6 +183,7 @@ namespace BdArtLibrairie
         private void OnBtnFermerClicked(object sender, EventArgs a)
         {
             mdatas.lstoreUneVente.Clear();
+            rResponse = ResponseType.Close;
             Exit();
         }
 
@@ -175,13 +203,13 @@ namespace BdArtLibrairie
             TreeViewColumn colIsbnEan = new TreeViewColumn();
             colIsbnEan.Title = "ISBN / EAN";
             // dttable albums
-                TreeViewColumn colAuteur = new TreeViewColumn();
-                colAuteur.Title = "Auteur";
-                TreeViewColumn colTitre = new TreeViewColumn();
-                colTitre.Title = "Titre";
-                TreeViewColumn colPrixVente = new TreeViewColumn();
-                colPrixVente.Title = "Prix vente (€)";
-                TreeViewColumn colQteVendu = new TreeViewColumn();
+            TreeViewColumn colAuteur = new TreeViewColumn();
+            colAuteur.Title = "Auteur";
+            TreeViewColumn colTitre = new TreeViewColumn();
+            colTitre.Title = "Titre";
+            TreeViewColumn colPrixVente = new TreeViewColumn();
+            colPrixVente.Title = "Prix vente (€)";
+            TreeViewColumn colQteVendu = new TreeViewColumn();
             // fin dttable albums
             colQteVendu.Title = "Qté vendu";
             TreeViewColumn colLieu = new TreeViewColumn();
@@ -277,7 +305,8 @@ namespace BdArtLibrairie
                 // répartitions des parts
                 // si une ligne existe dans la table Paiements (seulement dans le cas de l'affichage
                 // d'une vente existante), on récupère les parts de paiements
-                GetPartsPaiementVente();
+                if (bNewVente == false && bModified == false)
+                    GetPartsPaiementVente();
                 txtPartCB.Changed -= OnTxtPartCBChanged;
                 txtPartCheque.Changed -= OnTxtPartChequeChanged;
                 txtPartEspeces.Changed -= OnTxtPartEspecesChanged;
@@ -332,6 +361,7 @@ namespace BdArtLibrairie
                 }
             }
             txtCode.Text = string.Empty;
+            bModified = true;
             UpdateData();
         }
 
@@ -354,6 +384,7 @@ namespace BdArtLibrairie
             if (mdatas.lstoreUneVente.GetIter(out iter, chemin) == true)
             {
                 mdatas.ModifierUneVente(iter, cbListeLieuVente.ActiveText, cbListeStatutPaiement.ActiveText);
+                bModified = true;
                 UpdateData();
             }
         }
@@ -377,6 +408,7 @@ namespace BdArtLibrairie
             if (mdatas.lstoreUneVente.GetIter(out iter, chemin) == true)
             {
                 mdatas.SupprimerUneVente(iter);
+                bModified = true;
                 UpdateData();
             }
         }
@@ -389,14 +421,23 @@ namespace BdArtLibrairie
             string strPaiement = string.Empty;
             double dblPourcentCB=0, dblPourcentCheque=0, dblPourcentEspeces=0;
 
+            if (bNewVente == false)
+            {
+                // on est en modification d'une vente
+                // on va supprimer la vente dans les tables avant de continuer
+                mdatas.SupprimerVente(nNumeroVente);
+            }
             // si pas d'élément
             if (mdatas.lstoreUneVente.GetIterFirst(out iter) == false)
             {
-                rResponse = ResponseType.Cancel;
+                if (bNewVente == true)
+                    rResponse = ResponseType.Cancel;
+                else
+                    rResponse = ResponseType.Apply;
                 Exit();
                 return;
             }
-            else
+            if (mdatas.lstoreUneVente.GetIterFirst(out iter) == true)
             {
                 do
                 {
@@ -430,7 +471,9 @@ namespace BdArtLibrairie
             }
             rResponse = ResponseType.Apply;
             // ajout des livres de la vente dans la table Ventes
-            dtDate = DateTime.Now;
+            // on garde la date initiale en cas de modif
+            if (bNewVente == true)
+                dtDateVente = DateTime.Now;
             // pour éviter la division par 0
             if (dblPrixTotal != 0)
             {
@@ -438,7 +481,7 @@ namespace BdArtLibrairie
                 dblPourcentCheque = 100*dblPartCheque/dblPrixTotal;
                 dblPourcentEspeces = 100*dblPartEspeces/dblPrixTotal;
             }
-            mdatas.AjouteVenteLivre(nNumeroVente, dblPourcentCB, dblPourcentCheque, dblPourcentEspeces, dtDate);
+            mdatas.AjouteVenteLivre(nNumeroVente, dblPourcentCB, dblPourcentCheque, dblPourcentEspeces, dtDateVente);
             //
             if (chkImprimerTicket.Active == true)
             {
@@ -449,7 +492,7 @@ namespace BdArtLibrairie
                 //txtInfo.ShowAll();
                 try
                 {
-                    if (ImprimerTicket(dtDate) == true)
+                    if (ImprimerTicket(dtDateVente) == true)
                     {
                         if (Global.UseDialogForTicketPrint == false)
                             // on laisse l'impression se terminer avant l'appel à printer.Dispose()
@@ -486,7 +529,7 @@ namespace BdArtLibrairie
             Global.AfficheInfo(txtInfo, "Impression des tickets de caisse...", new Gdk.Color(0,0,255));
             try
             {
-                bResult = ImprimerTicket(dtDate);
+                bResult = ImprimerTicket(dtDateVente);
             }
             catch (Exception e)
             {
@@ -509,18 +552,14 @@ namespace BdArtLibrairie
         {
             TreeIter iter;
 
+            if (bModified == true && Global.Confirmation(this, "Quitter", "Toutes les modifications seront perdues. Continuer ?") == false)
+                return;
             rResponse = ResponseType.Cancel;
-            // si pas d'élément
-            if (mdatas.lstoreUneVente.GetIterFirst(out iter) == false)
-            {
-                Exit();
-            }
-            else if(Global.Confirmation(this, "Quitter", "Toutes les données seront perdues. Continuer ?") == true)
-            {
+            // si des éléments
+            if (mdatas.lstoreUneVente.GetIterFirst(out iter) == true)
                 // on vide le listStore
                 mdatas.lstoreUneVente.Clear();
-                Exit();
-            }
+            Exit();
         }
 
         private void OnchkPartCBClicked(object sender, EventArgs a)
@@ -540,6 +579,7 @@ namespace BdArtLibrairie
                 // txtPartCB.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
                 dblPartCB = 0;
             }
+            bModified = true;
             UpdateData();
         }
         private void OnchkPartChequeClicked(object sender, EventArgs a)
@@ -559,6 +599,7 @@ namespace BdArtLibrairie
                 // txtPartCheque.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
                 dblPartCheque = 0;
             }
+            bModified = true;
             UpdateData();
         }
         private void OnchkPartEspecesClicked(object sender, EventArgs a)
@@ -578,6 +619,7 @@ namespace BdArtLibrairie
                 // txtPartEspeces.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
                 dblPartEspeces = 0;
             }
+            bModified = true;
             UpdateData();
         }
 
@@ -587,6 +629,7 @@ namespace BdArtLibrairie
             txtPartCB.Changed -= OnTxtPartCBChanged;
             Global.CheckValeurs(this, sender);
             txtPartCB.Changed += OnTxtPartCBChanged;
+            bModified = true;
         }
 
         private void OnTxtPartChequeChanged(object sender, EventArgs a)
@@ -594,6 +637,7 @@ namespace BdArtLibrairie
             txtPartCheque.Changed -= OnTxtPartChequeChanged;
             Global.CheckValeurs(this, sender);
             txtPartCheque.Changed += OnTxtPartChequeChanged;
+            bModified = true;
         }
 
         private void OnTxtPartEspecesChanged(object sender, EventArgs a)
@@ -601,6 +645,7 @@ namespace BdArtLibrairie
             txtPartEspeces.Changed -= OnTxtPartEspecesChanged;
             Global.CheckValeurs(this, sender);
             txtPartEspeces.Changed += OnTxtPartEspecesChanged;
+            bModified = true;
         }
 
         private void OnTxtPartCBFocusOutEvent(object sender, EventArgs a)
@@ -608,6 +653,7 @@ namespace BdArtLibrairie
             txtPartCB.FocusOutEvent -= OnTxtPartCBFocusOutEvent;
 			txtPartCB.Text = Global.GetValueOrZero(this, sender, true).ToString();
 			txtPartCB.FocusOutEvent += OnTxtPartCBFocusOutEvent;
+            bModified = true;
             UpdateData(false);
         }
 
@@ -616,6 +662,7 @@ namespace BdArtLibrairie
             txtPartCheque.FocusOutEvent -= OnTxtPartChequeFocusOutEvent;
 			txtPartCheque.Text = Global.GetValueOrZero(this, sender, true).ToString();
 			txtPartCheque.FocusOutEvent += OnTxtPartChequeFocusOutEvent;
+            bModified = true;
             UpdateData(false);
         }
 
@@ -624,6 +671,7 @@ namespace BdArtLibrairie
             txtPartEspeces.FocusOutEvent -= OnTxtPartEspecesFocusOutEvent;
 			txtPartEspeces.Text = Global.GetValueOrZero(this, sender, true).ToString();
 			txtPartEspeces.FocusOutEvent += OnTxtPartEspecesFocusOutEvent;
+            bModified = true;
             UpdateData(false);
         }
 
@@ -660,7 +708,7 @@ namespace BdArtLibrairie
 
             if (mdatas.lstoreUneVente.GetIterFirst(out iter) == true)
             {
-                strResult = "Librairie BD'Art - Vente n°" + nNumeroVente.ToString() + strEndLine;
+                strResult = "Librairie " + Global.NomFestival + " - Vente n°" + nNumeroVente.ToString() + strEndLine;
                 strResult += dtDate.ToString() + strEndLine;
                 strResult += strSeparator;
                 do
@@ -754,7 +802,7 @@ namespace BdArtLibrairie
                                 e.CodePage(CodePage.ISO8859_15_LATIN9),
                                 e.LeftAlign(),
                                 e.SetStyles(PrintStyle.Bold),
-                                e.Print("Librairie BD'Art - Vente n°"),
+                                e.Print("Librairie " + Global.NomFestival +" - Vente n°"),
                                 e.PrintLine(nNumeroVente.ToString()),
                                 e.SetStyles(PrintStyle.None),
                                 e.PrintLine(dtDate.ToString()),
@@ -814,29 +862,48 @@ namespace BdArtLibrairie
             return true;
         }
 
-        public void AfficherMasquerBoutons()
+        public void SetControlesEditable(bool bEdit = true)
         {
-            this.Title = "Détails vente";
-            btnModifier.Visible = false;
-            btnSupprimer.Visible = false;
-            btnTerminer.Visible = false;
-            btnAnnuler.Visible = false;
-            chkImprimerTicket.Visible = false;
-            chkPartCB.Sensitive = false;
-            chkPartCheque.Sensitive = false;
-            chkPartEspeces.Sensitive = false;
-            txtAjouteAlbum.Visible = false;
-            cbListeStatutPaiement.Visible = false;
-            cbListeLieuVente.Visible = false;
-            lblStatutPaiement.Visible = false;
-            lblLieuVente.Visible = false;
-            btnChercheAlbum.Visible = false;
-            //
-            btnImprimerTicket.Visible = true;
-            btnFermer.Visible = true;
-            //
-            //this.Deletable = true;// pour afficher le bouton de fermeture
-            // code EAN ex.: 9782723433785
+            if (bEdit == true)
+            {
+                btnModifier.Visible = true;
+                btnSupprimer.Visible = true;
+                btnTerminer.Visible = true;
+                btnAnnuler.Visible = true;
+                chkImprimerTicket.Visible = true;
+                chkPartCB.Sensitive = true;
+                chkPartCheque.Sensitive = true;
+                chkPartEspeces.Sensitive = true;
+                txtAjouteAlbum.Visible = true;
+                cbListeStatutPaiement.Visible = true;
+                cbListeLieuVente.Visible = true;
+                lblStatutPaiement.Visible = true;
+                lblLieuVente.Visible = true;
+                btnChercheAlbum.Visible = true;
+                //
+                btnImprimerTicket.Visible = false;
+                btnFermer.Visible = false;
+            }
+            else
+            {
+                btnModifier.Visible = false;
+                btnSupprimer.Visible = false;
+                btnTerminer.Visible = false;
+                btnAnnuler.Visible = false;
+                chkImprimerTicket.Visible = false;
+                chkPartCB.Sensitive = false;
+                chkPartCheque.Sensitive = false;
+                chkPartEspeces.Sensitive = false;
+                txtAjouteAlbum.Visible = false;
+                cbListeStatutPaiement.Visible = false;
+                cbListeLieuVente.Visible = false;
+                lblStatutPaiement.Visible = false;
+                lblLieuVente.Visible = false;
+                btnChercheAlbum.Visible = false;
+                //
+                btnImprimerTicket.Visible = true;
+                btnFermer.Visible = true;
+            }
         }
     }
 }

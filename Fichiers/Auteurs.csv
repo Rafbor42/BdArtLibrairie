@@ -1,12 +1,13 @@
 IdAuteur;Prénom auteur;Nom auteur;Pourcentage
-4;Sylvain;Aimès;80
-8;Sylvie;Arnoux;90
-10;Patrick ;Biesse;90
+1;BDART;Association;100
+2;Sylvain;Aimès;75
+3;Thierry;Méry;90
+4;Christian;Peultier;90
 5;Philippe;Brocard;90
-11;Franck;Chantelouve;90
-6;Laureline;Grenouiller;90
-1;Rémi;Jiguel;90
-9;Frédéric;Marniquet;90
-3;Thibaud;Mazoyer;90
-7;Thierry;Méry;90
-2;Christian;Peultier;90
+6;Franck;Chantelouve;90
+7;Laureline;Grenouiller;90
+8;Rémi;Jiguel;90
+9;Nathalie;Janer;90
+10;Jean-François;Biard;90
+11;Eric;Ivars;90
+12;Romain;Huet;90
