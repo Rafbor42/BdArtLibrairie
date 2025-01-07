@@ -67,11 +67,21 @@ namespace BdArtLibrairie
                 chkModifiable.Visible = false;
             }
             //
+            if (Global.AppliquerCss == true)
+            {
+                // champs non éditables par défaut
+                Global.AddCssProvider(ref txtIdAuteur, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPrenomAuteur, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtNomAuteur, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPourcentage, Global.eCssClasses.EntryNotEditable);
+            }
+            //
             mdatas = datas;
             nIdAuteur = nId;
             bModified = false;
             bNewAuteur = bNew;
             UpdateData();
+            SetControlesEditable(false);
             if (bNewAuteur == true)                
                 chkModifiable.Active = true;
             else
@@ -94,7 +104,6 @@ namespace BdArtLibrairie
             btnFermer.Clicked += OnBtnFermerClicked;
             btnTerminer.Clicked += OnBtnTerminerClicked;
             btnAnnuler.Clicked += OnBtnAnnulerClicked;
-            SetControlesEditable(false);
             //
             chkModifiable.Clicked += OnChkModifiableClicked;
         }
@@ -117,8 +126,12 @@ namespace BdArtLibrairie
 
         private void OnTxtPourcentageFocusOutEvent(object o, FocusOutEventArgs args)
         {
+            double dblVal;
             txtPourcentage.FocusOutEvent -= OnTxtPourcentageFocusOutEvent;
-			txtPourcentage.Text = Global.GetValueOrZero(this, o, true).ToString();
+            dblVal = Global.GetValueOrZero(this, o, true);
+            if (dblVal < 0) dblVal = 0;
+            if (dblVal > 100) dblVal = 100;
+			txtPourcentage.Text = dblVal.ToString();
 			txtPourcentage.FocusOutEvent += OnTxtPourcentageFocusOutEvent;
             bModified = true;
         }
@@ -199,6 +212,18 @@ namespace BdArtLibrairie
                 txtPourcentage.IsEditable = true;
                 txtPrenomAuteur.IsEditable = true;
                 txtNomAuteur.IsEditable = true;
+
+                if (Global.AppliquerCss == true)
+                {
+                    txtPourcentage.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPourcentage.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                    
+                    txtPrenomAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPrenomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                    
+                    txtNomAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtNomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                }
             }
             else
             {
@@ -209,6 +234,18 @@ namespace BdArtLibrairie
                 txtPourcentage.IsEditable = false;
                 txtPrenomAuteur.IsEditable = false;
                 txtNomAuteur.IsEditable = false;
+
+                if (Global.AppliquerCss == true)
+                {
+                    txtPourcentage.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPourcentage.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+
+                    txtPrenomAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPrenomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+
+                    txtNomAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtNomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                }
             }
         }
     }

@@ -7,6 +7,7 @@
     - [Modification ou suppression d'un auteur](#modification-ou-suppression-dun-auteur)
   - [Onglet Albums](#onglet-albums)
     - [Modification ou suppression d'un album](#modification-ou-suppression-dun-album)
+    - [Impression des tarifs des albums](#impression-des-tarifs-des-albums)
   - [Onglet Ventes](#onglet-ventes)
     - [Effectuer une vente](#effectuer-une-vente)
     - [Modification ou suppression d'une vente](#modification-ou-suppression-dune-vente)
@@ -112,7 +113,7 @@ On trouve également 2 filtres _Lieu vente_ et _A facturer_. Le contenu de la gr
 ### Modification ou suppression d'un album
 
 Dans l'onglet _Albums_, sélectionner un album dans la grille.</br>
-Pour supprimer un album, cliquer sur le bouton _Supprimer_.
+Pour supprimer un album, cliquer sur le bouton _Supprimer_.</br>
 Un album ne peut pas être supprimé si des ventes de cet album sont enregistrées.
 
 Pour modifier un album, menu _Affichage→Détails album sélectionné_, ou faire double-clic sur la ligne, ou cliquer sur le bouton _Détails_. Dans la boite de dialogue _Albums_ cocher la case _Modifiable_:</br>
@@ -128,7 +129,13 @@ Ce message est enregistré dans le fichier _EcartsVentes.txt_, dans le dossier c
 
 ![Bouton écart ventes](images/markdown/bouton_ecart_ventes.jpg)
 
-Pour supprimer ces messages, supprimer le fichier _EcartsVentes.txt_.
+Pour supprimer ces messages, supprimer le fichier _EcartsVentes.txt_ à partir de la fenêtre qui s'ouvre en cliquant sur le bouton.
+
+### Impression des tarifs des albums
+
+Procéder comme décrit au § [Impression des ventes par auteur](#impression-des-ventes-par-auteur) pour générer le fichier d'export et lancer le fichier _BdArtLib.odb_.</br>
+Après avoir importer les fichiers, cliquer sur le bouton _Imprimer Tarifs des albums_, cela ouvrira le rapport contenant les tarifs par auteur:
+![Tarifs albums](images/markdown/tarifs_albums.jpg)
 
 ## Onglet Ventes
 
@@ -230,6 +237,8 @@ Après confirmation, saisir le mot de passe « Password01 » dans la zone sous
 Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés et le fichier _EcartsVentes.txt_ est supprimé.
 Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _.bdartlibrairie_ avec un numéro de version. Les fichiers de sauvegarde plus anciens sont conservés.
 
+Vous pouvez également purger, après confirmation, ce dossier de sauvegarde via le menu _Fichier->Purger le dossier backup_
+
 ### Bilan des ventes
 
 Le menu _Affichage->Bilan des ventes auteur_ ou un clic sur le bouton _Bilan des ventes_ affiche le classement des auteurs suivant 3 critères: le nombre d'albums vendus, le total des ventes (€) et la commission reversée à BD'Art (€):
@@ -255,7 +264,7 @@ A la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est l
 ![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
 
 - Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_export.csv_.
-- Cliquer ensuite sur le bouton d'actualisation puis sur le bouton d'impression. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
+- Cliquer ensuite sur le bouton d'actualisation puis sur le bouton _Imprimer Bilan des ventes_. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
 
@@ -273,7 +282,7 @@ Cet onglet permet de modifier certains paramètres:
 - l'ouverture ou pas du fichier, après l'export du fichier albums, **LibreOffice Base** _Bdartlib.odb_ pour imprimer les ventes par auteur.
 - renseigner le nom du festival qui apparaitra dans la barre de titre de l'application et dans les tickets.
 - la part auteur par défaut, en %.
-- en bas, on peut aussi choisir d'avoir ou pas les messages d’infos en couleur.
+- l'application des styles CSS pour colorier les Widgets d'affichage et de saisie de texte. Décocher si les couleurs ne sont pas compatibles avec le thème utilisé.
 
 Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier caché _.bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
 
@@ -282,7 +291,7 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
     <PrinterFilePath value="/dev/usb/lp0" />
     <Tempo value="2000" />
     <NombreTickets value="2" />
-    <UseFgColor value="False" />
+    <AppliquerCss value="True" />
     <UseDialogForTicketPrint value="True" />
     <UsbDevicePath value="/media/raf/4429-4124" />
     <NomFestival value="BD'Art" />
@@ -380,6 +389,11 @@ Pour l'accès à la clé USB sur Linux, on utilise la commande _lsblk_ pour dét
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
+
+- **3.1.0107.0**
+  - Ajout possibilité de supprimer le fichier _EcartsVentes.txt_.
+  - Ajout possibilité de purger le dossier de sauvegarde des fichiers.
+  - Utilisation des styles CSS sur les Widgets d'affichage et de saisie de texte.
 
 - **3.0.1228.0**
   - On lance BdArtLib.odb seulement si coché dans les paramètres.

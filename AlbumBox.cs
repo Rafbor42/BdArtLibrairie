@@ -36,7 +36,6 @@ using System;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 using System.Data;
-using System.Linq;
 
 namespace BdArtLibrairie
 {
@@ -76,6 +75,21 @@ namespace BdArtLibrairie
                 this.Title = "Nouvel Album";
                 chkModifiable.Visible = false;
             }
+            if (Global.AppliquerCss == true)
+            {
+                // champs non éditables par défaut
+                Global.AddCssProvider(ref txtCodeIsbnEan, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtAuteur, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtTitre, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPrixVente, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtStockInitial, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtStockFinal, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtVenduLibrairie, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtVenduMediatheque, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtQteOffert, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtQteAFacturer, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtQteTotalVendu, Global.eCssClasses.EntryNotEditable);
+            }
             //
             mdatas = datas;
             strIsbnEan = strCode;
@@ -85,6 +99,7 @@ namespace BdArtLibrairie
             strAuteur = strNomAuteur;
             bErreurCode = false;
             UpdateData();
+            SetControlesEditable(false);
             // on crée les events après avoir renseignés les champs de données modifiables
             if (bNewAlbum == true)
                 chkModifiable.Active = true;
@@ -95,7 +110,15 @@ namespace BdArtLibrairie
             txtPrixVente.FocusOutEvent += OnTxtPrixVenteFocusOutEvent;
             txtStockInitial.Changed += OnTxtStockInitialChanged;
             txtStockInitial.FocusOutEvent += OnTxtStockInitialFocusOutEvent;
+            txtCodeIsbnEan.Activated += OnTxtCodeIsbnEanActivated;
             txtCodeIsbnEan.GrabFocus();
+        }
+
+        private void OnTxtCodeIsbnEanActivated(object sender, EventArgs e)
+        {
+            CheckCodeIsbnEan();
+            bModified = true;
+            txtTitre.GrabFocus();
         }
 
         private AlbumBox(Builder builder) : base(builder.GetRawOwnedObject("AlbumBox"))
@@ -106,7 +129,6 @@ namespace BdArtLibrairie
             btnFermer.Clicked += OnBtnFermerClicked;
             btnTerminer.Clicked += OnBtnTerminerClicked;
             btnAnnuler.Clicked += OnBtnAnnulerClicked;
-            SetControlesEditable(false);
             chkModifiable.Active = false;
             chkModifiable.Clicked += OnChkModifiableClicked;
             //
@@ -280,24 +302,25 @@ namespace BdArtLibrairie
                         // on vérifie d'abord si l'album a déjà été vendu avec l'ancien prix
                         dblAncienPrix = Convert.ToDouble(row["dblPrixVente"]);
                         dblNouveauPrix = Convert.ToDouble(txtPrixVente.Text);
+                        row["dblPrixVente"] = dblNouveauPrix;
                         if (dblAncienPrix != dblNouveauPrix)
                         {
                             nCount = 0;
                             foreach(DataRow rowV in mdatas.dtTableVentes.Select("strIsbnEan='" + strIsbnEan + "'"))
                             {
-                                strMsg += "Vente:" + rowV["nNumero"].ToString() + " Rang:" + rowV["nRang"].ToString() + "\r\n";
+                                strMsg += "Vente:" + rowV["nNumero"].ToString() + " Rang:" + rowV["nRang"].ToString() + Environment.NewLine;
                                 nCount++;
                             }
                             if (strMsg != string.Empty)
                             {
                                 dblEcart = (dblAncienPrix - dblNouveauPrix) * nCount;
-                                strMsg2 = DateTime.Now.ToString() + ": L'album:\r\n"; 
-                                strMsg2 += strIsbnEan + ": " + txtTitre.Text + " de " + txtAuteur.Text +"\r\n";
-                                strMsg2 += "est déjà présent dans les ventes suivantes:\r\n" + strMsg;
-                                strMsg2 += "Le montant réel des recettes sera différent de celui calculé par l'application.\r\n";
-                                strMsg3 = string.Format("Ancien prix: {0:0.00}€, Nouveau prix: {1:0.00}€\r\n", dblAncienPrix, dblNouveauPrix);
+                                strMsg2 = DateTime.Now.ToString() + ": L'album:" + Environment.NewLine; 
+                                strMsg2 += strIsbnEan + ": " + txtTitre.Text + " de " + txtAuteur.Text + Environment.NewLine;
+                                strMsg2 += "est déjà présent dans les ventes suivantes:" + Environment.NewLine + strMsg;
+                                strMsg2 += "Le montant réel des recettes sera différent de celui calculé par l'application." + Environment.NewLine;
+                                strMsg3 = string.Format("Ancien prix: {0:0.00}€, Nouveau prix: {1:0.00}€" + Environment.NewLine, dblAncienPrix, dblNouveauPrix);
                                 strMsg2 += strMsg3;
-                                strMsg3 = string.Format("Qté vendue: {0}, Ecart: {1:0.00}€\r\n", nCount, dblEcart);
+                                strMsg3 = string.Format("Qté vendue: {0}, Ecart: {1:0.00}€" + Environment.NewLine, nCount, dblEcart);
                                 strMsg2 += strMsg3;
                                 Global.ShowMessage("Vente albums", strMsg2, this, MessageType.Warning);
                                 strMsg = string.Empty;
@@ -308,7 +331,6 @@ namespace BdArtLibrairie
                                 }
                             }
                         }
-                        row["dblPrixVente"] = Convert.ToDouble(txtPrixVente.Text);
                     }
                 }
             }
@@ -323,10 +345,28 @@ namespace BdArtLibrairie
                 btnFermer.Visible = false;
                 //
                 if (bNewAlbum == true)
+                {
                     txtCodeIsbnEan.IsEditable = true;
+                    if (Global.AppliquerCss == true)
+                    {
+                        txtCodeIsbnEan.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                        txtCodeIsbnEan.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                    }
+                }
                 txtTitre.IsEditable = true;
                 txtPrixVente.IsEditable = true;
                 txtStockInitial.IsEditable = true;
+                if (Global.AppliquerCss == true)
+                {
+                    txtTitre.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtTitre.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+
+                    txtPrixVente.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPrixVente.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+
+                    txtStockInitial.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtStockInitial.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                }
             }
             else
             {
@@ -338,6 +378,21 @@ namespace BdArtLibrairie
                 txtTitre.IsEditable = false;
                 txtPrixVente.IsEditable = false;
                 txtStockInitial.IsEditable = false;
+
+                if (Global.AppliquerCss == true)
+                {
+                    txtCodeIsbnEan.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtCodeIsbnEan.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+
+                    txtTitre.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtTitre.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+
+                    txtPrixVente.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPrixVente.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+
+                    txtStockInitial.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtStockInitial.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                }
             }
         }
     }

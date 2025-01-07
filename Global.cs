@@ -43,7 +43,7 @@ using System.Threading.Tasks;
 
 namespace BdArtLibrairie
 {
-	public static class Global
+    public static class Global
 	{
 		public enum eMoyenPaiement
 		{
@@ -106,6 +106,14 @@ namespace BdArtLibrairie
 			Paiement
 		}
 
+		public enum eCssClasses
+		{
+			EntryEditable,
+			EntryNotEditable,
+			InfoColorRed,
+			InfoColorBlue
+		}
+
 		public static string m_strMsgFileFormatNotOk = "Format du fichier non conforme";
         private static bool bConfigModified;
 		private static bool bImprimerTickets;
@@ -118,6 +126,7 @@ namespace BdArtLibrairie
 		private static string strFichierAuteurs;
 		private static string strFichierAuteursWoExt;
 		private static string strDossierFichiers;
+		private static string strDossierSauve;
         private static string strAppStartupPath;
 		private static string strPrinterFilePath;
 		private static string strUsbDevicePath;
@@ -126,11 +135,12 @@ namespace BdArtLibrairie
 		private static string strFichierEcartsVentesWoExt;
 		private static Int16 nTempo;
 		private static Int16 nNombreTickets;
-		private static bool bUseFgColor;
+		private static bool bAppliquerCss;
 		private static bool bUseDialogForTicketPrint;
 		private static string strFichierConfigLocal;
 		private static bool bLaunchBaseFile;
 		private static double dblPartAuteurDefaut;
+		private static CssProvider cssProvider;
         public static bool ConfigModified {	get => bConfigModified; set => bConfigModified = value; }
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
         public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
@@ -148,19 +158,22 @@ namespace BdArtLibrairie
         public static short NombreTickets { get => nNombreTickets; set => nNombreTickets = value; }
         public static bool ImprimerTickets { get => bImprimerTickets; set => bImprimerTickets = value; }
         public static bool UseDialogForTicketPrint { get => bUseDialogForTicketPrint; set => bUseDialogForTicketPrint = value; }
-        public static bool UseFgColor { get => bUseFgColor; set => bUseFgColor = value; }
+        public static bool AppliquerCss { get => bAppliquerCss; set => bAppliquerCss = value; }
         public static string FichierConfigLocal { get => strFichierConfigLocal; set => strFichierConfigLocal = value; }
 		public static string NomFestival { get => strNomFestival; set => strNomFestival = value; }
 		public static bool LaunchBaseFile { get => bLaunchBaseFile; set => bLaunchBaseFile = value; }
         public static double PartAuteurDefaut { get => dblPartAuteurDefaut; set => dblPartAuteurDefaut = value; }
         public static string FichierEcartsVentes { get => strFichierEcartsVentes; set => strFichierEcartsVentes = value; }
         public static string FichierEcartsVentesWoExt { get => strFichierEcartsVentesWoExt; set => strFichierEcartsVentesWoExt = value; }
+        public static CssProvider ProviderCss { get => cssProvider; set => cssProvider = value; }
+        public static string DossierSauve { get => strDossierSauve; set => strDossierSauve = value; }
 
         /// <summary>
         /// Constructeur.
         /// </summary>
         static Global()
 		{
+			ProviderCss = new CssProvider();
 			InitParams();
 		}
 
@@ -181,11 +194,12 @@ namespace BdArtLibrairie
 			FichierAlbumsWoExt = "Albums";
 			FichierEcartsVentes = "EcartsVentes.txt";
 			FichierEcartsVentesWoExt = "EcartsVentes";
+			DossierSauve = "Sauve";
 			// params écrasés par fichier de config
 			PrinterFilePath = "/dev/usb/lp0";
 			Tempo = 2000;
 			NombreTickets = 2;
-			UseFgColor = false;
+			AppliquerCss = false;
 			UseDialogForTicketPrint = true;
 			UsbDevicePath = "/media/raf/4429-4124";
 			FichierConfigLocal = "app.config";
@@ -199,6 +213,13 @@ namespace BdArtLibrairie
 			// création du dossier Fichiers, si pas présent
 			if (!Directory.Exists(DossierFichiers))
 				Directory.CreateDirectory(DossierFichiers);
+			//
+			// classes css, vérifier la correspondance avec la liste enum
+			string cssdata = ".EntryEditable {background-color: rgb(255, 255, 255); color: rgb(20, 20, 20);}";
+            cssdata += ".EntryNotEditable {background-color: rgb(240, 240, 240); color: rgb(50, 50, 50);}";
+            cssdata += ".InfoColorRed {color: rgb(255, 0, 0);}";
+            cssdata += ".InfoColorBlue {color: rgb(0, 0, 255);}";
+            ProviderCss.LoadFromData(cssdata);
         }
 
 		// Téléchargement d'un fichier.
@@ -253,8 +274,8 @@ namespace BdArtLibrairie
 							case "NombreTickets":
 								NombreTickets = Convert.ToInt16(reader.GetAttribute("value"));
 								break;
-							case "UseFgColor":
-								UseFgColor = Convert.ToBoolean(reader.GetAttribute("value"));
+							case "AppliquerCss":
+								AppliquerCss = Convert.ToBoolean(reader.GetAttribute("value"));
 								break;
 							case "UseDialogForTicketPrint":
 								UseDialogForTicketPrint = Convert.ToBoolean(reader.GetAttribute("value"));
@@ -316,8 +337,8 @@ namespace BdArtLibrairie
 						writer.WriteAttributeString("value", NombreTickets.ToString());
 						writer.WriteEndElement();
 
-						writer.WriteStartElement("UseFgColor");
-						writer.WriteAttributeString("value", UseFgColor.ToString());
+						writer.WriteStartElement("AppliquerCss");
+						writer.WriteAttributeString("value", AppliquerCss.ToString());
 						writer.WriteEndElement();
 
 						writer.WriteStartElement("UseDialogForTicketPrint");
@@ -438,14 +459,44 @@ namespace BdArtLibrairie
 			return nValue;
 		}
 
-		public static void AfficheInfo(Entry txtInfo, string strMsg, Gdk.Color color)
+		public static void AfficheInfo(ref Entry txtInfo, string strMsg, eCssClasses eClass)
 		{
 			txtInfo.Text = string.Empty;
 			// on change la couleur du texte, ne pas faire si utilisation d'un thème dark
-			if (UseFgColor == true)
-				txtInfo.ModifyFg(StateType.Normal, color);
+			if (AppliquerCss == true)
+			{
+				// le champ contient une seule classe css
+				// si déjà présente, on ne fait rien
+				if (txtInfo.StyleContext.HasClass(eClass.ToString()) == false)
+				{
+					if (eClass == eCssClasses.InfoColorBlue)
+						txtInfo.StyleContext.RemoveClass(eCssClasses.InfoColorRed.ToString());
+					else
+						txtInfo.StyleContext.RemoveClass(eCssClasses.InfoColorBlue.ToString());
+					txtInfo.StyleContext.AddClass(eClass.ToString());
+				}
+			}
 			txtInfo.Text = strMsg;
 			txtInfo.Show();
+		}
+
+		// Ajoute le Css provider ainsi que la classe passée en paramètre.
+		public static void AddCssProvider(ref Entry txtChamp, eCssClasses eClass)
+		{
+			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+			txtChamp.StyleContext.AddClass(eClass.ToString());
+		}
+
+		public static void AddCssProvider(ref SearchEntry txtChamp, eCssClasses eClass)
+		{
+			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+			txtChamp.StyleContext.AddClass(eClass.ToString());
+		}
+
+		public static void AddCssProvider(ref TextView txtChamp, eCssClasses eClass)
+		{
+			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+			txtChamp.StyleContext.AddClass(eClass.ToString());
 		}
 
 		// Demande confirmation à l'utilisateur.
@@ -499,8 +550,8 @@ namespace BdArtLibrairie
             catch (Exception e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg = e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg = e.Message + Environment.NewLine;
 			}
         }
     }

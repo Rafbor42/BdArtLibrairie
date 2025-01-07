@@ -33,6 +33,7 @@
     along with BdArtLibrairie.  If not, see <https://www.gnu.org/licenses/>.
 */
 using System;
+using System.IO;
 using Gtk;
 using UI = Gtk.Builder.ObjectAttribute;
 
@@ -40,16 +41,19 @@ namespace BdArtLibrairie
 {
     public class LireFichierBox : Dialog
     {
+        private Datas mdatas;
         [UI] private Button btnFermer = null;
+        [UI] private Button btnSupprimerFichier = null;
         [UI] private TextView tvAffichage = null;
 
-        public LireFichierBox(Window ParentWindow, string strData) : this(new Builder("LireFichierBox.glade"))
+        public LireFichierBox(Window ParentWindow, Datas datas, string strData) : this(new Builder("LireFichierBox.glade"))
         {
             this.TransientFor = ParentWindow;
             this.SetPosition(WindowPosition.CenterOnParent);
             this.Modal = true;
             this.Title = "Ecart Ventes";
             //
+            mdatas = datas;
             tvAffichage.Buffer.Text = strData;
         }
 
@@ -58,6 +62,24 @@ namespace BdArtLibrairie
             builder.Autoconnect(this);
             //
             btnFermer.Clicked += OnBtnFermerClicked;
+            btnSupprimerFichier.Clicked += OnBtnSupprimerFichierClicked;
+        }
+
+        private void OnBtnSupprimerFichierClicked(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+
+            if (Global.Confirmation(this, "Supprimer Fichier", "Voulez-vous vraiment supprimer le fichier EcartsVentes.txt ?") == true)
+            {
+                mdatas.SupprimerFichierEcartVentes(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, supprimer fichier:", strMsg, this);
+                }
+                else
+                    tvAffichage.Buffer.Text = string.Empty;
+                
+            }
         }
 
         private void OnBtnFermerClicked(object sender, EventArgs e) => this.Dispose();

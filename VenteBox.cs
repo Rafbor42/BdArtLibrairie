@@ -90,6 +90,18 @@ namespace BdArtLibrairie
             }
             txtInfo.Visible = false;
             //
+            if (Global.AppliquerCss == true)
+            {
+                // champs non éditables par défaut
+                Global.AddCssProvider(ref txtCoutTotal, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPartCB, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPartCheque, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtPartEspeces, Global.eCssClasses.EntryNotEditable);
+                Global.AddCssProvider(ref txtAjouteAlbum, Global.eCssClasses.EntryNotEditable);
+
+                Global.AddCssProvider(ref txtInfo, Global.eCssClasses.InfoColorBlue);
+            }
+            //
             mdatas = datas;
             nNumeroVente = nNumVente;
             bModified = false;
@@ -100,6 +112,7 @@ namespace BdArtLibrairie
             InitcbListeStatutPaiement();
             InitTrvVentes();
             UpdateData();
+            SetControlesEditable(false);
             InitPrinter();
             // on crée les events des champs modifiables après les avoir renseignés
             if (bNewVente == true)
@@ -142,7 +155,6 @@ namespace BdArtLibrairie
             btnFermer.Clicked += OnBtnFermerClicked;
             btnFermer.Visible = false;
             btnChercheAlbum.Clicked += OnBtnChercheAlbumClicked;
-            SetControlesEditable(false);
             chkModifiable.Active = false;
             chkModifiable.Clicked += OnChkModifiableClicked;
             //
@@ -488,7 +500,7 @@ namespace BdArtLibrairie
                 Gdk.Cursor cursor = this.Window.Cursor;
                 this.Window.Cursor = new Gdk.Cursor(Gdk.CursorType.CoffeeMug);
                 txtInfo.Visible = true;
-                Global.AfficheInfo(txtInfo, "Impression des tickets de caisse...", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Impression des tickets de caisse...", Global.eCssClasses.InfoColorBlue);
                 //txtInfo.ShowAll();
                 try
                 {
@@ -526,7 +538,7 @@ namespace BdArtLibrairie
             this.Window.Cursor = new Gdk.Cursor(Gdk.CursorType.CoffeeMug);
             txtInfo.Visible = true;
             bool bResult = true;
-            Global.AfficheInfo(txtInfo, "Impression des tickets de caisse...", new Gdk.Color(0,0,255));
+            Global.AfficheInfo(ref txtInfo, "Impression des tickets de caisse...", Global.eCssClasses.InfoColorBlue);
             try
             {
                 bResult = ImprimerTicket(dtDateVente);
@@ -534,7 +546,7 @@ namespace BdArtLibrairie
             catch (Exception e)
             {
                 Global.ShowMessage("Impression tickets", e.Message, this);
-                Global.AfficheInfo(txtInfo, "Problème d'impression", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Problème d'impression", Global.eCssClasses.InfoColorRed);
                 bResult = false;
             }
             finally
@@ -567,7 +579,11 @@ namespace BdArtLibrairie
             if (chkPartCB.Active == true)
             {
                 txtPartCB.IsEditable = true;
-                // txtPartCB.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartCB.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPartCB.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                }
                 txtPartCB.CanFocus = true;
                 if (dblPartCheque + dblPartEspeces == 0)
                     dblPartCB = dblPrixTotal;
@@ -576,7 +592,11 @@ namespace BdArtLibrairie
             {
                 txtPartCB.IsEditable = false;
                 txtPartCB.CanFocus = false;
-                // txtPartCB.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartCB.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPartCB.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                }
                 dblPartCB = 0;
             }
             bModified = true;
@@ -588,7 +608,11 @@ namespace BdArtLibrairie
             {
                 txtPartCheque.IsEditable = true;
                 txtPartCheque.CanFocus = true;
-                // txtPartCheque.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartCheque.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPartCheque.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                }
                 if (dblPartCB + dblPartEspeces == 0)
                     dblPartCheque = dblPrixTotal;
             }
@@ -596,7 +620,11 @@ namespace BdArtLibrairie
             {
                 txtPartCheque.IsEditable = false;
                 txtPartCheque.CanFocus = false;
-                // txtPartCheque.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartCheque.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPartCheque.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                }
                 dblPartCheque = 0;
             }
             bModified = true;
@@ -608,7 +636,11 @@ namespace BdArtLibrairie
             {
                 txtPartEspeces.IsEditable = true;
                 txtPartEspeces.CanFocus = true;
-                // txtPartEspeces.ModifyBg(StateType.Normal, new Gdk.Color(255,255,255));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartEspeces.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+                    txtPartEspeces.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+                }
                 if (dblPartCB + dblPartCheque == 0)
                     dblPartEspeces = dblPrixTotal;
             }
@@ -616,7 +648,11 @@ namespace BdArtLibrairie
             {
                 txtPartEspeces.IsEditable = false;
                 txtPartEspeces.CanFocus = false;
-                // txtPartEspeces.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
+                if (Global.AppliquerCss == true)
+                {
+                    txtPartEspeces.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+                    txtPartEspeces.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                }
                 dblPartEspeces = 0;
             }
             bModified = true;
@@ -700,7 +736,7 @@ namespace BdArtLibrairie
             string strIsbnEan, strPaiement, strLieuVente, strTitre;
             double dblPrixVente;
             string strResult=string.Empty;
-            string strEndLine = "\r\n";
+            string strEndLine = Environment.NewLine;
             int nLargeurTot = 42;
             int nLongueurTitreTot = nLargeurTot - 7 - 1;
             int nLongueurTitre = nLongueurTitreTot - 2;
@@ -760,7 +796,7 @@ namespace BdArtLibrairie
                 if (printer == null)
                 {
                     txtInfo.Visible = true;
-                    Global.AfficheInfo(txtInfo, "L'imprimante n'est pas disponible", new Gdk.Color(255, 0, 0));
+                    Global.AfficheInfo(ref txtInfo, "L'imprimante n'est pas disponible", Global.eCssClasses.InfoColorRed);
                 }
             }
         }

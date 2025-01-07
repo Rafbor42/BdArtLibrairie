@@ -189,8 +189,8 @@ namespace BdArtLibrairie
 			catch (Exception e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 				bContinu = false;
 			}
 			finally
@@ -229,8 +229,8 @@ namespace BdArtLibrairie
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 					bContinu = false;
 				}
 				finally
@@ -270,8 +270,8 @@ namespace BdArtLibrairie
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 					bContinu = false;
 				}
 				finally
@@ -309,8 +309,8 @@ namespace BdArtLibrairie
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 				}
 				finally
 				{
@@ -810,8 +810,8 @@ namespace BdArtLibrairie
 			catch (IOException e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 				bContinu = false;
 			}
 			finally
@@ -859,8 +859,8 @@ namespace BdArtLibrairie
 				catch (IOException e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 					bContinu = false;
 				}
 				finally
@@ -1014,7 +1014,7 @@ namespace BdArtLibrairie
 				rowA["nStockFinal"] = Convert.ToInt16(rowA["nStockFinal"]) - nQteVendu;
 				// si stock final < 0
 				if (Convert.ToInt16(rowA["nStockFinal"]) < 0)
-					ErreurStockAlbums += strIsbnEan + "\t" + rowA["strTitre"] + "\r\n";
+					ErreurStockAlbums += strIsbnEan + "\t" + rowA["strTitre"] + Environment.NewLine;
 				//
 				if (string.Compare(rowV["strPaiement"].ToString(), Global.eMoyenPaiement.Offert.ToString()) == 0)
 				{
@@ -1150,8 +1150,8 @@ namespace BdArtLibrairie
 			catch (IOException e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 			}
 			finally
 			{
@@ -1275,8 +1275,8 @@ namespace BdArtLibrairie
 			catch (IOException e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 			}
 			finally
 			{
@@ -1341,7 +1341,7 @@ namespace BdArtLibrairie
         private void DoCopieFichierSauve(string strNomFichier, string strNomFichierWoExt, string strExt=".csv")
         {
 			string strFichier = Path.Combine(Global.DossierFichiers, strNomFichier);
-			string strDirSauve = Path.Combine(Global.DossierFichiers, "Sauve");
+			string strDirSauve = Path.Combine(Global.DossierFichiers, Global.DossierSauve);
 			string strFichierSauve = string.Empty;
 
 			try
@@ -1410,8 +1410,8 @@ namespace BdArtLibrairie
 			catch (IOException e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 			}
 			finally
 			{
@@ -1560,8 +1560,8 @@ namespace BdArtLibrairie
 			catch (IOException e)
 			{
 				if (strMsg != String.Empty)
-					strMsg += "\r\n";
-				strMsg += e.Message + "\r\n";
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 			}
 			finally
 			{
@@ -1588,17 +1588,17 @@ namespace BdArtLibrairie
 
 					while ( (strLigne = strmReader.ReadLine()) != null )
 					{
-						strContenu += strLigne + "\r\n";
+						strContenu += strLigne + Environment.NewLine;
 					}
 					//Global.ShowMessage("Ecarts Ventes", strContenu, pParentWindow);
-					LireFichierBox lireBox = new LireFichierBox(pParentWindow, strContenu);
+					LireFichierBox lireBox = new LireFichierBox(pParentWindow, this, strContenu);
 					lireBox.Run();
 				}
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 				}
 				finally
 				{
@@ -1622,9 +1622,26 @@ namespace BdArtLibrairie
 				catch (Exception e)
 				{
 					if (strMsg != String.Empty)
-						strMsg += "\r\n";
-					strMsg += e.Message + "\r\n";
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
 				}
+			}
+        }
+
+        internal void PurgerDossierSauve(ref string strMsg)
+        {
+            string strDirSauve = Path.Combine(Global.DossierFichiers, Global.DossierSauve);
+
+			try
+			{
+				if (Directory.Exists(strDirSauve) == true)
+					Directory.Delete(strDirSauve, true);
+			}
+			catch (Exception e)
+			{
+				if (strMsg != String.Empty)
+					strMsg += Environment.NewLine;
+				strMsg += e.Message + Environment.NewLine;
 			}
         }
     }

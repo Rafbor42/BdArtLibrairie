@@ -47,6 +47,11 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-select-all</property>
   </object>
+  <object class="GtkImage" id="image18">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-clear</property>
+  </object>
   <object class="GtkImage" id="image19">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -143,7 +148,7 @@
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="mnuFichierExportAlbums">
-                        <property name="label">Exporter fichier Albums</property>
+                        <property name="label">Exporter le fichier Albums</property>
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image2</property>
@@ -157,6 +162,22 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image5</property>
+                        <property name="use-stock">False</property>
+                        <property name="always-show-image">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mnuFichierPurgerSauve">
+                        <property name="label" translatable="yes">Purger le dossier backup</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image18</property>
                         <property name="use-stock">False</property>
                         <property name="always-show-image">True</property>
                       </object>
@@ -408,8 +429,8 @@
                             <property name="height-request">34</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
-                            <property name="tooltip-text" translatable="yes">Afficher les détails de la vente sélectionnée</property>
                             <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Afficher les détails de la vente sélectionnée</property>
                             <property name="image">image17</property>
                             <property name="always-show-image">True</property>
                           </object>
@@ -1080,9 +1101,9 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkCheckButton" id="chkUseFgColor">
-                            <property name="label" translatable="yes">Colorier le texte dans les messages d'infos.</property>
-                            <property name="width-request">376</property>
+                          <object class="GtkCheckButton" id="chkAppliquerCss">
+                            <property name="label" translatable="yes">Appliquer les styles CSS</property>
+                            <property name="width-request">238</property>
                             <property name="height-request">34</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
@@ -1091,7 +1112,7 @@
                           </object>
                           <packing>
                             <property name="x">22</property>
-                            <property name="y">483</property>
+                            <property name="y">334</property>
                           </packing>
                         </child>
                         <child>
@@ -1277,8 +1298,8 @@
                     <property name="height-request">34</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Réinitialiser tous les filtres</property>
                     <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Réinitialiser tous les filtres</property>
                     <property name="image">image4</property>
                     <property name="always-show-image">True</property>
                   </object>
@@ -1309,8 +1330,8 @@
                     <property name="height-request">34</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Afficher les écarts sur les ventes</property>
                     <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Afficher les écarts sur les ventes</property>
                     <property name="image">image20</property>
                     <property name="always-show-image">True</property>
                   </object>
@@ -1421,8 +1442,8 @@
                     <property name="height-request">34</property>
                     <property name="visible">True</property>
                     <property name="can-focus">True</property>
-                    <property name="tooltip-text" translatable="yes">Afficher les erreurs sur les stocks</property>
                     <property name="receives-default">True</property>
+                    <property name="tooltip-text" translatable="yes">Afficher les erreurs sur les stocks</property>
                     <property name="image">image6</property>
                     <property name="always-show-image">True</property>
                   </object>

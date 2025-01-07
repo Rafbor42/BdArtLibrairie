@@ -56,6 +56,7 @@ namespace BdArtLibrairie
         [UI] private MenuItem mnuFichierQuitter = null;
         [UI] private MenuItem mnuFichierResetVentes = null;
         [UI] private MenuItem mnuFichierRecharger = null;
+        [UI] private MenuItem mnuFichierPurgerSauve = null;
         [UI] private CheckMenuItem mnuAffichageTout = null;
         [UI] private MenuItem mnuAffichageVente = null;
         [UI] private MenuItem mnuAffichageAuteur = null;
@@ -79,7 +80,7 @@ namespace BdArtLibrairie
         [UI] private Button btnErreurEcartVentes = null;
         [UI] private CheckButton chkAFacturer = null;
         [UI] private CheckButton chkUseDialogForTicketPrint = null;
-        [UI] private CheckButton chkUseFgColor = null;
+        [UI] private CheckButton chkAppliquerCss = null;
         [UI] private CheckButton chkLaunchBaseFile = null;
         //
         [UI] private ComboBoxText cbListeLieuVente = null;
@@ -142,21 +143,6 @@ namespace BdArtLibrairie
             InitTrvAlbums();
             InitTrvAuteurs();
             //
-            // txtInfo.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPartAuteur.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPourcentAuteur.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtQteLibrairie.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtQteMediatheques.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtQteOffert.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalAFacturer.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalCB.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalCheques.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalEspeces.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalLibrairie.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalMediatheques.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtTotalVentes.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPathResult.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            //
             Pango.FontDescription tpf = new Pango.FontDescription();
 			tpf.Weight = Pango.Weight.Bold;
             btnNouvelleVente.ModifyFont(tpf);
@@ -164,6 +150,9 @@ namespace BdArtLibrairie
             Global.LireConfigLocal(ref strMsg);
 			if (strMsg != string.Empty)
                 strMsg = "Lecture configuration: " + strMsg + "\n\n";
+            // styles css
+            if (Global.AppliquerCss == true)
+                InitCss();
             // events
             btnNouvelleVente.Clicked += OnBtnNouvelleVenteClicked;
             btnReset.Clicked += OnBtnResetClicked;
@@ -173,8 +162,8 @@ namespace BdArtLibrairie
             btnInfoErreurQtes.Clicked += OnBtnInfoErreurQtesClicked;
             chkUseDialogForTicketPrint.Active = Global.UseDialogForTicketPrint;
             chkUseDialogForTicketPrint.Clicked += OnChkUseDialogForTicketPrintClicked;
-            chkUseFgColor.Active = Global.UseFgColor;
-            chkUseFgColor.Clicked += OnChkUseFgColorClicked;
+            chkAppliquerCss.Active = Global.AppliquerCss;
+            chkAppliquerCss.Clicked += OnChkAppliquerCssClicked;
             chkLaunchBaseFile.Active = Global.LaunchBaseFile;
             chkLaunchBaseFile.Clicked += OnChkLaunchBaseFileClicked;
             btnAjouterAuteur.Clicked += OnBtnAjouterAuteurClicked;
@@ -215,6 +204,7 @@ namespace BdArtLibrairie
             mnuFichierQuitter.Activated += OnMnuFichierQuitter;
             mnuFichierResetVentes.Activated += OnMnuFichierResetVentes;
             mnuFichierRecharger.Activated += OnMnuFichierRecharger;
+            mnuFichierPurgerSauve.Activated += OnMnuFichierPurgerSauve;
             mnuAffichageTout.Toggled += OnMnuAffichageTout;
             mnuAffichageVente.Activated += OnMnuAffichageVente;
             mnuAffichageAuteur.Activated += OnMnuAffichageAuteur;
@@ -242,9 +232,9 @@ namespace BdArtLibrairie
                 Global.DownloadFile(uriSource, strFileDest, this);
             }
             if (strMsg != string.Empty)
-                Global.AfficheInfo(txtInfo, "Erreur lors du chargement des fichiers", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Erreur lors du chargement des fichiers", Global.eCssClasses.InfoColorRed);
             else
-                Global.AfficheInfo(txtInfo, "Tous les fichiers ont été correctement chargés", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Tous les fichiers ont été chargés", Global.eCssClasses.InfoColorBlue);
             //
             InitCbListeLieuVente();
             InitCbListeAuteurs();
@@ -258,6 +248,84 @@ namespace BdArtLibrairie
             Global.ConfigModified = false;
         }
 
+        private void OnMnuFichierPurgerSauve(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+
+            // suppression dossier de sauvegarde
+            if (Global.Confirmation(this, "Purge sauvegarde", "Etes-vous certain de vouloir purger le dossier de sauvegarde ?") == true)
+            {
+                datas.PurgerDossierSauve(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, purge dossier:", strMsg, this);
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la purge du dossier de sauvegarde", Global.eCssClasses.InfoColorRed);
+                }
+                else
+                    Global.AfficheInfo(ref txtInfo, "Le dossier de sauvegarde a été purgé", Global.eCssClasses.InfoColorBlue);
+            }
+        }
+
+        private void InitCss()
+        {
+            // champs non éditables
+            Global.AddCssProvider(ref txtInfo, Global.eCssClasses.InfoColorBlue);
+            Global.AddCssProvider(ref txtPartAuteur, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtPourcentAuteur, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtQteLibrairie, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtQteMediatheques, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtQteOffert, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalAFacturer, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalCB, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalCheques, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalEspeces, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalLibrairie, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalMediatheques, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtTotalVentes, Global.eCssClasses.EntryNotEditable);
+            Global.AddCssProvider(ref txtPathResult, Global.eCssClasses.EntryNotEditable);
+            // champs éditables
+            Global.AddCssProvider(ref txtPrinterFilePath, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtUsbDevicePath, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtNombreTickets, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtTempo, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtNomFestival, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtPartAuteurDefaut, Global.eCssClasses.EntryEditable);
+            Global.AddCssProvider(ref txtCodeIsbnEan, Global.eCssClasses.EntryEditable);
+        }
+
+        // Suppression des classes CSS affectées aux widgets.
+        private void RemoveCssClasses()
+        {
+            // champs non éditables
+            // le champ txtInfo contient soit InfoColorBlue, soit InfoColorRed
+			if (txtInfo.StyleContext.HasClass(Global.eCssClasses.InfoColorBlue.ToString()) == true)
+				txtInfo.StyleContext.RemoveClass(Global.eCssClasses.InfoColorBlue.ToString());
+			else
+				txtInfo.StyleContext.RemoveClass(Global.eCssClasses.InfoColorRed.ToString());
+            //
+            txtPartAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtPourcentAuteur.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteLibrairie.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteMediatheques.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteOffert.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalAFacturer.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalCB.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalCheques.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalEspeces.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalLibrairie.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalMediatheques.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalVentes.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtPathResult.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            // champs éditables
+            txtPrinterFilePath.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtUsbDevicePath.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtNombreTickets.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtTempo.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtNomFestival.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtPartAuteurDefaut.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtCodeIsbnEan.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+        }
+
         private void OnBtnErreurEcartVentes(object sender, EventArgs e)
         {
             string strMsg = string.Empty;
@@ -267,6 +335,7 @@ namespace BdArtLibrairie
             {
                 Global.ShowMessage("BdArtLibrairie, lecture fichier EcartsVentes:", strMsg, this);
             }
+            CheckErreurEcartVentes();
         }
 
         private void OnBtnBilanVentesClicked(object sender, EventArgs e)
@@ -319,16 +388,16 @@ namespace BdArtLibrairie
             if (datas.lstoreAlbums.GetIter(out iter, chemin) == true)
             {
                 strCode = datas.lstoreAlbums.GetValue(iter, Convert.ToInt16(Global.eTrvAlbumsCols.CodeIsbnEan)).ToString();
-                if (Global.Confirmation(this, "Suppression Album", "Etes-vous certain de vouloir supprimer l'album " + strCode + "\r\n") == false)
+                if (Global.Confirmation(this, "Suppression Album", "Etes-vous certain de vouloir supprimer l'album " + strCode + Environment.NewLine) == false)
                     return;
                 // on vérifie d'abord si l'album a déjà été vendu
                 foreach(DataRow rowV in datas.dtTableVentes.Select("strIsbnEan='" + strCode + "'"))
                 {
-                    strMsg += "Vente:" + rowV["nNumero"].ToString() + " Rang:" + rowV["nRang"].ToString() + "\r\n";
+                    strMsg += "Vente:" + rowV["nNumero"].ToString() + " Rang:" + rowV["nRang"].ToString() + Environment.NewLine;
                 }
                 if (strMsg != string.Empty)
                 {
-                    strMsg2 = "L'album ne peut pas être supprimé car déjà présent dans les ventes suivantes:\r\n" + strMsg;
+                    strMsg2 = "L'album ne peut pas être supprimé car déjà présent dans les ventes suivantes:" + Environment.NewLine + strMsg;
                     Global.ShowMessage("Suppression album", strMsg2, this, MessageType.Error);
                 }
                 else
@@ -339,10 +408,10 @@ namespace BdArtLibrairie
                     if (strMsg != string.Empty)
                     {
                         Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+                        Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
                     }
                     else
-                        Global.AfficheInfo(txtInfo, "L'album a été supprimé", new Gdk.Color(0,0,255));
+                        Global.AfficheInfo(ref txtInfo, "L'album a été supprimé", Global.eCssClasses.InfoColorBlue);
                 }
             }
         }
@@ -375,10 +444,10 @@ namespace BdArtLibrairie
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                    Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
                 }
                 else
-                    Global.AfficheInfo(txtInfo, "L'album a été ajouté", new Gdk.Color(0,0,255));
+                    Global.AfficheInfo(ref txtInfo, "L'album a été ajouté", Global.eCssClasses.InfoColorBlue);
             }
         }
 
@@ -402,7 +471,7 @@ namespace BdArtLibrairie
             if (datas.lstoreAuteurs.GetIter(out iter, chemin) == true)
             {
                 nIdAuteur = Convert.ToInt16(datas.lstoreAuteurs.GetValue(iter, Convert.ToInt16(Global.eTrvAuteursCols.IdAuteur)));
-                if (Global.Confirmation(this, "Suppression Auteur", "Etes-vous certain de vouloir supprimer l'auteur n°" + nIdAuteur.ToString() + "\r\n") == false)
+                if (Global.Confirmation(this, "Suppression Auteur", "Etes-vous certain de vouloir supprimer l'auteur n°" + nIdAuteur.ToString() + Environment.NewLine) == false)
                     return;
                 // on vérifie que l'auteur n'a pas d'albums
                 foreach (DataRow row in datas.dtTableAlbums.Select("nIdAuteur=" + nIdAuteur.ToString()))
@@ -414,10 +483,10 @@ namespace BdArtLibrairie
                     if (strMsg != string.Empty)
                     {
                         Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                        Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
                     }
                     else
-                        Global.AfficheInfo(txtInfo, "Les auteurs ont été mis à jour", new Gdk.Color(0,0,255));
+                        Global.AfficheInfo(ref txtInfo, "Les auteurs ont été mis à jour", Global.eCssClasses.InfoColorBlue);
                 }
                 else
                     Global.ShowMessage("Suppression Auteur", "Cet auteur ne peut pas être supprimé car il possède " + nNbAlbums.ToString() + " albums", this);
@@ -439,10 +508,10 @@ namespace BdArtLibrairie
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                    Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
                 }
                 else
-                    Global.AfficheInfo(txtInfo, "L'auteur a été ajouté", new Gdk.Color(0,0,255));
+                    Global.AfficheInfo(ref txtInfo, "L'auteur a été ajouté", Global.eCssClasses.InfoColorBlue);
             }
         }
 
@@ -488,10 +557,10 @@ namespace BdArtLibrairie
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
             }
             else
-                Global.AfficheInfo(txtInfo, "Les albums ont été mis à jour", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Les albums ont été mis à jour", Global.eCssClasses.InfoColorBlue);
             CheckErreurEcartVentes();
         }
 
@@ -537,10 +606,10 @@ namespace BdArtLibrairie
                     if (strMsg != string.Empty)
                     {
                         Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                        Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", new Gdk.Color(255,0,0));
+                        Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
                     }
                     else
-                        Global.AfficheInfo(txtInfo, "Les auteurs ont été mis à jour", new Gdk.Color(0,0,255));
+                        Global.AfficheInfo(ref txtInfo, "Les auteurs ont été mis à jour", Global.eCssClasses.InfoColorBlue);
                 }
             }
         }
@@ -556,7 +625,10 @@ namespace BdArtLibrairie
             {
                 strMsg = "Lecture fichiers: " + strMsg;
                 Global.ShowMessage("Erreurs au chargement:", strMsg, this);
+                Global.AfficheInfo(ref txtInfo, "Problème lors du chargement des fichiers", Global.eCssClasses.InfoColorRed);
             }
+            else
+                Global.AfficheInfo(ref txtInfo, "Les fichiers ont été chargés", Global.eCssClasses.InfoColorBlue);
             InitCbListeAuteurs();
             DoCalcul();
             UpdateData();
@@ -592,10 +664,10 @@ namespace BdArtLibrairie
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, copie fichiers:", strMsg, this);
-                Global.AfficheInfo(txtInfo, "Problème lors de la copie des fichiers sur la clé.", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Problème lors de la copie des fichiers sur la clé.", Global.eCssClasses.InfoColorRed);
             }
             else
-                Global.AfficheInfo(txtInfo, "Les fichiers ont été copiés la clé USB", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Les fichiers ont été copiés sur la clé USB", Global.eCssClasses.InfoColorBlue);
         }
 
         private void OnMnuFichierQuitter(object sender, EventArgs a)
@@ -673,7 +745,7 @@ namespace BdArtLibrairie
 
         private void OnBtnInfoErreurQtesClicked(object sender, EventArgs e)
         {
-            Global.ShowMessage("Erreur quantités", "Le stock final des albums suivants est négatif:\r\n\r\n" + datas.ErreurStockAlbums, this);
+            Global.ShowMessage("Erreur quantités", "Le stock final des albums suivants est négatif:" + Environment.NewLine + Environment.NewLine + datas.ErreurStockAlbums, this);
         }
 
         private void DoCalculAuteur(string strAuteur)
@@ -1042,10 +1114,10 @@ namespace BdArtLibrairie
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                    Global.AfficheInfo(txtInfo, "Problème lors de la mise à jour des ventes. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des ventes. Vérifier les fichiers", Global.eCssClasses.InfoColorRed);
                 }
                 else
-                    Global.AfficheInfo(txtInfo, "Les ventes ont été mises à jour", new Gdk.Color(0,0,255));
+                    Global.AfficheInfo(ref txtInfo, "Les ventes ont été mises à jour", Global.eCssClasses.InfoColorBlue);
             }
         }
 
@@ -1070,10 +1142,10 @@ namespace BdArtLibrairie
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                Global.AfficheInfo(txtInfo, "Problème lors de l'enregistrement de la vente. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Problème lors de l'enregistrement de la vente. Vérifier les fichiers", Global.eCssClasses.InfoColorRed);
             }
             else
-                Global.AfficheInfo(txtInfo, "La vente a été enregistrée", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "La vente a été enregistrée", Global.eCssClasses.InfoColorBlue);
         }
 
         // Double-clic sur une ligne.
@@ -1123,10 +1195,10 @@ namespace BdArtLibrairie
                     if (strMsg != string.Empty)
                     {
                         Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                        Global.AfficheInfo(txtInfo, "Problème lors de l'enregistrement de la vente. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                        Global.AfficheInfo(ref txtInfo, "Problème lors de l'enregistrement de la vente. Vérifier les fichiers", Global.eCssClasses.InfoColorRed);
                     }
                     else
-                        Global.AfficheInfo(txtInfo, "La vente a été mise à jour", new Gdk.Color(0,0,255));
+                        Global.AfficheInfo(ref txtInfo, "La vente a été mise à jour", Global.eCssClasses.InfoColorBlue);
                 }
             }
         }
@@ -1142,7 +1214,7 @@ namespace BdArtLibrairie
             cbListeLieuVente.Active = 0;
             cbListeAuteurs.Active = 0;
             chkAFacturer.Active = false;
-            Global.AfficheInfo(txtInfo, "Les filtres ont été réinitialisés", new Gdk.Color(0,0,255));
+            Global.AfficheInfo(ref txtInfo, "Les filtres ont été réinitialisés", Global.eCssClasses.InfoColorBlue);
         }
 
         // Interception de la touche Enter
@@ -1177,11 +1249,11 @@ namespace BdArtLibrairie
             if (strMsg != string.Empty)
             {
                 Global.ShowMessage("BdArtLibrairie, export albums:", strMsg, this);
-                Global.AfficheInfo(txtInfo, "Problème lors de l'export des albums. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Problème lors de l'export des albums. Vérifier les fichiers", Global.eCssClasses.InfoColorRed);
             }
             else
             {
-                Global.AfficheInfo(txtInfo, "Les albums ont été exportés", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Les albums ont été exportés", Global.eCssClasses.InfoColorBlue);
                 if (Global.LaunchBaseFile == true)
                 {
                     // lancement de la base de données dans un process
@@ -1211,13 +1283,13 @@ namespace BdArtLibrairie
             {
                 trvVentes.Columns[Convert.ToInt16(Global.eTrvVentesCols.Numero)].Visible = true;
                 trvVentes.Columns[Convert.ToInt16(Global.eTrvVentesCols.Rang)].Visible = true;
-                Global.AfficheInfo(txtInfo, "Toutes les colonnes sont affichées", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Toutes les colonnes sont affichées", Global.eCssClasses.InfoColorBlue);
             }
             else
             {
                 trvVentes.Columns[Convert.ToInt16(Global.eTrvVentesCols.Numero)].Visible = false;
                 trvVentes.Columns[Convert.ToInt16(Global.eTrvVentesCols.Rang)].Visible = false;
-                Global.AfficheInfo(txtInfo, "Certaines colonnes ont été masquées", new Gdk.Color(0,0,255));
+                Global.AfficheInfo(ref txtInfo, "Certaines colonnes ont été masquées", Global.eCssClasses.InfoColorBlue);
             }
         }
 
@@ -1239,15 +1311,20 @@ namespace BdArtLibrairie
             Global.ConfigModified = true;
         }
 
-        private void OnChkUseFgColorClicked(object sender, EventArgs a)
+        private void OnChkAppliquerCssClicked(object sender, EventArgs a)
         {
-            Global.UseFgColor = chkUseFgColor.Active;
+            Global.AppliquerCss = chkAppliquerCss.Active;
             Global.ConfigModified = true;
+            // on réapplique ou on supprime les classes CSS
+            if (Global.AppliquerCss == true)
+                InitCss();
+            else
+                RemoveCssClasses();
         }
 
         private void OnMnuFichierResetVentes(object sender, EventArgs a)
         {
-            string strMsg = "Etes-vous certain de vouloir supprimer toutes les ventes ?\r\n";
+            string strMsg = "Etes-vous certain de vouloir supprimer toutes les ventes ?" + Environment.NewLine;
             strMsg += "\r\nSi oui, vous devrez saisir un mot de passe pour que l'action soit effectuée";
             if (Global.Confirmation(this, "RAZ ventes", strMsg))
             {
@@ -1278,22 +1355,22 @@ namespace BdArtLibrairie
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
-                    Global.AfficheInfo(txtInfo, "Problème lors de l'enregistrement des ventes. Vérifier les fichiers", new Gdk.Color(255,0,0));
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de l'enregistrement des ventes. Vérifier les fichiers", Global.eCssClasses.InfoColorRed);
                 }
                 else
-                    Global.AfficheInfo(txtInfo, "Toutes les ventes ont été supprimées", new Gdk.Color(0,0,255));
+                    Global.AfficheInfo(ref txtInfo, "Toutes les ventes ont été supprimées", Global.eCssClasses.InfoColorBlue);
                 strMsg = string.Empty;
                 datas.SupprimerFichierEcartVentes(ref strMsg);
                 if (strMsg != string.Empty)
                 {
                     Global.ShowMessage("BdArtLibrairie, supprimer fichier:", strMsg, this);
-                    Global.AfficheInfo(txtInfo, "Problème lors de la suppression du fichier EcartsVentes.txt", new Gdk.Color(255,0,0));
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la suppression du fichier EcartsVentes.txt", Global.eCssClasses.InfoColorRed);
                 }
                 else
                     CheckErreurEcartVentes();
             }
             else
-                Global.AfficheInfo(txtInfo, "Password incorrect. RAZ des ventes annulé", new Gdk.Color(255,0,0));
+                Global.AfficheInfo(ref txtInfo, "Password incorrect. RAZ des ventes annulé", Global.eCssClasses.InfoColorRed);
             //
             txtPassword.Visible = false;
         }
