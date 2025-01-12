@@ -108,7 +108,7 @@
     <property name="stock">gtk-add</property>
   </object>
   <object class="GtkWindow" id="MainWindow">
-    <property name="width-request">1024</property>
+    <property name="width-request">1100</property>
     <property name="height-request">700</property>
     <property name="can-focus">False</property>
     <child>
@@ -552,7 +552,7 @@
                             <property name="height-request">34</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">Médiatthèque (€)</property>
+                            <property name="label" translatable="yes">Médiathèque (€)</property>
                             <property name="justify">right</property>
                             <property name="xalign">0.949999988079071</property>
                           </object>
@@ -1223,6 +1223,73 @@
                           <packing>
                             <property name="x">165</property>
                             <property name="y">295</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="txtVenteBoxWidth">
+                            <property name="width-request">65</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="width-chars">4</property>
+                            <property name="max-width-chars">4</property>
+                          </object>
+                          <packing>
+                            <property name="x">933</property>
+                            <property name="y">254</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="width-request">148</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Largeur (720-1000 px)</property>
+                          </object>
+                          <packing>
+                            <property name="x">783</property>
+                            <property name="y">254</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkEntry" id="txtVenteBoxHeight">
+                            <property name="width-request">65</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="width-chars">4</property>
+                            <property name="max-width-chars">4</property>
+                          </object>
+                          <packing>
+                            <property name="x">933</property>
+                            <property name="y">295</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="width-request">148</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Hauteur (470-700 px)</property>
+                          </object>
+                          <packing>
+                            <property name="x">784</property>
+                            <property name="y">295</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="width-request">135</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Fenêtre des ventes:</property>
+                          </object>
+                          <packing>
+                            <property name="x">784</property>
+                            <property name="y">225</property>
                           </packing>
                         </child>
                       </object>

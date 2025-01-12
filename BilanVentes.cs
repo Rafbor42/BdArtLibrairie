@@ -128,7 +128,7 @@ namespace BdArtLibrairie
             TreeViewColumn colAuteur = new TreeViewColumn();
             colAuteur.Title = "Auteur";
             TreeViewColumn colCommissions = new TreeViewColumn();
-            colCommissions.Title = "Part BD'Art (€)";
+            colCommissions.Title = "Part " + Global.NomFestival + " (€)";
             //
             trvStatsCommissions.AppendColumn(colAuteur);
             trvStatsCommissions.AppendColumn(colCommissions);

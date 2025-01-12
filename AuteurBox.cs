@@ -66,14 +66,18 @@ namespace BdArtLibrairie
                 this.Title = "Nouvel Auteur";
                 chkModifiable.Visible = false;
             }
-            //
+            // ajout des providers css
+            txtIdAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPrenomAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtNomAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPourcentage.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             if (Global.AppliquerCss == true)
             {
                 // champs non éditables par défaut
-                Global.AddCssProvider(ref txtIdAuteur, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPrenomAuteur, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtNomAuteur, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPourcentage, Global.eCssClasses.EntryNotEditable);
+                txtIdAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPrenomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtNomAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPourcentage.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
             }
             //
             mdatas = datas;

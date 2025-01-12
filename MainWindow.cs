@@ -108,6 +108,8 @@ namespace BdArtLibrairie
         [UI] private TextView txtPathResult = null;
         [UI] private Entry txtNomFestival = null;
         [UI] private Entry txtPartAuteurDefaut = null;
+        [UI] private Entry txtVenteBoxWidth = null;
+        [UI] private Entry txtVenteBoxHeight = null;
         //
         [UI] private TreeView trvVentes = null;
         [UI] private TreeView trvAlbums = null;
@@ -151,8 +153,7 @@ namespace BdArtLibrairie
 			if (strMsg != string.Empty)
                 strMsg = "Lecture configuration: " + strMsg + "\n\n";
             // styles css
-            if (Global.AppliquerCss == true)
-                InitCss();
+            InitCss();
             // events
             btnNouvelleVente.Clicked += OnBtnNouvelleVenteClicked;
             btnReset.Clicked += OnBtnResetClicked;
@@ -162,7 +163,6 @@ namespace BdArtLibrairie
             btnInfoErreurQtes.Clicked += OnBtnInfoErreurQtesClicked;
             chkUseDialogForTicketPrint.Active = Global.UseDialogForTicketPrint;
             chkUseDialogForTicketPrint.Clicked += OnChkUseDialogForTicketPrintClicked;
-            chkAppliquerCss.Active = Global.AppliquerCss;
             chkAppliquerCss.Clicked += OnChkAppliquerCssClicked;
             chkLaunchBaseFile.Active = Global.LaunchBaseFile;
             chkLaunchBaseFile.Clicked += OnChkLaunchBaseFileClicked;
@@ -196,6 +196,10 @@ namespace BdArtLibrairie
             txtNomFestival.Activated += OnTxtNomFestivalActivated;
             txtPartAuteurDefaut.FocusOutEvent += OnTxtPartAuteurDefautFocusOut;
             txtPartAuteurDefaut.Changed += OnTxtPartAuteurDefautChanged;
+            txtVenteBoxWidth.FocusOutEvent += OnTxtVenteBoxWidthFocusOut;
+            txtVenteBoxWidth.Changed += OnTxtVenteBoxWidthChanged;
+            txtVenteBoxHeight.FocusOutEvent += OnTxtVenteBoxHeightFocusOut;
+            txtVenteBoxHeight.Changed += OnTxtVenteBoxHeightChanged;
             //
             DeleteEvent += delegate { OnMnuFichierQuitter(this, new EventArgs()); };
             //
@@ -238,6 +242,7 @@ namespace BdArtLibrairie
             //
             InitCbListeLieuVente();
             InitCbListeAuteurs();
+            chkAppliquerCss.Active = Global.AppliquerCss;// déclenche l'event si true
             DoCalcul();
             UpdateData();
             datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
@@ -246,6 +251,46 @@ namespace BdArtLibrairie
             //
             CheckErreurEcartVentes();
             Global.ConfigModified = false;
+        }
+
+        private void OnTxtVenteBoxHeightChanged(object sender, EventArgs e)
+        {
+            txtVenteBoxHeight.Changed -= OnTxtVenteBoxHeightChanged;
+            Global.CheckValeurInt16(this, sender);
+            txtVenteBoxHeight.Changed += OnTxtVenteBoxHeightChanged;
+        }
+
+        private void OnTxtVenteBoxHeightFocusOut(object o, FocusOutEventArgs args)
+        {
+            Int16 nVal;
+            txtVenteBoxHeight.FocusOutEvent -= OnTxtVenteBoxHeightFocusOut;
+            nVal = Global.GetValueIntOrZero(this, o, true);
+            if (nVal < 470) nVal = 470;
+            if (nVal > 700) nVal = 700;
+            Global.VenteBoxHeight = nVal;
+            txtVenteBoxHeight.Text = Global.VenteBoxHeight.ToString();
+            txtVenteBoxHeight.FocusOutEvent += OnTxtVenteBoxHeightFocusOut;
+            Global.ConfigModified = true;
+        }
+
+        private void OnTxtVenteBoxWidthChanged(object sender, EventArgs e)
+        {
+            txtVenteBoxWidth.Changed -= OnTxtVenteBoxWidthChanged;
+            Global.CheckValeurInt16(this, sender);
+            txtVenteBoxWidth.Changed += OnTxtVenteBoxWidthChanged;
+        }
+
+        private void OnTxtVenteBoxWidthFocusOut(object o, FocusOutEventArgs args)
+        {
+            Int16 nVal;
+            txtVenteBoxWidth.FocusOutEvent -= OnTxtVenteBoxWidthFocusOut;
+            nVal = Global.GetValueIntOrZero(this, o, true);
+            if (nVal < 720) nVal = 720;
+            if (nVal > 1000) nVal = 1000;
+            Global.VenteBoxWidth = nVal;
+            txtVenteBoxWidth.Text = Global.VenteBoxWidth.ToString();
+            txtVenteBoxWidth.FocusOutEvent += OnTxtVenteBoxWidthFocusOut;
+            Global.ConfigModified = true;
         }
 
         private void OnMnuFichierPurgerSauve(object sender, EventArgs e)
@@ -266,31 +311,74 @@ namespace BdArtLibrairie
             }
         }
 
+        // Ajout des providers CSS
         private void InitCss()
         {
             // champs non éditables
-            Global.AddCssProvider(ref txtInfo, Global.eCssClasses.InfoColorBlue);
-            Global.AddCssProvider(ref txtPartAuteur, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtPourcentAuteur, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtQteLibrairie, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtQteMediatheques, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtQteOffert, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalAFacturer, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalCB, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalCheques, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalEspeces, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalLibrairie, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalMediatheques, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtTotalVentes, Global.eCssClasses.EntryNotEditable);
-            Global.AddCssProvider(ref txtPathResult, Global.eCssClasses.EntryNotEditable);
+            txtInfo.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPartAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPourcentAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteLibrairie.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteMediatheques.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteOffert.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalAFacturer.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalCB.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalCheques.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalEspeces.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalLibrairie.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalMediatheques.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTotalVentes.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPathResult.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             // champs éditables
-            Global.AddCssProvider(ref txtPrinterFilePath, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtUsbDevicePath, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtNombreTickets, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtTempo, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtNomFestival, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtPartAuteurDefaut, Global.eCssClasses.EntryEditable);
-            Global.AddCssProvider(ref txtCodeIsbnEan, Global.eCssClasses.EntryEditable);
+            txtPrinterFilePath.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtUsbDevicePath.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtNombreTickets.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTempo.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtNomFestival.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPartAuteurDefaut.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtCodeIsbnEan.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtVenteBoxWidth.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtVenteBoxHeight.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            // listebox
+            cbListeAuteurs.Child.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            cbListeLieuVente.Child.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            // boutons
+            btnReset.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+        }
+
+        private void AddCssClass()
+        {
+            // champs non éditables
+            txtInfo.StyleContext.AddClass(Global.eCssClasses.InfoColorBlue.ToString());
+            txtPartAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtPourcentAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteLibrairie.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteMediatheques.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtQteOffert.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalAFacturer.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalCB.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalCheques.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalEspeces.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalLibrairie.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalMediatheques.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtTotalVentes.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtPathResult.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            // champs éditables
+            txtPrinterFilePath.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtUsbDevicePath.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtNombreTickets.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtTempo.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtNomFestival.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtPartAuteurDefaut.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtCodeIsbnEan.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtVenteBoxWidth.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            txtVenteBoxHeight.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
+            // listebox
+            if (string.Compare(cbListeAuteurs.ActiveText, "Tous") != 0)
+                cbListeAuteurs.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
+
+            if (string.Compare(cbListeLieuVente.ActiveText, "Tous") != 0)
+                cbListeLieuVente.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
         }
 
         // Suppression des classes CSS affectées aux widgets.
@@ -324,6 +412,11 @@ namespace BdArtLibrairie
             txtNomFestival.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
             txtPartAuteurDefaut.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
             txtCodeIsbnEan.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtVenteBoxWidth.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            txtVenteBoxHeight.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
+            // listbox: contient uniquement la classe ListesColors
+            Global.RemoveCssClass(ref cbListeAuteurs, Global.eCssClasses.ListesColors);
+            Global.RemoveCssClass(ref cbListeLieuVente, Global.eCssClasses.ListesColors);
         }
 
         private void OnBtnErreurEcartVentes(object sender, EventArgs e)
@@ -600,6 +693,7 @@ namespace BdArtLibrairie
                 if (auteurBox.rResponse == ResponseType.Apply)
                 {
                     datas.DoRefreshLstoreAuteurs();
+                    InitCbListeAuteurs();
                     DoCalcul();
                     UpdateData();
                     datas.EnregistrerFichierAuteurs(ref strMsg);
@@ -652,7 +746,6 @@ namespace BdArtLibrairie
         {
             Global.NomFestival = txtNomFestival.Text;
             this.Title = "Librairie " + Global.NomFestival;
-            btnFindUsbDevice.GrabFocus();
             Global.ConfigModified = true;
         }
 
@@ -711,6 +804,8 @@ namespace BdArtLibrairie
             txtNomFestival.Text = Global.NomFestival;
             this.Title = "Librairie " + Global.NomFestival;
             txtPartAuteurDefaut.Text = Global.PartAuteurDefaut.ToString();
+            txtVenteBoxWidth.Text = Global.VenteBoxWidth.ToString();
+            txtVenteBoxHeight.Text = Global.VenteBoxHeight.ToString();
         }
 
         // Calculs.
@@ -1051,6 +1146,14 @@ namespace BdArtLibrairie
                 trvAlbums.Columns[Convert.ToInt16(Global.eTrvAlbumsCols.QteVenduLibrairie)].Visible = false;
                 trvAlbums.Columns[Convert.ToInt16(Global.eTrvAlbumsCols.QteVenduMediatheque)].Visible = true;
             }
+            //
+            if (Global.AppliquerCss == true)
+            {
+                if (string.Compare(cbListeLieuVente.ActiveText, "Tous") == 0)
+                    Global.RemoveCssClass(ref cbListeLieuVente, Global.eCssClasses.ListesColors);
+                else
+                    cbListeLieuVente.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
+            }
         }
 
         private void InitCbListeAuteurs()
@@ -1068,6 +1171,18 @@ namespace BdArtLibrairie
             cbListeAuteurs.Active = 0;
 
             cbListeAuteurs.Changed += OnCbListeAuteursChanged;
+            UpdateCssAuteur();
+        }
+
+        private void UpdateCssAuteur()
+        {
+            if (Global.AppliquerCss == true)
+            {
+                if (string.Compare(cbListeAuteurs.ActiveText, "Tous") == 0)
+                    Global.RemoveCssClass(ref cbListeAuteurs, Global.eCssClasses.ListesColors);
+                else
+                    cbListeAuteurs.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
+            }
         }
 
         private void OnCbListeAuteursChanged(object sender, EventArgs a)
@@ -1077,6 +1192,8 @@ namespace BdArtLibrairie
             UpdateData();
             datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
             datas.DoFiltreDtTableVentes(cbListeAuteurs.ActiveText);
+            //
+            UpdateCssAuteur();
         }
 
         private void Window_DeleteEvent(object sender, DeleteEventArgs a)
@@ -1315,9 +1432,9 @@ namespace BdArtLibrairie
         {
             Global.AppliquerCss = chkAppliquerCss.Active;
             Global.ConfigModified = true;
-            // on réapplique ou on supprime les classes CSS
+            // on applique ou on supprime les classes CSS
             if (Global.AppliquerCss == true)
-                InitCss();
+                AddCssClass();
             else
                 RemoveCssClasses();
         }
@@ -1383,7 +1500,6 @@ namespace BdArtLibrairie
         private void OnTxtPrinterFilePathFocusOut(object sender, EventArgs a)
         {
             Global.PrinterFilePath = txtPrinterFilePath.Text;
-            btnFindPrinter.GrabFocus();
             Global.ConfigModified = true;
         }
 
@@ -1395,8 +1511,6 @@ namespace BdArtLibrairie
         private void OnTxtUsbDevicePathFocusOut(object o, EventArgs a)
         {
             Global.UsbDevicePath = txtUsbDevicePath.Text;
-            btnFindUsbDevice.GrabFocus();
-            //Global.ShowMessage("", Global.UsbDevicePath, this);
             Global.ConfigModified = true;
         }
 
@@ -1416,7 +1530,6 @@ namespace BdArtLibrairie
             if (nVal > 3) nVal = 3;
             Global.NombreTickets = nVal;
             UpdateData();
-            btnFindPrinter.GrabFocus();
             txtNombreTickets.FocusOutEvent += OnTxtNombreTicketsFocusOut;
             Global.ConfigModified = true;
         }
@@ -1437,7 +1550,6 @@ namespace BdArtLibrairie
             if (nVal > 5000) nVal = 5000;
             Global.Tempo = nVal;
             UpdateData();
-            btnFindPrinter.GrabFocus();
             txtTempo.FocusOutEvent += OnTxtTempoFocusOut;
             Global.ConfigModified = true;
         }

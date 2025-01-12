@@ -82,6 +82,8 @@ namespace BdArtLibrairie
         {
             this.TransientFor = ParentWindow;
             this.SetPosition(WindowPosition.CenterOnParent);
+            this.DefaultWidth = Global.VenteBoxWidth;
+            this.DefaultHeight = Global.VenteBoxHeight;
             this.Modal = true;
             if (bNew == true)
             {
@@ -89,17 +91,18 @@ namespace BdArtLibrairie
                 chkModifiable.Visible = false;
             }
             txtInfo.Visible = false;
-            //
+            // styles css
+            InitCss();
             if (Global.AppliquerCss == true)
             {
                 // champs non éditables par défaut
-                Global.AddCssProvider(ref txtCoutTotal, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPartCB, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPartCheque, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPartEspeces, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtAjouteAlbum, Global.eCssClasses.EntryNotEditable);
+                txtCoutTotal.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPartCB.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPartCheque.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPartEspeces.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtAjouteAlbum.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
 
-                Global.AddCssProvider(ref txtInfo, Global.eCssClasses.InfoColorBlue);
+                txtInfo.StyleContext.AddClass(Global.eCssClasses.InfoColorBlue.ToString());
             }
             //
             mdatas = datas;
@@ -139,6 +142,21 @@ namespace BdArtLibrairie
             txtAjouteAlbum.GrabFocus();
         }
 
+        // Ajout des providers CSS
+        private void InitCss()
+        {
+            // champs non éditables
+            txtCoutTotal.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPartCB.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPartCheque.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPartEspeces.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtAjouteAlbum.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtInfo.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            // listebox
+            cbListeLieuVente.Child.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            cbListeStatutPaiement.Child.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+        }
+
         private VenteBox(Builder builder) : base(builder.GetRawOwnedObject("VenteBox"))
         {
             builder.Autoconnect(this);
@@ -157,12 +175,6 @@ namespace BdArtLibrairie
             btnChercheAlbum.Clicked += OnBtnChercheAlbumClicked;
             chkModifiable.Active = false;
             chkModifiable.Clicked += OnChkModifiableClicked;
-            //
-            // txtCoutTotal.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPartCB.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPartCheque.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtPartEspeces.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
-            // txtInfo.ModifyBg(StateType.Normal, new Gdk.Color(220,220,220));
             //
             Pango.FontDescription tpf = new Pango.FontDescription();
 			tpf.Weight = Pango.Weight.Bold;
@@ -713,11 +725,25 @@ namespace BdArtLibrairie
 
         private void OnCbListeLieuVenteChanged(object sender, EventArgs a)
         {
+            if (Global.AppliquerCss == true)
+            {
+                if (string.Compare(cbListeLieuVente.ActiveText, "Librairie") == 0)
+                    Global.RemoveCssClass(ref cbListeLieuVente, Global.eCssClasses.ListesColors);
+                else
+                    cbListeLieuVente.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
+            }
             txtAjouteAlbum.GrabFocus();
         }
 
         private void OnCbListeStatutPaiementChanged(object sender, EventArgs a)
         {
+            if (Global.AppliquerCss == true)
+            {
+                if (string.Compare(cbListeStatutPaiement.ActiveText, "Vendu") == 0)
+                    Global.RemoveCssClass(ref cbListeStatutPaiement, Global.eCssClasses.ListesColors);
+                else
+                    cbListeStatutPaiement.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
+            }
             txtAjouteAlbum.GrabFocus();
         }
 

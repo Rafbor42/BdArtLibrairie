@@ -111,7 +111,8 @@ namespace BdArtLibrairie
 			EntryEditable,
 			EntryNotEditable,
 			InfoColorRed,
-			InfoColorBlue
+			InfoColorBlue,
+			ListesColors
 		}
 
 		public static string m_strMsgFileFormatNotOk = "Format du fichier non conforme";
@@ -140,6 +141,8 @@ namespace BdArtLibrairie
 		private static string strFichierConfigLocal;
 		private static bool bLaunchBaseFile;
 		private static double dblPartAuteurDefaut;
+		private static Int16 nVenteBoxWidth;
+		private static Int16 nVenteBoxHeight;
 		private static CssProvider cssProvider;
         public static bool ConfigModified {	get => bConfigModified; set => bConfigModified = value; }
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
@@ -167,6 +170,8 @@ namespace BdArtLibrairie
         public static string FichierEcartsVentesWoExt { get => strFichierEcartsVentesWoExt; set => strFichierEcartsVentesWoExt = value; }
         public static CssProvider ProviderCss { get => cssProvider; set => cssProvider = value; }
         public static string DossierSauve { get => strDossierSauve; set => strDossierSauve = value; }
+        public static short VenteBoxWidth { get => nVenteBoxWidth; set => nVenteBoxWidth = value; }
+        public static short VenteBoxHeight { get => nVenteBoxHeight; set => nVenteBoxHeight = value; }
 
         /// <summary>
         /// Constructeur.
@@ -206,6 +211,8 @@ namespace BdArtLibrairie
 			NomFestival = "BD'Art";
 			LaunchBaseFile = true;
 			PartAuteurDefaut = 90;
+			VenteBoxWidth = 720;
+			VenteBoxHeight = 470;
 			//
 			AppStartupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
 			//DossierFichiers = AppStartupPath + Path.DirectorySeparatorChar + "Fichiers";
@@ -219,6 +226,7 @@ namespace BdArtLibrairie
             cssdata += ".EntryNotEditable {background-color: rgb(240, 240, 240); color: rgb(50, 50, 50);}";
             cssdata += ".InfoColorRed {color: rgb(255, 0, 0);}";
             cssdata += ".InfoColorBlue {color: rgb(0, 0, 255);}";
+			cssdata += ".ListesColors {color: rgb(255, 255, 255); background-color: rgb(185, 16, 163);}";
             ProviderCss.LoadFromData(cssdata);
         }
 
@@ -292,6 +300,12 @@ namespace BdArtLibrairie
 							case "PartAuteurDefaut":
 								PartAuteurDefaut = Convert.ToDouble(reader.GetAttribute("value"));
 								break;
+							case "VenteBoxWidth":
+								VenteBoxWidth = Convert.ToInt16(reader.GetAttribute("value"));
+								break;
+							case "VenteBoxHeight":
+								VenteBoxHeight = Convert.ToInt16(reader.GetAttribute("value"));
+								break;
 						}
 					}
 				}
@@ -359,6 +373,14 @@ namespace BdArtLibrairie
 
 						writer.WriteStartElement("PartAuteurDefaut");
 						writer.WriteAttributeString("value", PartAuteurDefaut.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("VenteBoxWidth");
+						writer.WriteAttributeString("value", VenteBoxWidth.ToString());
+						writer.WriteEndElement();
+
+						writer.WriteStartElement("VenteBoxHeight");
+						writer.WriteAttributeString("value", VenteBoxHeight.ToString());
 						writer.WriteEndElement();
 					writer.WriteEndElement();
 				writer.WriteEndElement();
@@ -480,23 +502,10 @@ namespace BdArtLibrairie
 			txtInfo.Show();
 		}
 
-		// Ajoute le Css provider ainsi que la classe passée en paramètre.
-		public static void AddCssProvider(ref Entry txtChamp, eCssClasses eClass)
+		public static void RemoveCssClass(ref ComboBoxText cbChamp, eCssClasses eClass)
 		{
-			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
-			txtChamp.StyleContext.AddClass(eClass.ToString());
-		}
-
-		public static void AddCssProvider(ref SearchEntry txtChamp, eCssClasses eClass)
-		{
-			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
-			txtChamp.StyleContext.AddClass(eClass.ToString());
-		}
-
-		public static void AddCssProvider(ref TextView txtChamp, eCssClasses eClass)
-		{
-			txtChamp.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
-			txtChamp.StyleContext.AddClass(eClass.ToString());
+			if (cbChamp.Child.StyleContext.HasClass(eClass.ToString()))
+                cbChamp.Child.StyleContext.RemoveClass(eClass.ToString());
 		}
 
 		// Demande confirmation à l'utilisateur.

@@ -134,7 +134,7 @@ Pour supprimer ces messages, supprimer le fichier _EcartsVentes.txt_ à partir d
 ### Impression des tarifs des albums
 
 Procéder comme décrit au § [Impression des ventes par auteur](#impression-des-ventes-par-auteur) pour générer le fichier d'export et lancer le fichier _BdArtLib.odb_.</br>
-Après avoir importer les fichiers, cliquer sur le bouton _Imprimer Tarifs des albums_, cela ouvrira le rapport contenant les tarifs par auteur:
+Cliquer sur le bouton _Tarifs des albums_, cela ouvrira le rapport contenant les tarifs par auteur:
 ![Tarifs albums](images/markdown/tarifs_albums.jpg)
 
 ## Onglet Ventes
@@ -229,7 +229,7 @@ Pour ré-imprimer les tickets de caisse, afficher les détails d'une vente (voir
 
 ### Effacer toutes les ventes
 
-Utiliser des fichiers _Ventes.csv_ et _Paiements.csv_ nouvellement créés ou effacer les ventes par le menu _Fichier→RAZ des ventes_:
+Supprimer les fichiers _Ventes.csv_ et _Paiements.csv_ ou effacer les ventes par le menu _Fichier→RAZ des ventes_:
 
 ![RAZ ventes](images/markdown/raz_ventes.jpg)
 
@@ -256,15 +256,18 @@ Deux méthodes possibles:
 
 - soit faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis imprimer la copie d'écran (via **Firefox** par exemple).
 
-- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé sur le modèle du fichier _Albums.csv_ et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
+- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
 ```Albums_export.csv```</BR>
 Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique.</br>
-A la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire:
+A la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire</BR>
+L'import des fichiers est réalisé automatiquement et un message confirme qu'il a bien été effectué:
+
+![BdArtLibodbFormMsgImport](images/markdown/bdartlibodb_form_msg_import.png)
 
 ![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
 
-- Cliquer sur le bouton _Importer les fichiers BdArtLibrairie_. Cela va charger dans les tables le contenu du fichier _Auteurs.csv_ et du fichier _Albums_export.csv_.
-- Cliquer ensuite sur le bouton d'actualisation puis sur le bouton _Imprimer Bilan des ventes_. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
+- Les tables sont remplies automatiquement avec les contenus des fichiers _Auteurs.csv_ et _Albums_export.csv_.
+- Cliquer ensuite sur le bouton _Bilan des ventes_. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
 
@@ -283,6 +286,7 @@ Cet onglet permet de modifier certains paramètres:
 - renseigner le nom du festival qui apparaitra dans la barre de titre de l'application et dans les tickets.
 - la part auteur par défaut, en %.
 - l'application des styles CSS pour colorier les Widgets d'affichage et de saisie de texte. Décocher si les couleurs ne sont pas compatibles avec le thème utilisé.
+- les dimensions en pixel de la fenêtre des ventes (720x470 mini - 1000x700 maxi).
 
 Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier caché _.bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
 
@@ -389,6 +393,13 @@ Pour l'accès à la clé USB sur Linux, on utilise la commande _lsblk_ pour dét
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
+
+- **3.1.0112.0**
+  - Ajout possibilité de modifier et stocker les dimensions (en pixels) de la fenêtre des ventes.
+  - Application des styles CSS aux listes déroulantes pour mettre en évidence les filtres actifs.
+  - Réécriture du code d'application des styles CSS.
+  - Lors de l'export des albums, les fichiers sont importés automatiquement dans les tables de _BdArtLib.odb_.
+  - Corrections mineures.
 
 - **3.1.0107.0**
   - Ajout possibilité de supprimer le fichier _EcartsVentes.txt_.

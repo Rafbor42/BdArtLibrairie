@@ -75,20 +75,22 @@ namespace BdArtLibrairie
                 this.Title = "Nouvel Album";
                 chkModifiable.Visible = false;
             }
+            // styles css
+            InitCss();
             if (Global.AppliquerCss == true)
             {
                 // champs non éditables par défaut
-                Global.AddCssProvider(ref txtCodeIsbnEan, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtAuteur, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtTitre, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtPrixVente, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtStockInitial, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtStockFinal, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtVenduLibrairie, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtVenduMediatheque, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtQteOffert, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtQteAFacturer, Global.eCssClasses.EntryNotEditable);
-                Global.AddCssProvider(ref txtQteTotalVendu, Global.eCssClasses.EntryNotEditable);
+                txtCodeIsbnEan.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtAuteur.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtTitre.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtPrixVente.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtStockInitial.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtStockFinal.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtVenduLibrairie.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtVenduMediatheque.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtQteOffert.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtQteAFacturer.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+                txtQteTotalVendu.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
             }
             //
             mdatas = datas;
@@ -112,6 +114,23 @@ namespace BdArtLibrairie
             txtStockInitial.FocusOutEvent += OnTxtStockInitialFocusOutEvent;
             txtCodeIsbnEan.Activated += OnTxtCodeIsbnEanActivated;
             txtCodeIsbnEan.GrabFocus();
+        }
+
+        // Ajout des providers CSS
+        private void InitCss()
+        {
+            // champs non éditables
+            txtCodeIsbnEan.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtAuteur.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtTitre.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtPrixVente.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtStockInitial.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtStockFinal.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtVenduLibrairie.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtVenduMediatheque.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteOffert.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteAFacturer.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtQteTotalVendu.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
         }
 
         private void OnTxtCodeIsbnEanActivated(object sender, EventArgs e)
