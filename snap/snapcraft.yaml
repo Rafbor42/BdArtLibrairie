@@ -1,0 +1,51 @@
+name: bdartlibrairie
+version: '3.1.0416.0'
+license: GPL-3.0 AND MIT
+base: core22
+grade: stable
+confinement: strict
+source-code: https://github.com/Rafbor42/BdArtLibrairie
+summary: Gestion des ventes d'une librairie pendant un festival
+description: |
+  Cette application permet de gérer les ventes d'une librairie tenue
+  par des bénévoles lors du festival de bandes dessinées BD’Art de
+  Rive de Gier (42800). Elle permet de réaliser les ventes en scannant
+  les code-barres des albums, d'éditer des tickets de paiements,
+  et de calculer les sommes à reverser aux auteurs en fin de festival.
+
+  ** Nota **
+  Pour autoriser les téléchargements de fichiers, l'accès aux périphériques
+  USB ainsi que l'impression des tickets sur l'imprimante thermique,
+  lancer les commandes suivantes:
+     sudo snap connect bdartlibrairie:removable-media
+     sudo snap connect bdartlibrairie:mount-observe
+     sudo snap connect bdartlibrairie:raw-usb
+
+parts:
+  bdartlibrairie:
+    plugin: dotnet
+    dotnet-build-configuration: Release
+    dotnet-self-contained-runtime-identifier: linux-x64
+    source: .
+    build-packages:
+      - dotnet-sdk-8.0
+slots:
+    dbus-bdartlibrairie:
+      interface: dbus
+      bus: session
+      name: org.BdArtLibrairie.BdArtLibrairie
+apps:
+  bdartlibrairie:
+    extensions: [gnome]
+    command: BdArtLibrairie
+    slots:
+      - dbus-bdartlibrairie
+    plugs:
+      - network
+      - removable-media
+      - mount-observe
+      - raw-usb
+lint:
+  ignore:
+    - library:
+      - libcoreclrtraceptprovider.so*

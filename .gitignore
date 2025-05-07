@@ -1,3 +1,5 @@
 bin
 obj
 AppImages
+snap/local
+*_amd64.snap

@@ -1377,7 +1377,7 @@ namespace BdArtLibrairie
                     try
                     {
                         Process psBase = new Process();
-                        psBase.StartInfo.FileName = "/usr/bin/lobase";
+                        psBase.StartInfo.FileName = "xdg-open";
                         psBase.StartInfo.Arguments = "BdArtLib.odb";
                         psBase.StartInfo.WorkingDirectory = Global.DossierFichiers;
                         if (psBase.Start() == true)// nouveau process créé
@@ -1596,47 +1596,25 @@ namespace BdArtLibrairie
         // Lance la commande permettant d'identifier le point de montage de la clé USB.
         private void OnBtnFindUsbDeviceClicked(object sender, EventArgs a)
         {
-            Process psExec = null;
             txtPathResult.Buffer.Clear();
-            string strResult, strLigne;
+            
             try
             {
-                ProcessStartInfo myInfo = new ProcessStartInfo();
-                myInfo.CreateNoWindow = true;
-                myInfo.WorkingDirectory = Global.DossierFichiers;
-                myInfo.FileName = "lsblk";
-                myInfo.Arguments = "-o name,mountpoint";
-                myInfo.RedirectStandardOutput = true;
-                myInfo.UseShellExecute = false;
-                psExec = new Process();
-	     		psExec.StartInfo = myInfo;
-	     		psExec.Start();
-                strResult = psExec.StandardOutput.ReadToEnd();
-                // filtrage
-                StringReader strgReader = new StringReader(strResult);
-                while ( (strLigne = strgReader.ReadLine()) != null )
+                string[] lines = File.ReadAllLines("/proc/mounts");
+                foreach (var line in lines)
                 {
-                    if (strLigne.Contains("sd"))
-                        txtPathResult.Buffer.Text += strLigne + Environment.NewLine;
+                    var parts = line.Split(' ');
+                    if (parts.Length > 1 && parts[0].Contains("dev/sd"))
+                    {
+                        // parts[0] est le dispositif, parts[1] est le point de montage  
+                        txtPathResult.Buffer.Text += $"{parts[0]}: {parts[1]}" + Environment.NewLine;
+                    }
                 }
-                psExec.WaitForExit(5000); // 5 secondes maxi pour que le process se termine
             }
             catch (Exception ex)
 			{
 				Global.ShowMessage("Recherche clé USB:", ex.Message, this);
 			}
-            finally
-			{
-                try
-				{
-					if (psExec != null && psExec.HasExited == true)
-						psExec.Close();
-				}
-				catch (System.InvalidOperationException)
-				{
-					// no process associated
-				}
-            }
         }
 
         private void CheckErreurEcartVentes()

@@ -394,6 +394,9 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 ## Notes de version
 
+- **3.1.0416.0**
+  - Modifications mineures afin de pouvoir générer et faire fonctionner un paquet snap.
+
 - **3.1.0112.0**
   - Ajout possibilité de modifier et stocker les dimensions (en pixels) de la fenêtre des ventes.
   - Application des styles CSS aux listes déroulantes pour mettre en évidence les filtres actifs.
