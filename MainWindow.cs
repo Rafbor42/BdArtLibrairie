@@ -110,6 +110,7 @@ namespace BdArtLibrairie
         [UI] private Entry txtPartAuteurDefaut = null;
         [UI] private Entry txtVenteBoxWidth = null;
         [UI] private Entry txtVenteBoxHeight = null;
+        [UI] private Entry txtDossierFichiers = null;
         //
         [UI] private TreeView trvVentes = null;
         [UI] private TreeView trvAlbums = null;
@@ -329,6 +330,7 @@ namespace BdArtLibrairie
             txtTotalMediatheques.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             txtTotalVentes.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             txtPathResult.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
+            txtDossierFichiers.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             // champs éditables
             txtPrinterFilePath.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
             txtUsbDevicePath.StyleContext.AddProvider(Global.ProviderCss, Gtk.StyleProviderPriority.User);
@@ -363,6 +365,7 @@ namespace BdArtLibrairie
             txtTotalMediatheques.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
             txtTotalVentes.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
             txtPathResult.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtDossierFichiers.StyleContext.AddClass(Global.eCssClasses.EntryNotEditable.ToString());
             // champs éditables
             txtPrinterFilePath.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
             txtUsbDevicePath.StyleContext.AddClass(Global.eCssClasses.EntryEditable.ToString());
@@ -404,6 +407,7 @@ namespace BdArtLibrairie
             txtTotalMediatheques.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
             txtTotalVentes.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
             txtPathResult.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
+            txtDossierFichiers.StyleContext.RemoveClass(Global.eCssClasses.EntryNotEditable.ToString());
             // champs éditables
             txtPrinterFilePath.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
             txtUsbDevicePath.StyleContext.RemoveClass(Global.eCssClasses.EntryEditable.ToString());
@@ -806,6 +810,7 @@ namespace BdArtLibrairie
             txtPartAuteurDefaut.Text = Global.PartAuteurDefaut.ToString();
             txtVenteBoxWidth.Text = Global.VenteBoxWidth.ToString();
             txtVenteBoxHeight.Text = Global.VenteBoxHeight.ToString();
+            txtDossierFichiers.Text = Global.DossierFichiers;
         }
 
         // Calculs.

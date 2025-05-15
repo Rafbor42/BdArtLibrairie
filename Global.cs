@@ -128,7 +128,6 @@ namespace BdArtLibrairie
 		private static string strFichierAuteursWoExt;
 		private static string strDossierFichiers;
 		private static string strDossierSauve;
-        private static string strAppStartupPath;
 		private static string strPrinterFilePath;
 		private static string strUsbDevicePath;
 		private static string strNomFestival;
@@ -148,7 +147,6 @@ namespace BdArtLibrairie
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
         public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
 		public static string FichierPaiements { get => strFichierPaiements; set => strFichierPaiements = value; }
-        public static string AppStartupPath { get => strAppStartupPath; set => strAppStartupPath = value; }
         public static string FichierAuteurs { get => strFichierAuteurs; set => strFichierAuteurs = value; }
         public static string DossierFichiers { get => strDossierFichiers; set => strDossierFichiers = value; }
         public static string FichierVentesWoExt { get => strFichierVentesWoExt; set => strFichierVentesWoExt = value; }
@@ -204,9 +202,9 @@ namespace BdArtLibrairie
 			PrinterFilePath = "/dev/usb/lp0";
 			Tempo = 2000;
 			NombreTickets = 2;
-			AppliquerCss = false;
+			AppliquerCss = true;
 			UseDialogForTicketPrint = true;
-			UsbDevicePath = "/media/raf/4429-4124";
+			UsbDevicePath = "/media/rafbor/4429-4124";
 			FichierConfigLocal = "app.config";
 			NomFestival = "BD'Art";
 			LaunchBaseFile = true;
@@ -214,9 +212,10 @@ namespace BdArtLibrairie
 			VenteBoxWidth = 720;
 			VenteBoxHeight = 470;
 			//
-			AppStartupPath = Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-			//DossierFichiers = AppStartupPath + Path.DirectorySeparatorChar + "Fichiers";
-			DossierFichiers = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".bdartlibrairie");
+			DossierFichiers = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "bdartlibrairie");
+			// version Snap
+			if (Environment.GetEnvironmentVariable("BDARTLIBRAIRIE_BASE") != null)
+				DossierFichiers = Path.Combine(Environment.GetEnvironmentVariable("BDARTLIBRAIRIE_BASE"), "bdartlibrairie");
 			// création du dossier Fichiers, si pas présent
 			if (!Directory.Exists(DossierFichiers))
 				Directory.CreateDirectory(DossierFichiers);

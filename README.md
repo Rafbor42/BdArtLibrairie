@@ -21,7 +21,7 @@
   - [Développement et installation](#développement-et-installation)
   - [Notes de version](#notes-de-version)
   - [Téléchargements](#téléchargements)
-    - [Installation sur Linux](#installation-sur-linux)
+  - [Installation sur Linux](#installation-sur-linux)
 
 # BdArtLibrairie
 
@@ -32,7 +32,7 @@
 Cette application a été créée pour gérer les ventes de la librairie tenue par des bénévoles lors du festival de bandes dessinées BD’Art de Rive de Gier (42800). Elle permet de réaliser les ventes en scannant les code-barres des albums, d'éditer des tickets de paiements, et de calculer les sommes à reverser aux auteurs en fin de festival.
 
 Elle est composée de 4 onglets: _Ventes, Albums, Auteurs, Paramètres_.
-Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_). Les fichiers sont stockés dans le dossier utilisateur, dans un dossier caché _.bdartlibrairie_.
+Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_). Les fichiers sont stockés dans le dossier utilisateur, dans un dossier nommé _bdartlibrairie_ (cf. [onglet Paramètres](#onglet-paramètres))
 
 ## Principe de fonctionnement
 
@@ -53,7 +53,7 @@ puis l'onglet _Albums_:
 - Si le fichier est ouvert dans **Google Sheet**, il faut l’exporter au format **Excel** ou **OpenDocument** (menu _Fichier → Télécharger_),
 - Ouvrir le fichier dans **Excel** ou **LibreOffice Calc** puis exporter chacun des onglets dans un fichier _csv_ séparateur _;_ (dans **LibreOffice Calc**, faire pour chaque onglet : _Enregistrer sous_, choisir le format _Texte CSV_, puis choisir le séparateur _;_ ).
 
-- Enregistrer les fichiers dans le dossier _.bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_.
+- Enregistrer les fichiers dans le dossier _bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_.
 
 - Lancer l’application **BdArtLibrairie** (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
 
@@ -125,7 +125,7 @@ En cas de modification du prix de vente, si des ventes ont été enregistrées, 
 
 ![Erreur écart ventes](images/markdown/erreur_ecart_ventes.jpg)
 
-Ce message est enregistré dans le fichier _EcartsVentes.txt_, dans le dossier caché _.BdArtLibrairie_. Un bouton _Erreur écarts ventes_ apparait, permettant de réafficher les messages:
+Ce message est enregistré dans le fichier _EcartsVentes.txt_, dans le dossier _bdartlibrairie_. Un bouton _Erreur écarts ventes_ apparait, permettant de réafficher les messages:
 
 ![Bouton écart ventes](images/markdown/bouton_ecart_ventes.jpg)
 
@@ -235,7 +235,7 @@ Supprimer les fichiers _Ventes.csv_ et _Paiements.csv_ ou effacer les ventes par
 
 Après confirmation, saisir le mot de passe « Password01 » dans la zone sous la grille.
 Si Ok, les fichiers _Ventes.csv_ et _Paiements.csv_ sont réinitialisés et le fichier _EcartsVentes.txt_ est supprimé.
-Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _.bdartlibrairie_ avec un numéro de version. Les fichiers de sauvegarde plus anciens sont conservés.
+Par sécurité, une copie de ces fichiers est sauvegardée dans le sous-dossier _Sauve_ du dossier _bdartlibrairie_ avec un numéro de version. Les fichiers de sauvegarde plus anciens sont conservés.
 
 Vous pouvez également purger, après confirmation, ce dossier de sauvegarde via le menu _Fichier->Purger le dossier backup_
 
@@ -248,7 +248,7 @@ Le menu _Affichage->Bilan des ventes auteur_ ou un clic sur le bouton _Bilan des
 ### Sauvegarde des données
 
 Les ventes sont enregistrées automatiquement. Seuls les fichiers _Ventes.csv_ et _Paiements.csv_ sont mis à jour après chaque vente.
-Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manuellement via le gestionnaire de fichier, ou alors utiliser le menu _Fichier->Copier les fichiers sur clé_. Cette action va compresser le dossier _.bdartlibrairie_ et le copier sur la clé USB. Voir l’ [onglet Paramètres](#onglet-paramètres) pour configurer le montage de la clé USB.
+Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manuellement via le gestionnaire de fichier, ou alors utiliser le menu _Fichier->Copier les fichiers sur clé_. Cette action va compresser le dossier _bdartlibrairie_ et le copier sur la clé USB. Voir l’ [onglet Paramètres](#onglet-paramètres) pour configurer le montage de la clé USB.
 
 ### Impression des ventes par auteur
 
@@ -278,7 +278,7 @@ L'import des fichiers est réalisé automatiquement et un message confirme qu'il
 Cet onglet permet de modifier certains paramètres:
 
 - le point de montage sous Linux de l’imprimante thermique: _dev/usb/lp1_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
-- le point de montage sous Linux de la clé USB: _/media/raf/4429-4124_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
+- le point de montage sous Linux de la clé USB: _/media/rafbor/4429-4124_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
 - le nombre de tickets à imprimer : 1 à 3 (défaut : 2).
 - la temporisation pendant l’impression : 0 à 5000 ms (défaut : 2000). Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
 - l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
@@ -288,7 +288,7 @@ Cet onglet permet de modifier certains paramètres:
 - l'application des styles CSS pour colorier les Widgets d'affichage et de saisie de texte. Décocher si les couleurs ne sont pas compatibles avec le thème utilisé.
 - les dimensions en pixel de la fenêtre des ventes (720x470 mini - 1000x700 maxi).
 
-Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier caché _.bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
+Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier _bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
 
 ```text
 <userSettings>
@@ -303,6 +303,10 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
     <PartAuteurDefaut value="90" />
   </userSettings>
 ```
+
+L'onglet affiche aussi le chemin vers le dossier _bdartlibrairie_ ou sont stockés les fichiers. Le chemin est différent selon le format de l'application installée (ce paramètre n'est pas modifiable): 
+- Format _AppImage_: $HOME/.config/bdartlibrairie
+- Format _Snap_: $HOME/snap/bdartlibrairie/common/bdartlibrairie
 
 ## Structure des données
 
@@ -357,12 +361,12 @@ L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, 
 _Gtk3_ est installé par défaut sur les systèmes Linux Ubuntu et Xubuntu.
 Pour utilisation sur système Windows, il faut installer _Gtk3_.
 
-La publication pour Linux de l’application dans _Visual Studio Code_ se fait au format _AppImage_, en lançant le script _publish-appimage_ (cf [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage) pour explications sur la configuration et l'utilisation). Le fichier AppImage généré intègre le _Runtime .NET 8_ et se trouve dans le dossier _AppImages_.
+La publication pour Linux de l’application dans _Visual Studio Code_ se fait au format _AppImage_, en lançant le script _publish-appimage_ (cf [Publish-AppImage](https://github.com/kuiperzone/Publish-AppImage) pour explications sur la configuration et l'utilisation). Le fichier _AppImage_ généré intègre le _Runtime .NET 8_ et se trouve dans le dossier _AppImages_.
 
 Consulter la [documentation Microsoft](https://learn.microsoft.com/fr-fr/dotnet/core/deploying/) pour plus d'explications sur le déploiement d'applications _.NET_.
 
 Les données sont stockées dans les fichiers _csv_ décrits au § [Présentation](#présentation), l’application n’utilise pas de  base de données pour stocker les données, seulement **LibreOffice Base** pour générer les rapports de ventes par auteurs.
-Le fichier base _BdArtLib.odb_ doit être présent dans le dossier caché _.bdartlibrairie_, s'il n'est pas présent au lancement de l'application, l'application tente de le télécharger depuis le dépôt Github.
+Le fichier base _BdArtLib.odb_ doit être présent dans le dossier _bdartlibrairie_, s'il n'est pas présent au lancement de l'application, l'application tente de le télécharger depuis le dépôt Github.
 
 Pour l’impression des tickets de caisse, on utilise le protocole ESC/POS développé par Epson. L’imprimante thermique TM-T20III est donc parfaitement adaptée.
 L’application utilise le package [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET) pour imprimer.
@@ -389,13 +393,19 @@ Cf. [Mike's Software Blog](https://mike42.me/blog/2015-03-getting-a-usb-receipt-
 
 Sur Windows, cf. les explications du fichier _readme_ du dépot [ESC-POS_NET](https://github.com/lukevp/ESC-POS-.NET), il faut installer un port COM virtuel, et mapper l’imprimante sur ce port, ou alors utiliser un câble USB-Serie en utilisant le port série de l’imprimante.
 
-Pour l'accès à la clé USB sur Linux, on utilise la commande _lsblk_ pour détecter le point de montage. Cliquer sur le bouton _Rechercher_ pour lancer la recherche.</br>
+Pour l'accès à la clé USB sur Linux, on recherche dans le fichier _/proc/mounts_ les lignes commençants par "dev/sd". Cliquer sur le bouton _Rechercher_ pour lancer la recherche.</br>
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
 
+- **3.1.0515.0**
+  - Ajout fichiers _.desktop_ et _.png_ dans dossier _snap/gui_ afin que l'installation du _Snap_ crée un lanceur.
+  - Mise à jour du fichier _readme_ pour intégrer la version _Snap_.
+  - Modifié dossier de stockage des fichiers et de la configuration, affichage du chemin dans les paramètres.
+  - Modifications mineures.
+
 - **3.1.0416.0**
-  - Modifications mineures afin de pouvoir générer et faire fonctionner un paquet snap.
+  - Modifications mineures afin de pouvoir générer et faire fonctionner un paquet _Snap_.
 
 - **3.1.0112.0**
   - Ajout possibilité de modifier et stocker les dimensions (en pixels) de la fenêtre des ventes.
@@ -425,7 +435,7 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 - **2.0.0306.0**
   - Au lancement et si non trouvé, le fichier _BdArtLib.odb_ est téléchargé à partir du dépôt Github.
 - **2.0.0304.0**
-  - Publication sous forme d'AppImage.
+  - Publication sous forme d'_AppImage_.
   - Suppression du script _findusb.sh_.
 - **2.0.0210.0**
   - Les données et la config utilisateur ne sont plus stockées dans le dossier de l'application mais dans le dossier utilisateur afin de faciliter l'installation des nouvelles versions.
@@ -442,8 +452,18 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 ## Téléchargements
 
 - **Linux**:
-  - fichier AppImage: voir [Releases](https://github.com/Rafbor42/BdArtLibrairie/releases).
+  - Fichier _AppImage_: voir [Releases](https://github.com/Rafbor42/BdArtLibrairie/releases).
 
-### Installation sur Linux
+## Installation sur Linux
 
-- fichier AppImage: consulter cette [documentation](https://doc.ubuntu-fr.org/appimage) pour savoir comment installer des fichiers AppImage.
+- Format _AppImage_: consulter cette [documentation](https://doc.ubuntu-fr.org/appimage) pour savoir comment installer des fichiers _AppImage_.
+- Format _Snap_: **BdArtLibrairie** peut être installée de différentes manières:
+  - à partir du [Snap Store en ligne](https://snapcraft.io/bdartlibrairie).
+  - à partir de votre gestionnaire de logiciels (Gnome Software, Snap Store, Discover,...).
+  - en ligne de commande:</br>
+  ```sudo snap install bdartlibrairie```
+
+  Après installation du _Snap_, pour autoriser les téléchargements de fichiers, l'accès aux périphériques USB ainsi que l'impression des tickets sur l'imprimante thermique, lancer les commandes suivantes:</br>
+  ```sudo snap connect bdartlibrairie:removable-media```</br>
+  ```sudo snap connect bdartlibrairie:mount-observe```</br>
+  ```sudo snap connect bdartlibrairie:raw-usbv```</br>

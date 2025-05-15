@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+X-SnapAppName=bdartlibrairie
+X-SnapInstanceName=bdartlibrairie
+Name[fr]=BdArtLibrairie
+GenericName=BdArtLibrairie
+Comment=Gestion des ventes d'une librairie pendant un festival
+Exec=bdartlibrairie
+Icon=${SNAP}/meta/gui/bdartlibrairie.png
+Terminal=false
+StartupNotify=true
+Categories=GNOME;GTK;Office;Finance;
