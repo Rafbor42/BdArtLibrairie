@@ -466,4 +466,4 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
   Après installation du _Snap_, pour autoriser les téléchargements de fichiers, l'accès aux périphériques USB ainsi que l'impression des tickets sur l'imprimante thermique, lancer les commandes suivantes:</br>
   ```sudo snap connect bdartlibrairie:removable-media```</br>
   ```sudo snap connect bdartlibrairie:mount-observe```</br>
-  ```sudo snap connect bdartlibrairie:raw-usbv```</br>
+  ```sudo snap connect bdartlibrairie:raw-usb```</br>
