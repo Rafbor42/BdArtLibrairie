@@ -67,6 +67,16 @@
     <property name="can-focus">False</property>
     <property name="stock">gtk-dialog-error</property>
   </object>
+  <object class="GtkImage" id="image21">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-redo</property>
+  </object>
+  <object class="GtkImage" id="image22">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="stock">gtk-open</property>
+  </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -136,6 +146,16 @@
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="image">image8</property>
+                        <property name="use-stock">False</property>
+                        <property name="always-show-image">True</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkImageMenuItem" id="mnuFichierReTelecharger">
+                        <property name="label" translatable="yes">Retélécharger BdArtLib.odb</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="image">image21</property>
                         <property name="use-stock">False</property>
                         <property name="always-show-image">True</property>
                       </object>
@@ -1027,7 +1047,7 @@
                             <property name="height-request">34</property>
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="label" translatable="yes">Tempo pendant impression tickets (0-5000 ms)</property>
+                            <property name="label" translatable="yes">Tempo pendant impression tickets (0-300 ms)</property>
                             <property name="xalign">0.949999988079071</property>
                           </object>
                           <packing>
@@ -1319,6 +1339,22 @@
                           <packing>
                             <property name="x">118</property>
                             <property name="y">373</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="btnOuvrirDossierFichiers">
+                            <property name="width-request">30</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Ouvrir le dossier dans l'explorateur</property>
+                            <property name="image">image22</property>
+                            <property name="always-show-image">True</property>
+                          </object>
+                          <packing>
+                            <property name="x">1004</property>
+                            <property name="y">374</property>
                           </packing>
                         </child>
                       </object>

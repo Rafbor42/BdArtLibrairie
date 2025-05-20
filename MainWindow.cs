@@ -56,6 +56,7 @@ namespace BdArtLibrairie
         [UI] private MenuItem mnuFichierQuitter = null;
         [UI] private MenuItem mnuFichierResetVentes = null;
         [UI] private MenuItem mnuFichierRecharger = null;
+        [UI] private MenuItem mnuFichierReTelecharger = null;
         [UI] private MenuItem mnuFichierPurgerSauve = null;
         [UI] private CheckMenuItem mnuAffichageTout = null;
         [UI] private MenuItem mnuAffichageVente = null;
@@ -78,6 +79,7 @@ namespace BdArtLibrairie
         [UI] private Button btnDetailsVente = null;
         [UI] private Button btnBilanVentes = null;
         [UI] private Button btnErreurEcartVentes = null;
+        [UI] private Button btnOuvrirDossierFichiers = null;
         [UI] private CheckButton chkAFacturer = null;
         [UI] private CheckButton chkUseDialogForTicketPrint = null;
         [UI] private CheckButton chkAppliquerCss = null;
@@ -176,6 +178,7 @@ namespace BdArtLibrairie
             btnDetailsVente.Clicked += OnBtnDetailsVenteClicked;
             btnBilanVentes.Clicked += OnBtnBilanVentesClicked;
             btnErreurEcartVentes.Clicked += OnBtnErreurEcartVentes;
+            btnOuvrirDossierFichiers.Clicked += OnBtnOuvrirDossierFichiers;
             //
             cbListeLieuVente.Changed += OnCbListeLieuVenteChanged;
             cbListeAuteurs.Changed += OnCbListeAuteursChanged;
@@ -209,6 +212,7 @@ namespace BdArtLibrairie
             mnuFichierQuitter.Activated += OnMnuFichierQuitter;
             mnuFichierResetVentes.Activated += OnMnuFichierResetVentes;
             mnuFichierRecharger.Activated += OnMnuFichierRecharger;
+            mnuFichierReTelecharger.Activated += OnMnuFichierReTelecharger;
             mnuFichierPurgerSauve.Activated += OnMnuFichierPurgerSauve;
             mnuAffichageTout.Toggled += OnMnuAffichageTout;
             mnuAffichageVente.Activated += OnMnuAffichageVente;
@@ -230,12 +234,8 @@ namespace BdArtLibrairie
                 strMsg += "Lecture fichiers: " + strMsg2;
             }
             // fichier BdArtLib.odb
-            Uri uriSource = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/BdArtLib.odb");
-            string strFileDest = System.IO.Path.Combine(Global.DossierFichiers, "BdArtLib.odb");
-            if (!File.Exists(strFileDest))
-            {
-                Global.DownloadFile(uriSource, strFileDest, this);
-            }
+            if (!File.Exists(Global.FichierBdArtLibOdb))
+                Global.DownloadFile(Global.UriBdArtLibOdb, Global.FichierBdArtLibOdb, this);
             if (strMsg != string.Empty)
                 Global.AfficheInfo(ref txtInfo, "Erreur lors du chargement des fichiers", Global.eCssClasses.InfoColorRed);
             else
@@ -252,6 +252,34 @@ namespace BdArtLibrairie
             //
             CheckErreurEcartVentes();
             Global.ConfigModified = false;
+        }
+
+        private void OnBtnOuvrirDossierFichiers(object sender, EventArgs e)
+        {
+            // ouverture du dossier dans un process
+            try
+            {
+                Process psBase = new Process();
+                psBase.StartInfo.FileName = "xdg-open";
+                psBase.StartInfo.Arguments = Global.DossierFichiers;
+                //psBase.StartInfo.WorkingDirectory = Global.DossierFichiers;
+                if (psBase.Start() == true)// nouveau process créé
+                {
+                    psBase.WaitForExit(1000);
+                }
+            }
+            catch (Exception ex)
+            {
+                Global.ShowMessage("Erreur ouverture du dossier:", ex.Message, this);
+            }
+        }
+
+        private void OnMnuFichierReTelecharger(object sender, EventArgs e)
+        {
+            if (Global.Confirmation(this, "Retélécharger:", "Voulez-vous vraiment retélécharger le fichier BdArtLib.odb ?") == false)
+                return;
+            Global.DownloadFile(Global.UriBdArtLibOdb, Global.FichierBdArtLibOdb, this);
+            Global.AfficheInfo(ref txtInfo, "Téléchargement de BdArtLib.odb en asynchrone", Global.eCssClasses.InfoColorBlue);
         }
 
         private void OnTxtVenteBoxHeightChanged(object sender, EventArgs e)
@@ -1552,7 +1580,7 @@ namespace BdArtLibrairie
             txtTempo.FocusOutEvent -= OnTxtTempoFocusOut;
             nVal = Global.GetValueIntOrZero(this, sender, true);
             if (nVal < 0) nVal = 0;
-            if (nVal > 5000) nVal = 5000;
+            if (nVal > 300) nVal = 300;
             Global.Tempo = nVal;
             UpdateData();
             txtTempo.FocusOutEvent += OnTxtTempoFocusOut;

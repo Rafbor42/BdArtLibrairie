@@ -55,7 +55,8 @@ puis l'onglet _Albums_:
 
 - Enregistrer les fichiers dans le dossier _bdartlibrairie_, chaque fichier porte le nom de l'onglet: _Auteurs.csv_, _Albums.csv_.
 
-- Lancer l’application **BdArtLibrairie** (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))
+- Lancer l’application **BdArtLibrairie** (les fichiers sont chargés automatiquement) puis effectuer les ventes. (cf. § [Onglet Ventes](#onglet-ventes))</br>
+Si les fichiers sont modifiés alors que l'application est déjà ouverte, il faut recharger les fichiers à partir du menu: _Fichier->Recharger les fichiers_.
 
 - Lorsqu’une vente d’albums est effectuée, les données sont automatiquement enregistrées dans les fichiers _Ventes.csv_ et _Paiements.csv_ et les cumuls en quantités et en euros sont recalculés pour chaque auteur.
 
@@ -135,6 +136,7 @@ Pour supprimer ces messages, supprimer le fichier _EcartsVentes.txt_ à partir d
 
 Procéder comme décrit au § [Impression des ventes par auteur](#impression-des-ventes-par-auteur) pour générer le fichier d'export et lancer le fichier _BdArtLib.odb_.</br>
 Cliquer sur le bouton _Tarifs des albums_, cela ouvrira le rapport contenant les tarifs par auteur:
+
 ![Tarifs albums](images/markdown/tarifs_albums.jpg)
 
 ## Onglet Ventes
@@ -264,6 +266,8 @@ L'import des fichiers est réalisé automatiquement et un message confirme qu'il
 
 ![BdArtLibodbFormMsgImport](images/markdown/bdartlibodb_form_msg_import.png)
 
+En cas d'erreur signalé par **LibreOffice Base**, il est possible qu'une mise à jour ait eu lieu pour le fichier _BdArtLib.odb_. Fermer **LibreOffice Base** puis retélécharger le fichier via le menu: _Fichier->Retélécharger BdArtLib.odb_, puis renouveler l'opération.
+
 ![BdArtLibodbForm](images/markdown/bdartlibodb_form.png)
 
 - Les tables sont remplies automatiquement avec les contenus des fichiers _Auteurs.csv_ et _Albums_export.csv_.
@@ -280,7 +284,7 @@ Cet onglet permet de modifier certains paramètres:
 - le point de montage sous Linux de l’imprimante thermique: _dev/usb/lp1_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
 - le point de montage sous Linux de la clé USB: _/media/rafbor/4429-4124_ par défaut (cf. § [Développement et installation](#développement-et-installation) pour explications).
 - le nombre de tickets à imprimer : 1 à 3 (défaut : 2).
-- la temporisation pendant l’impression : 0 à 5000 ms (défaut : 2000). Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
+- la temporisation pendant l’impression : 0 à 300 ms (défaut : 100) pour chaque ligne imprimée. Ce paramètre suspend le thread courant de l’application pendant l’impression des tickets. Une valeur trop petite entraînera l’arrêt de l’impression en cours avant qu’elle soit terminée.
 - l’utilisation ou pas de l’imprimante à tickets. Si coché, le ticket sera affiché dans une fenêtre et ne sera pas imprimé.
 - l'ouverture ou pas du fichier, après l'export du fichier albums, **LibreOffice Base** _Bdartlib.odb_ pour imprimer les ventes par auteur.
 - renseigner le nom du festival qui apparaitra dans la barre de titre de l'application et dans les tickets.
@@ -292,21 +296,25 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
 
 ```text
 <userSettings>
-    <PrinterFilePath value="/dev/usb/lp0" />
-    <Tempo value="2000" />
+    <PrinterFilePath value="/dev/usb/lp1" />
+    <Tempo value="100" />
     <NombreTickets value="2" />
     <AppliquerCss value="True" />
-    <UseDialogForTicketPrint value="True" />
-    <UsbDevicePath value="/media/raf/4429-4124" />
+    <UseDialogForTicketPrint value="False" />
+    <UsbDevicePath value="/media/rafbor/4429-4124" />
     <NomFestival value="BD'Art" />
-    <LaunchBaseFile value="False" />
+    <LaunchBaseFile value="True" />
     <PartAuteurDefaut value="90" />
+    <VenteBoxWidth value="720" />
+    <VenteBoxHeight value="470" />
   </userSettings>
 ```
 
 L'onglet affiche aussi le chemin vers le dossier _bdartlibrairie_ ou sont stockés les fichiers. Le chemin est différent selon le format de l'application installée (ce paramètre n'est pas modifiable): 
 - Format _AppImage_: $HOME/.config/bdartlibrairie
 - Format _Snap_: $HOME/snap/bdartlibrairie/common/bdartlibrairie
+
+Le bouton à droite de la zone de texte permet d'ouvrir directement le dossier dans l'explorateur de fichiers.
 
 ## Structure des données
 
@@ -354,7 +362,7 @@ Paiements.csv
 
 ## Développement et installation
 
-En pratique, pendant le festival BD'Art, un PC sous Xubuntu 22.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
+En pratique, pendant le festival BD'Art, un PC sous Xubuntu 24.04 est utilisé, sur lequel est connecté une imprimante Epson TM-T20III et un lecteur de code-barres TERA T5100C.
 
 L’application est développée en C# avec _Visual Studio Code_ sur PC Ubuntu, elle utilise les frameworks _.NET 8_ et _Gtk3_ via la librairie [GtkSharp](https://github.com/GtkSharp/GtkSharp).
 
@@ -397,6 +405,12 @@ Pour l'accès à la clé USB sur Linux, on recherche dans le fichier _/proc/moun
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
+
+- **3.1.0520.0**
+  - Ajout menu pour retélécharger le fichier _BdArtLib.odb_.
+  - Ajout bouton pour ouvrir le dossier de stockage dans l'explorateur.
+  - Mise à jour du package ESCPOS_NET -> v3.0.0.
+  - Modifier temporisation du thread pendant l'impression des tickets d'une nouvelle vente.
 
 - **3.1.0515.0**
   - Ajout fichiers _.desktop_ et _.png_ dans dossier _snap/gui_ afin que l'installation du _Snap_ crée un lanceur.
@@ -458,7 +472,8 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 - Format _AppImage_: consulter cette [documentation](https://doc.ubuntu-fr.org/appimage) pour savoir comment installer des fichiers _AppImage_.
 - Format _Snap_: **BdArtLibrairie** peut être installée de différentes manières:
-  - à partir du [Snap Store en ligne](https://snapcraft.io/bdartlibrairie).
+  - à partir du _Snap Store_ en ligne:</br>
+  [![Get it from the Snap Store](https://snapcraft.io/static/images/badges/fr/snap-store-black.svg)](https://snapcraft.io/bdartlibrairie)
   - à partir de votre gestionnaire de logiciels (Gnome Software, Snap Store, Discover,...).
   - en ligne de commande:</br>
   ```sudo snap install bdartlibrairie```

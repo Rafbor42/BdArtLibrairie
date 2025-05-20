@@ -47,7 +47,7 @@ namespace BdArtLibrairie
     public class VenteBox : Dialog
     {
         private Datas mdatas;
-        private Int16 nNumeroVente;
+        private Int16 nNumeroVente, nTempo;
         private DateTime dtDateVente;
         private double dblPrixTotal, dblPartCB, dblPartCheque, dblPartEspeces;
         private BasePrinter printer;
@@ -111,6 +111,7 @@ namespace BdArtLibrairie
             bNewVente = bNew;
             dtDateVente = dtDaVente;
             dblPrixTotal = dblPartCB = dblPartCheque = dblPartEspeces = 0;
+            nTempo = 0;
             InitCbListeLieuVente();
             InitcbListeStatutPaiement();
             InitTrvVentes();
@@ -509,18 +510,20 @@ namespace BdArtLibrairie
             //
             if (chkImprimerTicket.Active == true)
             {
-                Gdk.Cursor cursor = this.Window.Cursor;
-                this.Window.Cursor = new Gdk.Cursor(Gdk.CursorType.CoffeeMug);
+                Gdk.Cursor cursor = Window.Cursor;
+                Window.Cursor = new Gdk.Cursor(Display, Gdk.CursorType.Clock);
                 txtInfo.Visible = true;
                 Global.AfficheInfo(ref txtInfo, "Impression des tickets de caisse...", Global.eCssClasses.InfoColorBlue);
-                //txtInfo.ShowAll();
                 try
                 {
                     if (ImprimerTicket(dtDateVente) == true)
                     {
                         if (Global.UseDialogForTicketPrint == false)
-                            // on laisse l'impression se terminer avant l'appel à printer.Dispose()
-                            Thread.Sleep(Global.Tempo);
+                            // on laisse l'impression se terminer avant l'appel à printer.Dispose().
+                            // nTempo est un multiple de Global.Tempo:
+                            // = 1 (1ère ligne) + x (nb albums) + 1 (dernière ligne) +1 (fin)
+                            // multiplié par le nb d'étiquettes
+                            Thread.Sleep(nTempo);
                     }
                 }
                 catch (Exception e)
@@ -529,7 +532,7 @@ namespace BdArtLibrairie
                 }
                 finally
                 {
-                    this.Window.Cursor = cursor;
+                    Window.Cursor = cursor;
                 }
             }
             Exit();
@@ -546,8 +549,8 @@ namespace BdArtLibrairie
         {
             if (printer == null && Global.UseDialogForTicketPrint == false)
                 return;
-            Gdk.Cursor cursor = this.Window.Cursor;
-            this.Window.Cursor = new Gdk.Cursor(Gdk.CursorType.CoffeeMug);
+            Gdk.Cursor cursor = Window.Cursor;
+            Window.Cursor = new Gdk.Cursor(Display, Gdk.CursorType.Clock);
             txtInfo.Visible = true;
             bool bResult = true;
             Global.AfficheInfo(ref txtInfo, "Impression des tickets de caisse...", Global.eCssClasses.InfoColorBlue);
@@ -563,7 +566,7 @@ namespace BdArtLibrairie
             }
             finally
             {
-                this.Window.Cursor = cursor;
+                Window.Cursor = cursor;
                 if (bResult == true)
                 {
                     txtInfo.Text = string.Empty;
@@ -813,7 +816,7 @@ namespace BdArtLibrairie
                     return;
                 }
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Global.ShowMessage("Initialisation imprimante:", e.Message, this);
             }
@@ -854,17 +857,19 @@ namespace BdArtLibrairie
             e = new EPSON();
             printer.Write(e.Initialize());
             //
+            nTempo = 0;
             // NombreTickets à imprimer
             for (Int16 n = 0; n < Global.NombreTickets; n++)
             {
                 if (mdatas.lstoreUneVente.GetIterFirst(out iter) == true)
                 {
+                    nTempo += Global.Tempo;
                     printer.Write(
                             ByteSplicer.Combine(
                                 e.CodePage(CodePage.ISO8859_15_LATIN9),
                                 e.LeftAlign(),
                                 e.SetStyles(PrintStyle.Bold),
-                                e.Print("Librairie " + Global.NomFestival +" - Vente n°"),
+                                e.Print("Librairie " + Global.NomFestival + " - Vente n°"),
                                 e.PrintLine(nNumeroVente.ToString()),
                                 e.SetStyles(PrintStyle.None),
                                 e.PrintLine(dtDate.ToString()),
@@ -877,10 +882,11 @@ namespace BdArtLibrairie
                         strIsbnEan = mdatas.lstoreUneVente.GetValue(iter, Convert.ToInt16(Global.eTrvListeLivresCols.CodeIsbnEan)).ToString();
                         strTitre = mdatas.lstoreUneVente.GetValue(iter, Convert.ToInt16(Global.eTrvListeLivresCols.Titre)).ToString();
                         if (strTitre.Length > nLongueurTitre)
-                            strTitre = strTitre.Substring(0,nLongueurTitre);
+                            strTitre = strTitre.Substring(0, nLongueurTitre);
                         strPaiement = mdatas.lstoreUneVente.GetValue(iter, Convert.ToInt16(Global.eTrvListeLivresCols.Paiement)).ToString();
                         dblPrixVente = Convert.ToDouble(mdatas.lstoreUneVente.GetValue(iter, Convert.ToInt16(Global.eTrvListeLivresCols.PrixVente)));
                         strLieuVente = mdatas.lstoreUneVente.GetValue(iter, Convert.ToInt16(Global.eTrvListeLivresCols.LieuVente)).ToString();
+                        nTempo += Global.Tempo;
                         printer.Write(
                             ByteSplicer.Combine(
                                 e.LeftAlign(),
@@ -902,12 +908,13 @@ namespace BdArtLibrairie
                     }
                     while (mdatas.lstoreUneVente.IterNext(ref iter) == true);
                     //
+                    nTempo += Global.Tempo;
                     printer.Write(
                             ByteSplicer.Combine(
                                 e.LeftAlign(),
                                 e.PrintLine(strSeparator),
                                 e.SetStyles(PrintStyle.Bold),
-                                e.Print(("Total (" + "CB:" + txtPartCB.Text + "|Ch:" + txtPartCheque.Text + "|Es:" + txtPartEspeces.Text + ")").PadRight(nLongueurTitreTot,'.') + string.Format("{0,7:F2}", Math.Round(dblPrixTotal, 2))),
+                                e.Print(("Total (" + "CB:" + txtPartCB.Text + "|Ch:" + txtPartCheque.Text + "|Es:" + txtPartEspeces.Text + ")").PadRight(nLongueurTitreTot, '.') + string.Format("{0,7:F2}", Math.Round(dblPrixTotal, 2))),
                                 e.CodePage(CodePage.PC858_EURO),
                                 EURO,
                                 e.CodePage(CodePage.ISO8859_15_LATIN9),
@@ -919,6 +926,7 @@ namespace BdArtLibrairie
                                 e.FullCutAfterFeed(2)
                             )
                     );
+                    nTempo += Global.Tempo;
                 }
             }
             return true;

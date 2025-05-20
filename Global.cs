@@ -133,6 +133,7 @@ namespace BdArtLibrairie
 		private static string strNomFestival;
 		private static string strFichierEcartsVentes;
 		private static string strFichierEcartsVentesWoExt;
+		private static string strFichierBdArtLibOdb;
 		private static Int16 nTempo;
 		private static Int16 nNombreTickets;
 		private static bool bAppliquerCss;
@@ -143,7 +144,8 @@ namespace BdArtLibrairie
 		private static Int16 nVenteBoxWidth;
 		private static Int16 nVenteBoxHeight;
 		private static CssProvider cssProvider;
-        public static bool ConfigModified {	get => bConfigModified; set => bConfigModified = value; }
+		private static Uri uriBdArtLibOdb;
+        public static bool ConfigModified { get => bConfigModified; set => bConfigModified = value; }
         public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
         public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
 		public static string FichierPaiements { get => strFichierPaiements; set => strFichierPaiements = value; }
@@ -170,6 +172,8 @@ namespace BdArtLibrairie
         public static string DossierSauve { get => strDossierSauve; set => strDossierSauve = value; }
         public static short VenteBoxWidth { get => nVenteBoxWidth; set => nVenteBoxWidth = value; }
         public static short VenteBoxHeight { get => nVenteBoxHeight; set => nVenteBoxHeight = value; }
+		public static Uri UriBdArtLibOdb { get => uriBdArtLibOdb; set => uriBdArtLibOdb = value; }
+        public static string FichierBdArtLibOdb { get => strFichierBdArtLibOdb; set => strFichierBdArtLibOdb = value; }
 
         /// <summary>
         /// Constructeur.
@@ -180,12 +184,12 @@ namespace BdArtLibrairie
 			InitParams();
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Initialisation des paramètres.
 		/// </summary>
 		static void InitParams()
 		{
-            ConfigModified = false;
+			ConfigModified = false;
 			ImprimerTickets = true;
 			FichierAlbums = "Albums.csv";
 			FichierVentes = "Ventes.csv";
@@ -200,7 +204,7 @@ namespace BdArtLibrairie
 			DossierSauve = "Sauve";
 			// params écrasés par fichier de config
 			PrinterFilePath = "/dev/usb/lp0";
-			Tempo = 2000;
+			Tempo = 100;
 			NombreTickets = 2;
 			AppliquerCss = true;
 			UseDialogForTicketPrint = true;
@@ -222,11 +226,14 @@ namespace BdArtLibrairie
 			//
 			// classes css, vérifier la correspondance avec la liste enum
 			string cssdata = ".EntryEditable {background-color: rgb(255, 255, 255); color: rgb(20, 20, 20);}";
-            cssdata += ".EntryNotEditable {background-color: rgb(240, 240, 240); color: rgb(50, 50, 50);}";
-            cssdata += ".InfoColorRed {color: rgb(255, 0, 0);}";
-            cssdata += ".InfoColorBlue {color: rgb(0, 0, 255);}";
+			cssdata += ".EntryNotEditable {background-color: rgb(240, 240, 240); color: rgb(50, 50, 50);}";
+			cssdata += ".InfoColorRed {color: rgb(255, 0, 0);}";
+			cssdata += ".InfoColorBlue {color: rgb(0, 0, 255);}";
 			cssdata += ".ListesColors {color: rgb(255, 255, 255); background-color: rgb(185, 16, 163);}";
-            ProviderCss.LoadFromData(cssdata);
+			ProviderCss.LoadFromData(cssdata);
+			//
+			UriBdArtLibOdb = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/BdArtLib.odb");
+			FichierBdArtLibOdb = Path.Combine(DossierFichiers, "BdArtLib.odb");
         }
 
 		// Téléchargement d'un fichier.
@@ -249,7 +256,7 @@ namespace BdArtLibrairie
 		{
 			using (var s = await client.GetStreamAsync(uri))
 			{
-				using (var fs = new FileStream(strFileDest, FileMode.CreateNew))
+				using (var fs = new FileStream(strFileDest, FileMode.Create))
 				{
 					await s.CopyToAsync(fs);
 				}
@@ -261,6 +268,7 @@ namespace BdArtLibrairie
 		/// </summary>
 		public static void LireConfigLocal(ref string strMsg)
 		{
+			Int16 nVal;
 			XmlTextReader reader = null;
         	try
         	{
@@ -276,7 +284,10 @@ namespace BdArtLibrairie
 								PrinterFilePath = reader.GetAttribute("value");
 								break;
 							case "Tempo":
-								Tempo = Convert.ToInt16(reader.GetAttribute("value"));
+								// compatibilité avec versions précédentes
+								nVal = Convert.ToInt16(reader.GetAttribute("value"));
+								if (nVal < 1000)
+									Tempo = nVal;
 								break;
 							case "NombreTickets":
 								NombreTickets = Convert.ToInt16(reader.GetAttribute("value"));
