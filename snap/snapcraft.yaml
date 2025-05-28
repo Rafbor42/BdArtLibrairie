@@ -1,5 +1,5 @@
 name: bdartlibrairie
-version: '3.1.0520.0'
+version: '3.1.0526.0'
 license: GPL-3.0 AND MIT
 base: core22
 grade: stable
@@ -24,11 +24,26 @@ parts:
     source: .
     build-packages:
       - dotnet-sdk-8.0
+    stage-packages:
+      - sox
+      - libsox-fmt-mp3
+      - libsox-fmt-pulse
+      - libpulse0
+
+environment:
+  LD_LIBRARY_PATH: $SNAP_LIBRARY_PATH:$SNAP/lib:$SNAP/usr/lib:$SNAP/usr/lib/x86_64-linux-gnu:$SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/pulseaudio
+  PULSE_SERVER: unix:/run/user/1000/pulse/native
+
+layout:
+  /usr/lib/$SNAPCRAFT_ARCH_TRIPLET/sox:
+    bind: $SNAP/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/sox
+
 slots:
     dbus-bdartlibrairie:
       interface: dbus
       bus: session
       name: org.BdArtLibrairie.BdArtLibrairie
+
 apps:
   bdartlibrairie:
     extensions: [gnome]
@@ -42,6 +57,8 @@ apps:
       - removable-media
       - mount-observe
       - raw-usb
+      - audio-playback
+
 lint:
   ignore:
     - library:

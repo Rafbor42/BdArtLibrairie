@@ -84,6 +84,7 @@ namespace BdArtLibrairie
         [UI] private CheckButton chkUseDialogForTicketPrint = null;
         [UI] private CheckButton chkAppliquerCss = null;
         [UI] private CheckButton chkLaunchBaseFile = null;
+        [UI] private CheckButton chkJouerSons = null;
         //
         [UI] private ComboBoxText cbListeLieuVente = null;
         [UI] private ComboBoxText cbListeAuteurs = null;
@@ -169,6 +170,8 @@ namespace BdArtLibrairie
             chkAppliquerCss.Clicked += OnChkAppliquerCssClicked;
             chkLaunchBaseFile.Active = Global.LaunchBaseFile;
             chkLaunchBaseFile.Clicked += OnChkLaunchBaseFileClicked;
+            chkJouerSons.Active = Global.JouerSons;
+            chkJouerSons.Clicked += OnChkJouerSonsClicked;
             btnAjouterAuteur.Clicked += OnBtnAjouterAuteurClicked;
             btnSupprimerAuteur.Clicked += OnBtnSupprimerAuteurClicked;
             btnAjouterAlbum.Clicked += OnBtnAjouterAlbumClicked;
@@ -236,6 +239,9 @@ namespace BdArtLibrairie
             // fichier BdArtLib.odb
             if (!File.Exists(Global.FichierBdArtLibOdb))
                 Global.DownloadFile(Global.UriBdArtLibOdb, Global.FichierBdArtLibOdb, this);
+            // fichier error.wav
+            if (!File.Exists(Global.FichierErrorWav))
+                Global.DownloadFile(Global.UriErrorWav, Global.FichierErrorWav, this);
             if (strMsg != string.Empty)
                 Global.AfficheInfo(ref txtInfo, "Erreur lors du chargement des fichiers", Global.eCssClasses.InfoColorRed);
             else
@@ -252,6 +258,12 @@ namespace BdArtLibrairie
             //
             CheckErreurEcartVentes();
             Global.ConfigModified = false;
+        }
+
+        private void OnChkJouerSonsClicked(object sender, EventArgs e)
+        {
+            Global.JouerSons = chkJouerSons.Active;
+            Global.ConfigModified = true;
         }
 
         private void OnBtnOuvrirDossierFichiers(object sender, EventArgs e)

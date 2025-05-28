@@ -40,10 +40,11 @@ using System.IO;
 using System.IO.Compression;
 using System.Net.Http;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace BdArtLibrairie
 {
-    public static class Global
+	public static class Global
 	{
 		public enum eMoyenPaiement
 		{
@@ -60,14 +61,14 @@ namespace BdArtLibrairie
 
 		public enum eTrvAuteursCols
 		{
-			IdAuteur=0,
+			IdAuteur = 0,
 			Auteur,
 			Pourcentage
 		}
 
 		public enum eTrvAlbumsCols
 		{
-			CodeIsbnEan=0,
+			CodeIsbnEan = 0,
 			Auteur,
 			Titre,
 			PrixVente,
@@ -83,7 +84,7 @@ namespace BdArtLibrairie
 
 		public enum eTrvVentesCols
 		{
-			Numero=0,
+			Numero = 0,
 			Rang,
 			Date,
 			CodeIsbnEan,
@@ -97,7 +98,7 @@ namespace BdArtLibrairie
 
 		public enum eTrvListeLivresCols
 		{
-			CodeIsbnEan=0,
+			CodeIsbnEan = 0,
 			Auteur,
 			Titre,
 			PrixVente,
@@ -116,7 +117,7 @@ namespace BdArtLibrairie
 		}
 
 		public static string m_strMsgFileFormatNotOk = "Format du fichier non conforme";
-        private static bool bConfigModified;
+		private static bool bConfigModified;
 		private static bool bImprimerTickets;
 		private static string strFichierAlbums;
 		private static string strFichierAlbumsWoExt;
@@ -134,6 +135,7 @@ namespace BdArtLibrairie
 		private static string strFichierEcartsVentes;
 		private static string strFichierEcartsVentesWoExt;
 		private static string strFichierBdArtLibOdb;
+		private static string strFichierErrorWav;
 		private static Int16 nTempo;
 		private static Int16 nNombreTickets;
 		private static bool bAppliquerCss;
@@ -145,35 +147,40 @@ namespace BdArtLibrairie
 		private static Int16 nVenteBoxHeight;
 		private static CssProvider cssProvider;
 		private static Uri uriBdArtLibOdb;
-        public static bool ConfigModified { get => bConfigModified; set => bConfigModified = value; }
-        public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
-        public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
+		private static Uri uriErrorWav;
+		private static bool bJouerSons;
+		public static bool ConfigModified { get => bConfigModified; set => bConfigModified = value; }
+		public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
+		public static string FichierVentes { get => strFichierVentes; set => strFichierVentes = value; }
 		public static string FichierPaiements { get => strFichierPaiements; set => strFichierPaiements = value; }
-        public static string FichierAuteurs { get => strFichierAuteurs; set => strFichierAuteurs = value; }
-        public static string DossierFichiers { get => strDossierFichiers; set => strDossierFichiers = value; }
-        public static string FichierVentesWoExt { get => strFichierVentesWoExt; set => strFichierVentesWoExt = value; }
-        public static string FichierPaiementsWoExt { get => strFichierPaiementsWoExt; set => strFichierPaiementsWoExt = value; }
+		public static string FichierAuteurs { get => strFichierAuteurs; set => strFichierAuteurs = value; }
+		public static string DossierFichiers { get => strDossierFichiers; set => strDossierFichiers = value; }
+		public static string FichierVentesWoExt { get => strFichierVentesWoExt; set => strFichierVentesWoExt = value; }
+		public static string FichierPaiementsWoExt { get => strFichierPaiementsWoExt; set => strFichierPaiementsWoExt = value; }
 		public static string FichierAuteursWoExt { get => strFichierAuteursWoExt; set => strFichierAuteursWoExt = value; }
 		public static string FichierAlbumsWoExt { get => strFichierAlbumsWoExt; set => strFichierAlbumsWoExt = value; }
-        public static string PrinterFilePath { get => strPrinterFilePath; set => strPrinterFilePath = value; }
+		public static string PrinterFilePath { get => strPrinterFilePath; set => strPrinterFilePath = value; }
 		public static string UsbDevicePath { get => strUsbDevicePath; set => strUsbDevicePath = value; }
-        public static short Tempo { get => nTempo; set => nTempo = value; }
-        public static short NombreTickets { get => nNombreTickets; set => nNombreTickets = value; }
-        public static bool ImprimerTickets { get => bImprimerTickets; set => bImprimerTickets = value; }
-        public static bool UseDialogForTicketPrint { get => bUseDialogForTicketPrint; set => bUseDialogForTicketPrint = value; }
-        public static bool AppliquerCss { get => bAppliquerCss; set => bAppliquerCss = value; }
-        public static string FichierConfigLocal { get => strFichierConfigLocal; set => strFichierConfigLocal = value; }
+		public static short Tempo { get => nTempo; set => nTempo = value; }
+		public static short NombreTickets { get => nNombreTickets; set => nNombreTickets = value; }
+		public static bool ImprimerTickets { get => bImprimerTickets; set => bImprimerTickets = value; }
+		public static bool UseDialogForTicketPrint { get => bUseDialogForTicketPrint; set => bUseDialogForTicketPrint = value; }
+		public static bool AppliquerCss { get => bAppliquerCss; set => bAppliquerCss = value; }
+		public static string FichierConfigLocal { get => strFichierConfigLocal; set => strFichierConfigLocal = value; }
 		public static string NomFestival { get => strNomFestival; set => strNomFestival = value; }
 		public static bool LaunchBaseFile { get => bLaunchBaseFile; set => bLaunchBaseFile = value; }
-        public static double PartAuteurDefaut { get => dblPartAuteurDefaut; set => dblPartAuteurDefaut = value; }
-        public static string FichierEcartsVentes { get => strFichierEcartsVentes; set => strFichierEcartsVentes = value; }
-        public static string FichierEcartsVentesWoExt { get => strFichierEcartsVentesWoExt; set => strFichierEcartsVentesWoExt = value; }
-        public static CssProvider ProviderCss { get => cssProvider; set => cssProvider = value; }
-        public static string DossierSauve { get => strDossierSauve; set => strDossierSauve = value; }
-        public static short VenteBoxWidth { get => nVenteBoxWidth; set => nVenteBoxWidth = value; }
-        public static short VenteBoxHeight { get => nVenteBoxHeight; set => nVenteBoxHeight = value; }
+		public static double PartAuteurDefaut { get => dblPartAuteurDefaut; set => dblPartAuteurDefaut = value; }
+		public static string FichierEcartsVentes { get => strFichierEcartsVentes; set => strFichierEcartsVentes = value; }
+		public static string FichierEcartsVentesWoExt { get => strFichierEcartsVentesWoExt; set => strFichierEcartsVentesWoExt = value; }
+		public static CssProvider ProviderCss { get => cssProvider; set => cssProvider = value; }
+		public static string DossierSauve { get => strDossierSauve; set => strDossierSauve = value; }
+		public static short VenteBoxWidth { get => nVenteBoxWidth; set => nVenteBoxWidth = value; }
+		public static short VenteBoxHeight { get => nVenteBoxHeight; set => nVenteBoxHeight = value; }
 		public static Uri UriBdArtLibOdb { get => uriBdArtLibOdb; set => uriBdArtLibOdb = value; }
-        public static string FichierBdArtLibOdb { get => strFichierBdArtLibOdb; set => strFichierBdArtLibOdb = value; }
+		public static string FichierBdArtLibOdb { get => strFichierBdArtLibOdb; set => strFichierBdArtLibOdb = value; }
+		public static bool JouerSons { get => bJouerSons; set => bJouerSons = value; }
+        public static string FichierErrorWav { get => strFichierErrorWav; set => strFichierErrorWav = value; }
+        public static Uri UriErrorWav { get => uriErrorWav; set => uriErrorWav = value; }
 
         /// <summary>
         /// Constructeur.
@@ -203,7 +210,7 @@ namespace BdArtLibrairie
 			FichierEcartsVentesWoExt = "EcartsVentes";
 			DossierSauve = "Sauve";
 			// params écrasés par fichier de config
-			PrinterFilePath = "/dev/usb/lp0";
+			PrinterFilePath = "/dev/usb/lp1";
 			Tempo = 100;
 			NombreTickets = 2;
 			AppliquerCss = true;
@@ -215,6 +222,7 @@ namespace BdArtLibrairie
 			PartAuteurDefaut = 90;
 			VenteBoxWidth = 720;
 			VenteBoxHeight = 470;
+			JouerSons = true;
 			//
 			DossierFichiers = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "bdartlibrairie");
 			// version Snap
@@ -234,7 +242,9 @@ namespace BdArtLibrairie
 			//
 			UriBdArtLibOdb = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/BdArtLib.odb");
 			FichierBdArtLibOdb = Path.Combine(DossierFichiers, "BdArtLib.odb");
-        }
+			UriErrorWav = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/error.wav");
+			FichierErrorWav = Path.Combine(DossierFichiers, "error.wav");
+		}
 
 		// Téléchargement d'un fichier.
 		// D'après la réponse de Tony dans https://stackoverflow.com/questions/45711428/download-file-with-webclient-or-httpclient
@@ -247,7 +257,7 @@ namespace BdArtLibrairie
 					await client.DownloadFileTaskAsync(uriSource, strFileDest);
 				}
 			}
-			catch(Exception e)
+			catch (Exception e)
 			{
 				ShowMessage("Téléchargement", "Fichier " + uriSource.ToString() + Environment.NewLine + e.Message, pWindow);
 			}
@@ -263,15 +273,15 @@ namespace BdArtLibrairie
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Récupère les paramètres de l'application dans le fichier de configuration.
 		/// </summary>
 		public static void LireConfigLocal(ref string strMsg)
 		{
 			Int16 nVal;
 			XmlTextReader reader = null;
-        	try
-        	{
+			try
+			{
 				// config au niveau utilisateur
 				reader = new XmlTextReader(Path.Combine(DossierFichiers, FichierConfigLocal));
 				while (reader.Read())
@@ -286,7 +296,7 @@ namespace BdArtLibrairie
 							case "Tempo":
 								// compatibilité avec versions précédentes
 								nVal = Convert.ToInt16(reader.GetAttribute("value"));
-								if (nVal < 1000)
+								if (nVal <= 300)
 									Tempo = nVal;
 								break;
 							case "NombreTickets":
@@ -316,15 +326,18 @@ namespace BdArtLibrairie
 							case "VenteBoxHeight":
 								VenteBoxHeight = Convert.ToInt16(reader.GetAttribute("value"));
 								break;
+							case "JouerSons":
+								JouerSons = Convert.ToBoolean(reader.GetAttribute("value"));
+								break;
 						}
 					}
 				}
 			}
-        	catch (FileNotFoundException)
+			catch (FileNotFoundException)
 			{
 				// le fichier sera créé par l'application
 			}
-        	catch (Exception ex)
+			catch (Exception ex)
 			{
 				strMsg += ex.Message + Environment.NewLine;
 			}
@@ -335,7 +348,7 @@ namespace BdArtLibrairie
 			}
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Ecriture des paramètres utilisateur dans le fichier de configuration.
 		/// </summary>
 		public static void EcrireConfigLocal(ref string strMsg)
@@ -348,51 +361,56 @@ namespace BdArtLibrairie
 
 				writer.WriteStartDocument(true);
 				writer.WriteStartElement("configuration");
-					writer.WriteStartElement("userSettings");
-						writer.WriteStartElement("PrinterFilePath");
-						writer.WriteAttributeString("value", PrinterFilePath);
-						writer.WriteEndElement();
+				writer.WriteStartElement("userSettings");
+				writer.WriteStartElement("PrinterFilePath");
+				writer.WriteAttributeString("value", PrinterFilePath);
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("Tempo");
-						writer.WriteAttributeString("value", Tempo.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("Tempo");
+				writer.WriteAttributeString("value", Tempo.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("NombreTickets");
-						writer.WriteAttributeString("value", NombreTickets.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("NombreTickets");
+				writer.WriteAttributeString("value", NombreTickets.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("AppliquerCss");
-						writer.WriteAttributeString("value", AppliquerCss.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("AppliquerCss");
+				writer.WriteAttributeString("value", AppliquerCss.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("UseDialogForTicketPrint");
-						writer.WriteAttributeString("value", UseDialogForTicketPrint.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("UseDialogForTicketPrint");
+				writer.WriteAttributeString("value", UseDialogForTicketPrint.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("UsbDevicePath");
-						writer.WriteAttributeString("value", UsbDevicePath);
-						writer.WriteEndElement();
+				writer.WriteStartElement("UsbDevicePath");
+				writer.WriteAttributeString("value", UsbDevicePath);
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("NomFestival");
-						writer.WriteAttributeString("value", NomFestival);
-						writer.WriteEndElement();
+				writer.WriteStartElement("NomFestival");
+				writer.WriteAttributeString("value", NomFestival);
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("LaunchBaseFile");
-						writer.WriteAttributeString("value", LaunchBaseFile.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("LaunchBaseFile");
+				writer.WriteAttributeString("value", LaunchBaseFile.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("PartAuteurDefaut");
-						writer.WriteAttributeString("value", PartAuteurDefaut.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("PartAuteurDefaut");
+				writer.WriteAttributeString("value", PartAuteurDefaut.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("VenteBoxWidth");
-						writer.WriteAttributeString("value", VenteBoxWidth.ToString());
-						writer.WriteEndElement();
+				writer.WriteStartElement("VenteBoxWidth");
+				writer.WriteAttributeString("value", VenteBoxWidth.ToString());
+				writer.WriteEndElement();
 
-						writer.WriteStartElement("VenteBoxHeight");
-						writer.WriteAttributeString("value", VenteBoxHeight.ToString());
-						writer.WriteEndElement();
-					writer.WriteEndElement();
+				writer.WriteStartElement("VenteBoxHeight");
+				writer.WriteAttributeString("value", VenteBoxHeight.ToString());
+				writer.WriteEndElement();
+
+				writer.WriteStartElement("JouerSons");
+				writer.WriteAttributeString("value", JouerSons.ToString());
+				writer.WriteEndElement();
+
+				writer.WriteEndElement();
 				writer.WriteEndElement();
 				writer.WriteEndDocument();
 			}
@@ -408,26 +426,26 @@ namespace BdArtLibrairie
 		}
 
 		// Affiche un message dans une boite de dialogue.
-        public static void ShowMessage(string strTitle, string strMsg, Window pParent, MessageType mType=MessageType.Error)
-        {
-            MessageDialog md = new MessageDialog(pParent, DialogFlags.DestroyWithParent, mType, ButtonsType.Close, strTitle);
-            md.SecondaryText = strMsg;
-            md.Run();
-            md.Dispose();
-        }
+		public static void ShowMessage(string strTitle, string strMsg, Window pParent, MessageType mType = MessageType.Error)
+		{
+			MessageDialog md = new MessageDialog(pParent, DialogFlags.DestroyWithParent, mType, ButtonsType.Close, strTitle);
+			md.SecondaryText = strMsg;
+			md.Run();
+			md.Dispose();
+		}
 
 		// Controle du format de la valeur saisie dans la zone de texte.
 		// NB: sur les appels à cette méthode à partir de l'évenement TextChanged, pour éviter les
 		// appels en boucle, il faut désactiver l'évenement TextChanged sur le controle source.
-        public static bool CheckValeurs(Window pParent, object sender)
+		public static bool CheckValeurs(Window pParent, object sender)
 		{
 			Entry txtBox = (Entry)sender;
 			try
 			{
 				double dblValue;
-				
+
 				// on remplace le point par la virgule
-				txtBox.Text = txtBox.Text.Replace('.',',');
+				txtBox.Text = txtBox.Text.Replace('.', ',');
 				// on tente une conversion en double
 				dblValue = Convert.ToDouble(txtBox.Text);
 				//
@@ -441,15 +459,15 @@ namespace BdArtLibrairie
 			return false;
 		}
 
-        public static double GetValueOrZero(Window pParent, object sender, bool bShowMessage=false)
+		public static double GetValueOrZero(Window pParent, object sender, bool bShowMessage = false)
 		{
 			double dblValue = 0;
 			Entry txtBox = (Entry)sender;
-			
+
 			try
 			{
 				// on remplace le point par la virgule
-				txtBox.Text = txtBox.Text.Replace('.',',');
+				txtBox.Text = txtBox.Text.Replace('.', ',');
 				// on tente une conversion en double
 				dblValue = Math.Round(Convert.ToDouble(txtBox.Text), 2);
 			}
@@ -467,11 +485,11 @@ namespace BdArtLibrairie
 			return dblValue;
 		}
 
-		public static Int16 GetValueIntOrZero(Window pParent, object sender, bool bShowMessage=false)
+		public static Int16 GetValueIntOrZero(Window pParent, object sender, bool bShowMessage = false)
 		{
 			Int16 nValue = 0;
 			Entry txtBox = (Entry)sender;
-			
+
 			try
 			{
 				// on tente une conversion en short
@@ -515,17 +533,17 @@ namespace BdArtLibrairie
 		public static void RemoveCssClass(ref ComboBoxText cbChamp, eCssClasses eClass)
 		{
 			if (cbChamp.Child.StyleContext.HasClass(eClass.ToString()))
-                cbChamp.Child.StyleContext.RemoveClass(eClass.ToString());
+				cbChamp.Child.StyleContext.RemoveClass(eClass.ToString());
 		}
 
 		// Demande confirmation à l'utilisateur.
-        public static bool Confirmation(Window pParent, string strCaption, string strMsg)
+		public static bool Confirmation(Window pParent, string strCaption, string strMsg)
 		{
 			MessageDialog md = new MessageDialog(pParent, DialogFlags.DestroyWithParent, MessageType.Question, ButtonsType.YesNo, strCaption);
-            md.SecondaryText = strMsg;
-            ResponseType result = (ResponseType)md.Run();
-            md.Dispose();
-            if (result == ResponseType.Yes)
+			md.SecondaryText = strMsg;
+			ResponseType result = (ResponseType)md.Run();
+			md.Dispose();
+			if (result == ResponseType.Yes)
 				return true;
 			else
 				return false;
@@ -551,7 +569,7 @@ namespace BdArtLibrairie
 		}
 
 		public static void ExportFichiers(ref string strMsg)
-        {
+		{
 			string strFileName = "BdArtFiles.zip";
 			string strZipFile = Path.Combine(Path.GetTempPath(), strFileName);
 			string strDestFile = Path.Combine(UsbDevicePath, strFileName);
@@ -566,12 +584,46 @@ namespace BdArtLibrairie
 				// copie sur clé
 				File.Copy(strZipFile, strDestFile, true);
 			}
-            catch (Exception e)
+			catch (Exception e)
 			{
 				if (strMsg != String.Empty)
 					strMsg += Environment.NewLine;
 				strMsg = e.Message + Environment.NewLine;
 			}
-        }
+		}
+
+		public static void JouerSonErreur(Window pParent)
+		{
+			if (JouerSons == true)
+			{
+				string sSample = "error.wav";
+				// on joue le son avec l'application par défaut
+				try
+				{
+					Process psPlay = new Process();
+					// version Snap
+					if (Environment.GetEnvironmentVariable("BDARTLIBRAIRIE_BASE") != null)
+						psPlay.StartInfo.FileName = "play";// package sox
+					else
+					{
+						if (File.Exists("/usr/bin/pw-play") == true)
+							psPlay.StartInfo.FileName = "pw-play";// package pipewire
+						else
+							psPlay.StartInfo.FileName = "aplay";// package alsa-utils
+					}
+					psPlay.StartInfo.Arguments = sSample;
+					psPlay.StartInfo.WorkingDirectory = DossierFichiers;
+					psPlay.StartInfo.CreateNoWindow = true;
+					if (psPlay.Start() == true)// nouveau process créé
+					{
+						psPlay.WaitForExit(1000);
+					}
+				}
+				catch (Exception ex)
+				{
+					ShowMessage("Erreur tentative de jouer un son:", ex.Message, pParent);
+				}
+			}
+		}
     }
 }

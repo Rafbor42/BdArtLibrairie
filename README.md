@@ -161,7 +161,8 @@ Tant que l’imprimante ne sera pas reconnue, un rappel _L'imprimante n'est pas 
 
 ![Rappel imprimante](images/markdown/rappel_imprimante.jpg)
 
-Le focus est placé sur la zone d’ajout de livre, il suffit de scanner les code-barres des livres, l’un après l’autre, pour les ajouter.
+Le focus est placé sur la zone d’ajout de livre, il suffit de scanner les code-barres des livres, l’un après l’autre, pour les ajouter.</br>
+Si le code scanné n'existe pas dans l'application, un signal sonore est émis (ce comportement peut être désactivé dans l’ [onglet Paramètres](#onglet-paramètres)).</br>
 Sélectionner le lieu de vente et le statut de paiement avant d’ajouter un livre (sinon voir au § [Modification ou suppression d'une vente](#modification-ou-suppression-dune-vente) comment les modifier).
 
 ![Nouvelle vente](images/markdown/nouvelle_vente.jpg)
@@ -290,6 +291,7 @@ Cet onglet permet de modifier certains paramètres:
 - renseigner le nom du festival qui apparaitra dans la barre de titre de l'application et dans les tickets.
 - la part auteur par défaut, en %.
 - l'application des styles CSS pour colorier les Widgets d'affichage et de saisie de texte. Décocher si les couleurs ne sont pas compatibles avec le thème utilisé.
+- l'émission ou non de signaux sonores. A décocher en cas d'erreurs signalées lors de l'émission des sons.
 - les dimensions en pixel de la fenêtre des ventes (720x470 mini - 1000x700 maxi).
 
 Ces paramètres sont prédéfinis dans le fichier de configuration de l'application _app.config_ qui est stocké dans le dossier _bdartlibrairie_ du dossier utilisateur. Ils sont mis à jour à la fermeture de l'application.
@@ -300,13 +302,14 @@ Ces paramètres sont prédéfinis dans le fichier de configuration de l'applicat
     <Tempo value="100" />
     <NombreTickets value="2" />
     <AppliquerCss value="True" />
-    <UseDialogForTicketPrint value="False" />
+    <UseDialogForTicketPrint value="True" />
     <UsbDevicePath value="/media/rafbor/4429-4124" />
     <NomFestival value="BD'Art" />
     <LaunchBaseFile value="True" />
     <PartAuteurDefaut value="90" />
     <VenteBoxWidth value="720" />
     <VenteBoxHeight value="470" />
+    <JouerSons value="True" />
   </userSettings>
 ```
 
@@ -406,11 +409,15 @@ Modifier la valeur dans la zone texte correspondante pour mettre à jour le poin
 
 ## Notes de version
 
+- **3.1.0526.0**
+  - Lors de la lecture du code barre d'un album, s'il n'existe pas, un signal sonore est émis. 
+  - Corrections mineures.
+
 - **3.1.0520.0**
   - Ajout menu pour retélécharger le fichier _BdArtLib.odb_.
   - Ajout bouton pour ouvrir le dossier de stockage dans l'explorateur.
   - Mise à jour du package ESCPOS_NET -> v3.0.0.
-  - Modifier temporisation du thread pendant l'impression des tickets d'une nouvelle vente.
+  - Modifié temporisation du thread pendant l'impression des tickets d'une nouvelle vente.
 
 - **3.1.0515.0**
   - Ajout fichiers _.desktop_ et _.png_ dans dossier _snap/gui_ afin que l'installation du _Snap_ crée un lanceur.

@@ -41,6 +41,7 @@ using ESCPOS_NET.Emitters;
 using ESCPOS_NET.Utilities;
 using System.Runtime.InteropServices;
 using System.Threading;
+using Gdk;
 
 namespace BdArtLibrairie
 {
@@ -78,7 +79,7 @@ namespace BdArtLibrairie
         [UI] private CheckButton chkImprimerTicket = null;
         [UI] private CheckButton chkModifiable = null;
 
-        public VenteBox(Window ParentWindow, ref Datas datas, bool bNew=false, Int16 nNumVente=0, DateTime dtDaVente=new DateTime()) : this(new Builder("VenteBox.glade"))
+        public VenteBox(Gtk.Window ParentWindow, ref Datas datas, bool bNew=false, Int16 nNumVente=0, DateTime dtDaVente=new DateTime()) : this(new Builder("VenteBox.glade"))
         {
             this.TransientFor = ParentWindow;
             this.SetPosition(WindowPosition.CenterOnParent);
@@ -367,13 +368,15 @@ namespace BdArtLibrairie
 
         private void OnAjouteAlbumActivated(object sender, EventArgs a)
         {
+            bool bTrouve = false;
             Entry txtCode = (Entry)sender;
             // ajout du livre dans lstoreUneVente
             foreach (DataRow row in mdatas.dtTableAlbums.Select("strIsbnEan='" + txtCode.Text + "'"))
             {
+                bTrouve = true;
                 // recherche strAuteur et ajout dans lstoreUneVente
                 foreach (DataRow rowAU in mdatas.dtTableAuteurs.Select("nIdAuteur=" + row["nIdAuteur"].ToString()))
-                {	
+                {
                     mdatas.lstoreUneVente.AppendValues(
                         txtCode.Text,
                             rowAU["strAuteur"].ToString(),
@@ -385,6 +388,8 @@ namespace BdArtLibrairie
                     );
                 }
             }
+            if (bTrouve == false)
+                Global.JouerSonErreur(this);
             txtCode.Text = string.Empty;
             bModified = true;
             UpdateData();
