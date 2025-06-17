@@ -151,6 +151,8 @@ Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés e
 
 ### Effectuer une vente
 
+[![Ventes d'albums avec BdArtLibrairie](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FT-WgNIMz5gM%3Fsi%3DR94rVZp-fehJbP-f)](https://youtu.be/T-WgNIMz5gM?si=R94rVZp-fehJbP-f)
+
 Cliquer sur le bouton _Nouvelle vente_.
 Si la case _Ne pas imprimer les tickets_ est décochée dans les paramètres et si l’imprimante n’est pas montée correctement, un message d’erreur va s’afficher:
 
