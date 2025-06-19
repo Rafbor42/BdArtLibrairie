@@ -151,6 +151,8 @@ Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés e
 
 ### Effectuer une vente
 
+Démonstration en vidéo:
+
 [![Ventes d'albums avec BdArtLibrairie](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FT-WgNIMz5gM%3Fsi%3DR94rVZp-fehJbP-f)](https://youtu.be/T-WgNIMz5gM?si=R94rVZp-fehJbP-f)
 
 Cliquer sur le bouton _Nouvelle vente_.
@@ -277,6 +279,10 @@ En cas d'erreur signalé par **LibreOffice Base**, il est possible qu'une mise �
 - Cliquer ensuite sur le bouton _Bilan des ventes_. Cela va ouvrir le rapport, classé par auteurs, qu'il ne reste plus qu'à imprimer:
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
+
+Démonstration en vidéo:
+
+[![BdArtLibrairie: bilan des ventes](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2F18BzmP9LxMQ%3Fsi%3DzjR48IcLzFmIwc0Z)](https://youtu.be/18BzmP9LxMQ?si=zjR48IcLzFmIwc0Z)
 
 ## Onglet Paramètres
 
