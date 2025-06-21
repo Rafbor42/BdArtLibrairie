@@ -259,14 +259,17 @@ Si on veut sauvegarder ces fichiers sur un autre support, on peut le faire manue
 
 ### Impression des ventes par auteur
 
-Deux méthodes possibles:
+Trois méthodes possibles:
 
-- soit faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis imprimer la copie d'écran (via **Firefox** par exemple).
+1. faire une copie d'écran de l'onglet _Albums_ pour chaque auteur sélectionné dans la liste auteurs, puis imprimer la copie d'écran (via **Firefox** par exemple).
 
-- soit par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
+2. par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
 ```Albums_export.csv```</BR>
-Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique.</br>
-A la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire</BR>
+Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique. Démonstration en vidéo:
+
+[![BdArtLibrairie: importer dans Calc](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FtsIu6D2fprg%3Fsi%3Dxd3K8CdfglOXEkkF)](https://youtu.be/tsIu6D2fprg?si=xd3K8CdfglOXEkkF)
+
+3. comme précédemment, mais à la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire</BR>
 L'import des fichiers est réalisé automatiquement et un message confirme qu'il a bien été effectué:
 
 ![BdArtLibodbFormMsgImport](images/markdown/bdartlibodb_form_msg_import.png)
