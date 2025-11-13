@@ -1396,10 +1396,152 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GtkFixed">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">2</property>
+                        <property name="margin-bottom">2</property>
+                        <child>
+                          <object class="GtkComboBoxText" id="cbListeAuteursEnLigne">
+                            <property name="width-request">201</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                          </object>
+                          <packing>
+                            <property name="x">290</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel">
+                            <property name="width-request">105</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="label" translatable="yes">Auteur en ligne</property>
+                            <property name="justify">right</property>
+                            <property name="xalign">0.949999988079071</property>
+                          </object>
+                          <packing>
+                            <property name="x">180</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="btnTelechargerFichiersEnLigne">
+                            <property name="label" translatable="yes">Télécharger les fichiers</property>
+                            <property name="width-request">180</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Télécharger la liste des auteurs et des albums en ligne</property>
+                          </object>
+                          <packing>
+                            <property name="x">718</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="btnChargerAuteursEnLigne">
+                            <property name="label" translatable="yes">Charger liste des auteurs</property>
+                            <property name="width-request">180</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                          </object>
+                          <packing>
+                            <property name="x">514</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow">
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="shadow-type">in</property>
+                        <child>
+                          <object class="GtkTreeView" id="trvAlbumsEnLigne">
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="enable-grid-lines">both</property>
+                            <child internal-child="selection">
+                              <object class="GtkTreeSelection"/>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFixed">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="margin-top">2</property>
+                        <child>
+                          <object class="GtkButton" id="btnImportTousAlbumsEnLigne">
+                            <property name="label" translatable="yes">Importer tous les albums</property>
+                            <property name="width-request">174</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Importer tous les albums</property>
+                          </object>
+                          <packing>
+                            <property name="x">290</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="btnImportAlbumEnLigne">
+                            <property name="label" translatable="yes">Importer album</property>
+                            <property name="width-request">122</property>
+                            <property name="height-request">34</property>
+                            <property name="visible">True</property>
+                            <property name="can-focus">True</property>
+                            <property name="receives-default">True</property>
+                            <property name="tooltip-text" translatable="yes">Importer l'album sélectionné</property>
+                          </object>
+                          <packing>
+                            <property name="x">492</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                  </packing>
                 </child>
                 <child type="tab">
-                  <placeholder/>
+                  <object class="GtkLabel">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="label" translatable="yes">Base de données en ligne</property>
+                  </object>
+                  <packing>
+                    <property name="position">4</property>
+                    <property name="tab-fill">False</property>
+                  </packing>
                 </child>
               </object>
               <packing>

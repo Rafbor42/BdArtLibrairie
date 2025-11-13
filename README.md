@@ -17,6 +17,7 @@
     - [Sauvegarde des données](#sauvegarde-des-données)
     - [Impression des ventes par auteur](#impression-des-ventes-par-auteur)
   - [Onglet Paramètres](#onglet-paramètres)
+  - [Onglet Base de données en ligne](#onglet-base-de-données-en-ligne)
   - [Structure des données](#structure-des-données)
   - [Développement et installation](#développement-et-installation)
   - [Notes de version](#notes-de-version)
@@ -31,7 +32,7 @@
 
 Cette application a été créée pour gérer les ventes de la librairie tenue par des bénévoles lors du festival de bandes dessinées BD’Art de Rive de Gier (42800). Elle permet de réaliser les ventes en scannant les code-barres des albums, d'éditer des tickets de paiements, et de calculer les sommes à reverser aux auteurs en fin de festival.
 
-Elle est composée de 4 onglets: _Ventes, Albums, Auteurs, Paramètres_.
+Elle est composée de 5 onglets: _Ventes, Albums, Auteurs, Paramètres_, _Base de données en ligne_.
 Les données sont stockées dans 4 fichiers au format _csv_, séparateur _;_ (_Auteurs.csv_, _Albums.csv_, _Ventes.csv_ et _Paiements.csv_). Les fichiers sont stockés dans le dossier utilisateur, dans un dossier nommé _bdartlibrairie_ (cf. [onglet Paramètres](#onglet-paramètres))
 
 ## Principe de fonctionnement
@@ -330,6 +331,26 @@ L'onglet affiche aussi le chemin vers le dossier _bdartlibrairie_ ou sont stock�
 
 Le bouton à droite de la zone de texte permet d'ouvrir directement le dossier dans l'explorateur de fichiers.
 
+## Onglet Base de données en ligne
+
+![Onglet bdd en ligne](images/markdown/onglet_bdd_en_ligne.jpg)
+
+Cet onglet permet d'importer les albums d'un auteur à partir d'une base de données en ligne.
+
+Cliquer d'abord sur le bouton _Télécharger les fichiers_ pour récupérer localement les fichiers de la base de données en ligne.</BR>
+Les fichiers sont téléchargés dans le dossier _bdartlibrairie_ sous les noms: _AuteursEnLigne.csv_ et _AlbumsEnLigne.csv_.
+
+Cliquer ensuite sur le bouton _Charger liste des auteurs_. La liste des auteurs disponibles est chargée dans la liste déroulante _Auteur en ligne_ et les albums du 1er auteur de la liste sont affichés.
+
+Avant d'importer les albums d'un auteur, il faut au préalable ajouter l'auteur (cf. § [Onglet Auteurs](#onglet-auteurs)) puis le sélectionner dans le filtre _Auteur_ (cf. § [Filtre auteur](#filtre-auteur)).</BR>
+Le bouton _Importer album_ permet d'importer seulement l'album sélectionné.</BR>
+Le bouton _Importer tous les albums_ permet d'importer tous les albums de l'auteur sélectionné.
+
+Les albums déjà présents sont ignorés.
+Les albums sont importés avec un stock initial=10. Vous pouvez mettre à jour le stock initial (ainsi que d'autres données) via [Modification ou suppression d'un album](#modification-ou-suppression-dun-album).
+
+**Info**: vous pouvez partager les listes d'albums des auteurs invités dans vos festivals, en les soumettant via _Pull Requests_ sur la [page Github du projet](https://github.com/Rafbor42/BdArtLibrairie/pulls). Ils seront intégrés dans la base de données en ligne.
+
 ## Structure des données
 
 Auteurs.csv
@@ -419,6 +440,9 @@ Pour l'accès à la clé USB sur Linux, on recherche dans le fichier _/proc/moun
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
+
+- **3.2.1108.0**
+  - Ajout de l'onglet _Base de données en ligne_ permettant d'importer les albums de différents auteurs.
 
 - **3.1.0526.0**
   - Lors de la lecture du code barre d'un album, s'il n'existe pas, un signal sonore est émis. 

@@ -50,6 +50,7 @@ namespace BdArtLibrairie
         private double dblTotalCB, dblTotalCheques, dblTotalEspeces;
         private Int16 nQteMediatheques, nQteLibrairie, nQteOfferts;
         private ListStore lsListeAuteurs = new ListStore(typeof(string));
+        private ListStore lsListeAuteursEnLigne = new ListStore(typeof(string));
 
         [UI] private MenuItem mnuFichierExportAlbums = null;
         [UI] private MenuItem mnuFichierExportFichiers = null;
@@ -80,6 +81,10 @@ namespace BdArtLibrairie
         [UI] private Button btnBilanVentes = null;
         [UI] private Button btnErreurEcartVentes = null;
         [UI] private Button btnOuvrirDossierFichiers = null;
+        [UI] private Button btnTelechargerFichiersEnLigne = null;
+        [UI] private Button btnImportTousAlbumsEnLigne = null;
+        [UI] private Button btnImportAlbumEnLigne = null;
+        [UI] private Button btnChargerAuteursEnLigne = null;
         [UI] private CheckButton chkAFacturer = null;
         [UI] private CheckButton chkUseDialogForTicketPrint = null;
         [UI] private CheckButton chkAppliquerCss = null;
@@ -87,7 +92,8 @@ namespace BdArtLibrairie
         [UI] private CheckButton chkJouerSons = null;
         //
         [UI] private ComboBoxText cbListeLieuVente = null;
-        [UI] private ComboBoxText cbListeAuteurs = null;
+        [UI] private ComboBoxText cbListeAuteurs = null; 
+        [UI] private ComboBoxText cbListeAuteursEnLigne = null;
         //
         [UI] private Entry txtTotalVentes = null;
         [UI] private Entry txtTotalCB = null;
@@ -118,6 +124,7 @@ namespace BdArtLibrairie
         [UI] private TreeView trvVentes = null;
         [UI] private TreeView trvAlbums = null;
         [UI] private TreeView trvAuteurs = null;
+        [UI] private TreeView trvAlbumsEnLigne = null;
 
         public MainWindow() : this(new Builder("MainWindow.glade"))
         {
@@ -148,6 +155,7 @@ namespace BdArtLibrairie
             InitTrvVentes();
             InitTrvAlbums();
             InitTrvAuteurs();
+            InitTrvAlbumsEnLigne();
             //
             Pango.FontDescription tpf = new Pango.FontDescription();
 			tpf.Weight = Pango.Weight.Bold;
@@ -182,9 +190,14 @@ namespace BdArtLibrairie
             btnBilanVentes.Clicked += OnBtnBilanVentesClicked;
             btnErreurEcartVentes.Clicked += OnBtnErreurEcartVentes;
             btnOuvrirDossierFichiers.Clicked += OnBtnOuvrirDossierFichiers;
+            btnImportTousAlbumsEnLigne.Clicked += OnBtnImportTousAlbumsEnLigne;
+            btnImportAlbumEnLigne.Clicked += OnBtnImportAlbumEnLigne;
+            btnTelechargerFichiersEnLigne.Clicked += OnBtnTelechargerFichiersEnLigne;
+            btnChargerAuteursEnLigne.Clicked += OnBtnChargerAuteursEnLigne;
             //
             cbListeLieuVente.Changed += OnCbListeLieuVenteChanged;
             cbListeAuteurs.Changed += OnCbListeAuteursChanged;
+            cbListeAuteursEnLigne.Changed += OnCbListeAuteursEnLigneChanged;
             //
             txtCodeIsbnEan.Activated += OnCodeIsbnEanActivated;
             txtCodeIsbnEan.FocusGrabbed += OnCodeIsbnEanFocusGrabbed;
@@ -258,6 +271,183 @@ namespace BdArtLibrairie
             //
             CheckErreurEcartVentes();
             Global.ConfigModified = false;
+        }
+        private void OnBtnChargerAuteursEnLigne(object sender, EventArgs e)
+        {
+            // chargement du fichier AuteursEnLigne
+            strMsg = string.Empty;
+            datas.ChargerFichierAuteursEnligne(ref strMsg);
+            if (strMsg != string.Empty)
+                Global.ShowMessage("Erreurs au chargement:", strMsg, this);
+            else
+                Global.AfficheInfo(ref txtInfo, "Fichier des auteurs en ligne chargé", Global.eCssClasses.InfoColorBlue);
+            //
+            UpdateCbListeAuteursEnLigne();
+            OnCbListeAuteursEnLigneChanged(sender, e);
+        }
+
+        private void OnBtnTelechargerFichiersEnLigne(object sender, EventArgs e)
+        {
+            // suppression des fichiers existants
+            string strFilenameAuteurs = System.IO.Path.Combine(Global.DossierFichiers, Global.FichierAuteursEnLigne);
+            string strFilenameAlbums = System.IO.Path.Combine(Global.DossierFichiers, Global.FichierAlbumsEnLigne);
+            try
+            {
+                if (File.Exists(strFilenameAuteurs) == true)
+                    File.Delete(strFilenameAuteurs);
+                if (File.Exists(strFilenameAlbums) == true)
+                    File.Delete(strFilenameAlbums);
+            }
+            catch (Exception ex)
+            {
+                Global.ShowMessage("Erreur suppression fichier", ex.Message, this);
+            }
+            // suppression des données affichées
+            datas.dtTableAuteursEnLigne.Clear();
+            datas.dtTableAlbumsEnLigne.Clear();
+            datas.lstoreAlbumsEnLigne.Clear();
+            UpdateCbListeAuteursEnLigne();
+            // download fichier Auteurs.csv
+            Global.DownloadFile(Global.UriFichierAuteursEnLigne, Global.FichierAuteursEnLigne, this);
+            // download fichier Albums.csv
+            Global.DownloadFile(Global.UriFichierAlbumsEnLigne, Global.FichierAlbumsEnLigne, this);
+            Global.AfficheInfo(ref txtInfo, "Téléchargement des fichiers AuteursEnLigne et AlbumsEnLigne en asynchrone", Global.eCssClasses.InfoColorBlue);
+        }
+
+        private void OnBtnImportAlbumEnLigne(object sender, EventArgs e)
+        {
+            TreeIter iter;
+            TreePath chemin;
+            TreePath[] chemins;
+            chemins = trvAlbumsEnLigne.Selection.GetSelectedRows();
+            string strCode = string.Empty;
+            string strMsg = string.Empty;
+            Int16 nIdAuteur=0;
+
+            // il faut préalablement sélectionner l'auteur
+            if (cbListeAuteurs.ActiveText == "Tous")
+            {
+                Global.ShowMessage("Import d'un album:", "Vous devez d'abord sélectionner l'auteur dans la liste déroulante 'Auteur'", this);
+                return;
+            }
+            else
+            {
+                // recherche IdAuteur
+                foreach (DataRow rowAU in datas.dtTableAuteurs.Select("strAuteur='" + cbListeAuteurs.ActiveText + "'"))
+                    nIdAuteur = Convert.ToInt16(rowAU["nIdAuteur"]);
+            }
+            // si aucune ligne sélectionnée
+            if (chemins.Length == 0)
+            {
+                Global.ShowMessage("Album en ligne", "Vous devez sélectionner un album", this);
+                return;
+            }
+            if (Global.Confirmation(this, "Import album:", "Voulez-vous vraiment importer l'album sélectionné de l'auteur " + cbListeAuteursEnLigne.ActiveText + " vers l'auteur " + cbListeAuteurs.ActiveText + " ?") == false)
+                return;
+            //
+            chemin = chemins[0];
+            if (datas.lstoreAlbumsEnLigne.GetIter(out iter, chemin) == true)
+            {
+                strCode = datas.lstoreAlbumsEnLigne.GetValue(iter, Convert.ToInt16(Global.eTrvAlbumsCols.CodeIsbnEan)).ToString();
+                // controle existence de l'album
+                foreach (DataRow row in datas.dtTableAlbums.Select("strIsbnEan='" + strCode + "'"))
+                {
+                    if (row.RowState == DataRowState.Deleted)
+                        continue;
+                    Global.ShowMessage("Erreur doublon:", "Cet album existe déjà", this);
+                    return;
+                }
+            }
+            // ajout dans dtTableAlbums
+            foreach (DataRow row in datas.dtTableAlbumsEnLigne.Select("strIsbnEan='" + strCode + "'"))
+            {
+                datas.AjouteAlbum(strCode,
+                                    nIdAuteur,
+                                    row["strTitre"].ToString(),
+                                    Convert.ToDouble(row["dblPrixVente"]),
+                                    10,
+                                    10);
+            }
+            DoCalcul();
+            datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+            datas.EnregistrerFichierAlbums(ref strMsg);
+            if (strMsg != string.Empty)
+            {
+                Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
+            }
+            else
+                Global.AfficheInfo(ref txtInfo, "L'album a été ajouté avec un stock initial = 10", Global.eCssClasses.InfoColorBlue);
+        }
+
+        private void OnBtnImportTousAlbumsEnLigne(object sender, EventArgs e)
+        {
+            string strMsg = string.Empty;
+            Int16 nIdAuteur = 0, nIdAuteurEnLigne = 0;
+            string strCode;
+            bool bExiste;
+            Int16 nCount = 0;
+
+            // il faut préalablement sélectionner l'auteur
+            if (cbListeAuteurs.ActiveText == "Tous")
+            {
+                Global.ShowMessage("Import de tous les albums:", "Vous devez d'abord sélectionner l'auteur dans la liste déroulante 'Auteur'", this);
+                return;
+            }
+            else
+            {
+                // recherche IdAuteur
+                foreach (DataRow rowAU in datas.dtTableAuteurs.Select("strAuteur='" + cbListeAuteurs.ActiveText + "'"))
+                    nIdAuteur = Convert.ToInt16(rowAU["nIdAuteur"]);
+            }
+            // recherche IdAuteurEnLigne
+            foreach (DataRow rowAUL in datas.dtTableAuteursEnLigne.Select("strAuteur='" + cbListeAuteursEnLigne.ActiveText + "'"))
+                nIdAuteurEnLigne = Convert.ToInt16(rowAUL["nIdAuteur"]);
+            //
+            if (Global.Confirmation(this, "Import albums:", "Voulez-vous vraiment importer tous les albums présents de l'auteur " + cbListeAuteursEnLigne.ActiveText + " vers l'auteur " + cbListeAuteurs.ActiveText + " ?") == false)
+                return;
+            //
+            foreach (DataRow row in datas.dtTableAlbumsEnLigne.Select("nIdAuteur=" + nIdAuteurEnLigne.ToString()))
+            {
+                // controle existence de l'album
+                bExiste = false;
+                strCode = row["strIsbnEan"].ToString();
+                foreach (DataRow rowA in datas.dtTableAlbums.Select("strIsbnEan='" + strCode + "'"))
+                {
+                    if (rowA.RowState == DataRowState.Deleted)
+                        continue;
+                    strMsg += "L'album " + strCode + " existe déjà. Ignoré." + Environment.NewLine;
+                    bExiste = true;
+                }
+                if (bExiste == false)
+                {
+                    datas.AjouteAlbum(strCode,
+                                        nIdAuteur,
+                                        row["strTitre"].ToString(),
+                                        Convert.ToDouble(row["dblPrixVente"]),
+                                        10,
+                                        10);
+                    nCount++;
+                }
+            }
+            if (strMsg != string.Empty)
+                Global.ShowMessage("Import des albums", "Erreur de doublon(s):" + Environment.NewLine + strMsg, this, MessageType.Warning);
+            if (nCount > 0)
+            {
+                strMsg = string.Empty;
+                DoCalcul();
+                datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                datas.EnregistrerFichierAlbums(ref strMsg);
+                if (strMsg != string.Empty)
+                {
+                    Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                    Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
+                }
+                else
+                    Global.AfficheInfo(ref txtInfo, nCount.ToString() + " albums ont été ajoutés avec un stock initial = 10", Global.eCssClasses.InfoColorBlue);
+            }
+            else
+                Global.AfficheInfo(ref txtInfo, "Aucun album n'a été ajouté", Global.eCssClasses.InfoColorRed);
         }
 
         private void OnChkJouerSonsClicked(object sender, EventArgs e)
@@ -958,6 +1148,41 @@ namespace BdArtLibrairie
             datas.ErreurStockAlbums = string.Empty;
         }
 
+        private void InitTrvAlbumsEnLigne()
+        {
+            trvAlbumsEnLigne.Model = datas.lstoreAlbumsEnLigne;
+            //
+            TreeViewColumn colIsbnEan = new TreeViewColumn();
+            colIsbnEan.Title = "ISBN / EAN";
+            TreeViewColumn colAuteur = new TreeViewColumn();
+            colAuteur.Title = "Auteur";
+            TreeViewColumn colTitre = new TreeViewColumn();
+            colTitre.Title = "Titre";
+            TreeViewColumn colPrixVente = new TreeViewColumn();
+            colPrixVente.Title = "Prix vente (€)";
+            //
+            trvAlbumsEnLigne.AppendColumn(colIsbnEan);
+            trvAlbumsEnLigne.AppendColumn(colAuteur);
+            trvAlbumsEnLigne.AppendColumn(colTitre);
+            trvAlbumsEnLigne.AppendColumn(colPrixVente);
+            //
+            CellRendererText cellIsbnEan = new CellRendererText();
+            colIsbnEan.PackStart(cellIsbnEan, true);
+            colIsbnEan.AddAttribute(cellIsbnEan, "text", Convert.ToInt16(Global.eTrvAlbumsCols.CodeIsbnEan));
+
+            CellRendererText cellAuteur = new CellRendererText();
+            colAuteur.PackStart(cellAuteur, true);
+            colAuteur.AddAttribute(cellAuteur, "text", Convert.ToInt16(Global.eTrvAlbumsCols.Auteur));
+
+            CellRendererText cellTitre = new CellRendererText();
+            colTitre.PackStart(cellTitre, true);
+            colTitre.AddAttribute(cellTitre, "text", Convert.ToInt16(Global.eTrvAlbumsCols.Titre));
+
+            CellRendererText cellPrixVente = new CellRendererText();
+            colPrixVente.PackStart(cellPrixVente, true);
+            colPrixVente.AddAttribute(cellPrixVente, "text", Convert.ToInt16(Global.eTrvAlbumsCols.PrixVente));
+        }
+        
         private void InitTrvAlbums()
         {
             trvAlbums.Model = datas.lstoreAlbums;
@@ -1201,6 +1426,20 @@ namespace BdArtLibrairie
             }
         }
 
+        private void UpdateCbListeAuteursEnLigne()
+        {
+            cbListeAuteursEnLigne.Changed -= OnCbListeAuteursEnLigneChanged;
+            lsListeAuteursEnLigne.Clear();
+            foreach (DataRow row in datas.dtTableAuteursEnLigne.Select("1=1", "strAuteur ASC"))
+            {
+                lsListeAuteursEnLigne.AppendValues(row["strAuteur"].ToString());
+            }
+            cbListeAuteursEnLigne.Model = lsListeAuteursEnLigne;
+            cbListeAuteursEnLigne.Active = 0;
+
+            cbListeAuteursEnLigne.Changed += OnCbListeAuteursEnLigneChanged;
+        }
+        
         private void InitCbListeAuteurs()
         {
             string strNom = string.Empty;
@@ -1228,6 +1467,25 @@ namespace BdArtLibrairie
                 else
                     cbListeAuteurs.Child.StyleContext.AddClass(Global.eCssClasses.ListesColors.ToString());
             }
+        }
+
+        private void OnCbListeAuteursEnLigneChanged(object sender, EventArgs e)
+        {
+            Int16 nIdAuteur=-1;
+            txtInfo.Text = string.Empty;
+            // Chargement du fichier AlbumsEnLigne pour l'auteur sélectionné
+            strMsg = string.Empty;
+            // recherche IdAuteur
+            foreach (DataRow rowAU in datas.dtTableAuteursEnLigne.Select("strAuteur='" + cbListeAuteursEnLigne.ActiveText + "'"))
+                nIdAuteur = Convert.ToInt16(rowAU["nIdAuteur"]);
+            datas.ChargerFichierAlbumsEnLigne(nIdAuteur, ref strMsg);
+            if (strMsg != string.Empty)
+            {
+                Global.ShowMessage("Erreurs au chargement:", strMsg, this);
+                Global.AfficheInfo(ref txtInfo, "Erreurs au chargement des albums en ligne", Global.eCssClasses.InfoColorRed);
+            }
+            else
+                Global.AfficheInfo(ref txtInfo, "Albums en ligne chargés pour l'auteur sélectionné", Global.eCssClasses.InfoColorBlue);
         }
 
         private void OnCbListeAuteursChanged(object sender, EventArgs a)

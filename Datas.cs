@@ -45,8 +45,9 @@ namespace BdArtLibrairie
 	{
 		public Window pParentWindow=null;
 		public DataTable dtTableVentes, dtTableAlbums, dtTablePaiements, dtTableAuteurs;
+		public DataTable dtTableAlbumsEnLigne, dtTableAuteursEnLigne;
 		public ListStore lstoreVentes, lstoreAlbums, lstoreUneVente, lstoreAuteurs, lstoreAlbumsMini;
-		public ListStore lstoreStatsAlbums, lstoreStatsPrix, lstoreStatsCommissions;
+		public ListStore lstoreStatsAlbums, lstoreStatsPrix, lstoreStatsCommissions, lstoreAlbumsEnLigne, lstoreAuteursEnLigne;
 		protected StreamReader strmReader = StreamReader.Null;
 		protected StreamWriter strmWriter = StreamWriter.Null;
 		private string strPremLigneAlbums = "Code ISBN / EAN;IdAuteur;Titre;Prix vente;Stock initial";
@@ -105,6 +106,9 @@ namespace BdArtLibrairie
 			dtTableAuteurs.Columns.Add("dblPourcentage", typeof(double));
 			dtTableAuteurs.PrimaryKey = new DataColumn[] { dtTableAuteurs.Columns["nIdAuteur"] };
 			//
+			dtTableAuteursEnLigne = dtTableAuteurs.Clone();
+			dtTableAlbumsEnLigne = dtTableAlbums.Clone();
+			//
 			// IsbnEan, auteur, titre, PrixVente, StockInitial, QtéVenduLibrairie, QteVenduMediat, QteOffert, StockFinal, QteAfacturer, QteTotalVendu, PrixTotal
 			lstoreAlbums = new ListStore(typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string), typeof(string));
 			// numéro, rang, date+heure, IsbnEan, auteur, titre, PrixVente, Qté vendu, Lieu, Paiement
@@ -115,6 +119,10 @@ namespace BdArtLibrairie
 			lstoreAuteurs = new ListStore(typeof(string), typeof(string), typeof(string));
 			// IsbnEan, auteur, titre
 			lstoreAlbumsMini = new ListStore(typeof(string), typeof(string), typeof(string));
+			// IdAuteur, auteur, pourcentage
+			lstoreAuteursEnLigne = new ListStore(typeof(string), typeof(string), typeof(string));
+			// IsbnEan, auteur, titre, PrixVente
+			lstoreAlbumsEnLigne = new ListStore(typeof(string), typeof(string), typeof(string), typeof(string));
 			//
 			lstoreStatsAlbums = new ListStore(typeof(string), typeof(string));
 			lstoreStatsPrix = new ListStore(typeof(string), typeof(string));
@@ -126,12 +134,16 @@ namespace BdArtLibrairie
 		public void Init()
 		{
 			dtTableAlbums.Clear();
+			dtTableAlbumsEnLigne.Clear();
 			dtTableAuteurs.Clear();
+			dtTableAuteursEnLigne.Clear();
 			dtTableVentes.Clear();
 			dtTablePaiements.Clear();
 			lstoreAlbums.Clear();
 			lstoreVentes.Clear();
 			lstoreAuteurs.Clear();
+			lstoreAuteursEnLigne.Clear();
+			lstoreAlbumsEnLigne.Clear();
 			strErreurStockAlbums = string.Empty;
 		}
 
@@ -718,7 +730,7 @@ namespace BdArtLibrairie
 		public void DoFiltreDtTableAlbums(string strAuteur, string strLieuVente, bool bAFacturer)
 		{
 			string strQuery;
-			Int16 nIdAuteur=0;
+			Int16 nIdAuteur = 0;
 
 			if (string.Compare(strAuteur, "Tous") == 0)
 			{
@@ -751,7 +763,7 @@ namespace BdArtLibrairie
 			{
 				// recherche strAuteur et ajout dans lstoreAlbums
 				foreach (DataRow rowAU in dtTableAuteurs.Select("nIdAuteur=" + dtRow["nIdAuteur"].ToString()))
-				{				
+				{
 					lstoreAlbums.AppendValues(
 						dtRow["strIsbnEan"].ToString(),
 							rowAU["strAuteur"].ToString(),
@@ -768,7 +780,6 @@ namespace BdArtLibrairie
 					);
 				}
 			}
-
 		}
 
 		public bool EnregistrerFichiersVentesPaiements(ref string strMsg)
@@ -1643,6 +1654,140 @@ namespace BdArtLibrairie
 					strMsg += Environment.NewLine;
 				strMsg += e.Message + Environment.NewLine;
 			}
+        }
+
+        internal void ChargerFichierAuteursEnligne(ref string strMsg)
+		{
+			dtTableAuteursEnLigne.Clear();
+			lstoreAuteursEnLigne.Clear();
+			// fichier AuteurEnLigne existe ?
+			if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierAuteursEnLigne)) == true)
+			{
+				FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAuteursEnLigne), FileMode.Open, FileAccess.Read);
+				strmReader = new StreamReader(fs, Encoding.UTF8);
+
+				// lecture du fichier
+				string strLigne;
+				string[] strSplit;
+				DataRow dtRow;
+				int j = 0;
+
+				try
+				{
+					// 1ère ligne
+					strmReader.ReadLine();
+					// lignes suivantes
+					while ((strLigne = strmReader.ReadLine()) != null)
+					{
+						strSplit = strLigne.Split(new Char[] { ';' });
+						if (strSplit.Length < 4)
+						{
+							throw new Exception("Fichier AUTEURS, ligne " + (j + 1).ToString() + ", " + Global.m_strMsgFileFormatNotOk);
+						}
+						dtRow = dtTableAuteursEnLigne.NewRow();
+						dtRow["nIdAuteur"] = strSplit[0];
+						dtRow["strPrenomAuteur"] = strSplit[1];
+						dtRow["strNomAuteur"] = strSplit[2];
+						dtRow["strAuteur"] = strSplit[2] + " " + strSplit[1];// nom prénom
+						dtRow["dblPourcentage"] = Convert.ToDouble(strSplit[3]);//.Replace(',','.'));
+																				//
+						dtTableAuteursEnLigne.Rows.Add(dtRow);
+						dtTableAuteursEnLigne.Rows[j++].AcceptChanges();
+						//
+						lstoreAuteursEnLigne.AppendValues(strSplit[0], strSplit[2] + " " + strSplit[1], strSplit[3]);
+					}
+				}
+				catch (Exception e)
+				{
+					if (strMsg != String.Empty)
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
+				}
+				finally
+				{
+					if (!strmReader.Equals(StreamReader.Null))
+						strmReader.Close();
+				}
+			}
+			else
+				strMsg = "Le fichier " + Global.FichierAuteursEnLigne + " n'a pas été trouvé" + Environment.NewLine;
+        }
+
+        internal void ChargerFichierAlbumsEnLigne(Int16 nIdAuteur, ref string strMsg)
+        {
+            dtTableAlbumsEnLigne.Clear();
+			lstoreAlbumsEnLigne.Clear();
+			// fichier AlbumsEnLigne existe ?
+			if (File.Exists(Path.Combine(Global.DossierFichiers, Global.FichierAlbumsEnLigne)) == true)
+			{
+				FileStream fs = new FileStream(Path.Combine(Global.DossierFichiers, Global.FichierAlbumsEnLigne), FileMode.Open, FileAccess.Read);
+				strmReader = new StreamReader(fs, Encoding.UTF8);
+
+				// lecture du fichier
+				string strLigne;
+				string[] strSplit;
+				DataRow dtRow;
+				int j = 0;
+
+				try
+				{
+					// 1ère ligne
+					strmReader.ReadLine();
+					// lignes suivantes
+					while ((strLigne = strmReader.ReadLine()) != null)
+					{
+						strSplit = strLigne.Split(new Char[] { ';' });
+						if (strSplit.Length < 5)
+						{
+							throw new Exception("Fichier ALBUMS, ligne " + (j + 1).ToString() + ", " + Global.m_strMsgFileFormatNotOk);
+						}
+						// albums de l'auteur sélectionné
+						if (Convert.ToInt16(strSplit[1]) == nIdAuteur)
+						{
+							dtRow = dtTableAlbumsEnLigne.NewRow();
+							dtRow["strIsbnEan"] = strSplit[0];
+							dtRow["nIdAuteur"] = Convert.ToInt16(strSplit[1]);
+							dtRow["strTitre"] = strSplit[2];
+							dtRow["dblPrixVente"] = Convert.ToDouble(strSplit[3]);//.Replace(',','.'));
+							dtRow["nStockInitial"] = Convert.ToInt16(strSplit[4]);
+							dtRow["nQteVenduLibrairie"] = 0;
+							dtRow["nQteVenduMediatheque"] = 0;
+							dtRow["nQteOffert"] = 0;
+							dtRow["nStockFinal"] = Convert.ToInt16(strSplit[4]); //=stock initial
+							dtRow["nQteAfacturer"] = 0;
+							dtRow["nQteTotalVendu"] = 0;
+							dtRow["dblPrixTotal"] = 0;
+							//
+							dtTableAlbumsEnLigne.Rows.Add(dtRow);
+							dtTableAlbumsEnLigne.Rows[j++].AcceptChanges();
+							//
+							// recherche nom auteur et ajout ligne dans lstoreAlbumsEnLigne
+							foreach (DataRow rowAU in dtTableAuteursEnLigne.Select("nIdAuteur=" + strSplit[1]))
+							{
+								lstoreAlbumsEnLigne.AppendValues(
+									strSplit[0],
+									rowAU["strAuteur"].ToString(),
+									strSplit[2],
+									strSplit[3]
+								);
+							}
+						}
+					}
+				}
+				catch (Exception e)
+				{
+					if (strMsg != String.Empty)
+						strMsg += Environment.NewLine;
+					strMsg += e.Message + Environment.NewLine;
+				}
+				finally
+				{
+					if (!strmReader.Equals(StreamReader.Null))
+						strmReader.Close();
+				}
+			}
+			else
+				strMsg = "Le fichier " + Global.FichierAuteursEnLigne + " n'a pas été trouvé" + Environment.NewLine;
         }
     }
 }

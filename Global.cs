@@ -120,12 +120,14 @@ namespace BdArtLibrairie
 		private static bool bConfigModified;
 		private static bool bImprimerTickets;
 		private static string strFichierAlbums;
+		private static string strFichierAlbumsEnLigne;
 		private static string strFichierAlbumsWoExt;
 		private static string strFichierVentes;
 		private static string strFichierVentesWoExt;
 		private static string strFichierPaiements;
 		private static string strFichierPaiementsWoExt;
 		private static string strFichierAuteurs;
+		private static string strFichierAuteursEnLigne;
 		private static string strFichierAuteursWoExt;
 		private static string strDossierFichiers;
 		private static string strDossierSauve;
@@ -148,6 +150,8 @@ namespace BdArtLibrairie
 		private static CssProvider cssProvider;
 		private static Uri uriBdArtLibOdb;
 		private static Uri uriErrorWav;
+		private static Uri uriFichierAuteursEnLigne;
+		private static Uri uriFichierAlbumsEnLigne;
 		private static bool bJouerSons;
 		public static bool ConfigModified { get => bConfigModified; set => bConfigModified = value; }
 		public static string FichierAlbums { get => strFichierAlbums; set => strFichierAlbums = value; }
@@ -181,6 +185,10 @@ namespace BdArtLibrairie
 		public static bool JouerSons { get => bJouerSons; set => bJouerSons = value; }
         public static string FichierErrorWav { get => strFichierErrorWav; set => strFichierErrorWav = value; }
         public static Uri UriErrorWav { get => uriErrorWav; set => uriErrorWav = value; }
+		public static Uri UriFichierAuteursEnLigne { get => uriFichierAuteursEnLigne; set => uriFichierAuteursEnLigne = value; }
+		public static Uri UriFichierAlbumsEnLigne { get => uriFichierAlbumsEnLigne; set => uriFichierAlbumsEnLigne = value; }
+		public static string FichierAuteursEnLigne { get => strFichierAuteursEnLigne; set => strFichierAuteursEnLigne = value; }
+		public static string FichierAlbumsEnLigne { get => strFichierAlbumsEnLigne; set => strFichierAlbumsEnLigne = value; }
 
         /// <summary>
         /// Constructeur.
@@ -244,6 +252,10 @@ namespace BdArtLibrairie
 			FichierBdArtLibOdb = Path.Combine(DossierFichiers, "BdArtLib.odb");
 			UriErrorWav = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/error.wav");
 			FichierErrorWav = Path.Combine(DossierFichiers, "error.wav");
+			UriFichierAuteursEnLigne = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/Auteurs.csv");
+			FichierAuteursEnLigne = Path.Combine(DossierFichiers, "AuteursEnLigne.csv");
+			UriFichierAlbumsEnLigne = new Uri("https://github.com/Rafbor42/BdArtLibrairie/raw/main/Fichiers/Albums.csv");
+			FichierAlbumsEnLigne = Path.Combine(DossierFichiers, "AlbumsEnLigne.csv");
 		}
 
 		// Téléchargement d'un fichier.

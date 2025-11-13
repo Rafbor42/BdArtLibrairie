@@ -1,4 +1,4 @@
-Code ISBN / EAN;IdAuteur;Titre;Prix vente;Stock initial
+﻿Code ISBN / EAN;IdAuteur;Titre;Prix vente;Stock initial
 1000000000001;1;Tote bag BD'ART;5;100
 9782487138193;2;Elias&Arthur - Aventures en pagaille;15;17
 9782957957989;2;Elias&Arthur - L'intégrale T1;20;9
@@ -88,3 +88,52 @@ Code ISBN / EAN;IdAuteur;Titre;Prix vente;Stock initial
 9782953500738;8;Germaine la vache tome 1;10;7
 9782953500714;8;Germaine la vache tome 2;10;7
 9782953500707;8;L’Avenir de Pronto;10;5
+9782958260705;13;Les gastéropotes - Tome 1 : Tous au potager !;15;10
+9782958260712;13;Les gastéropotes - Tome 2 : Salades de saisons;15;10
+9782958260729;13;Les gastéropotes - Tome 3 : Tout va trop vite;15;10
+9782958260736;13;Les gastéropotes - Tome 4 : Au ras des pâquerettes;15;10
+9782958260743;13;Les gastéropotes - Tome 5 : Se mettent au vert ;15;10
+9782958260750;13;Les gastéropotes - Tome 6 : Le Pied sur le Champignon;15;10
+9782958260774;13;Les gastéropotes - Tome 7 : Super-lents ;15;10
+9782958260767;13;Les gastéropotes- Florilèges - Tome 1;10;10
+9782958260781;13;Les gastéropotes- Florilèges - Tome 2;10;10
+9782955611975;14;Gergovie, la victoire;18;10
+9782955619711;14;L'année des 4 empereurs, mai 68;18;10
+9782955619728;14;Alésia, l'ultime espoir;19,5;10
+9782955619742;14;Bibracte, la casus belli helvéte;18;10
+9782955619759;14;Les empereurs gaulois, la dame de Riobe;18;10
+9782955619766;14;L'année des 4 empereurs, les 100 jours d'Othon;18;10
+9782490021017;15;Victoire;9,5;10
+9782955210161;15;Capricieux 1er;14;10
+9782490506187;15;La nuit des Ours;12,9;10
+9782914458320;15;La guerre de Louise 1914-1921;23;10
+9782490021154;15;Tu es grand maintenant;12;10
+9791093585444;15;La forêt de Mauperdus;18;10
+9791095903130;15;Pas beurk les légumes !;14;10
+9782955210123;15;Le fauteuil de papy;12;10
+9782490544271;15;Le trio L et la petite Afghane;9,9;10
+9782490544257;15;Le trio L et le chasseur de fossiles;9,9;10
+9782490544264;15;Le trio L en classe verte;9,9;10
+9791097100339;15;Une fin en soie;9;10
+9791097100162;15;la malédiction d'Ashkar;4;10
+9791097100513;15;Mes parents sont des tueurs;4;10
+9783958583450;15;Terence apprenti magicien;15;10
+9783958581722;15;Au bout du fil;12;10
+9782930956442;15;Maitre Lièvre Contes africains;15;10
+9782930956329;15;Maitre Tanuki Contes japonais;15;10
+9782956196808;16;Les fantômes du loch;15;10
+9782956196815;16;Les fantômes du loch - Relié;50;10
+9782956196822;16;Les secrets de Blackmoor castle;15;10
+9782956196839;16;Les secrets de Blackmoor castle - Relié;50;10
+9782956196846;16;Les démons des Carpathes;37;10
+9782956196853;16;Les démons des Carpathes - Relié;59;10
+9782956196860;16;Le trésor du pendu;15;10
+9782956196877;16;Le trésor du pendu - Relié;50;10
+9782956616603;17;A la droite du diable;10;10
+9782957435630;17;Réparer les méchants;12;10
+9782952886727;18;Le catalogue de Latol;13;10
+9782952886703;18;Le fruit du serpent;10;10
+9782952886710;18;La reine des eaux;13,5;10
+9782344024294;19;Lego Dino;29;10
+9791096987436;19;Tiny Black and White;30;10
+9791069999466;19;My Tiny World;20;10
