@@ -30,6 +30,18 @@
 
 ## Présentation
 
+#### Vidéo: effectuer une vente
+
+[![Ventes d'albums avec BdArtLibrairie](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FT-WgNIMz5gM%3Fsi%3DR94rVZp-fehJbP-f)](https://youtu.be/T-WgNIMz5gM?si=R94rVZp-fehJbP-f)
+
+#### Vidéo: importer dans Calc
+
+[![BdArtLibrairie: importer dans Calc](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FtsIu6D2fprg%3Fsi%3Dxd3K8CdfglOXEkkF)](https://youtu.be/tsIu6D2fprg?si=xd3K8CdfglOXEkkF)
+
+#### Vidéo: imprimer le bilan des ventes
+
+[![BdArtLibrairie: bilan des ventes](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2F18BzmP9LxMQ%3Fsi%3DzjR48IcLzFmIwc0Z)](https://youtu.be/18BzmP9LxMQ?si=zjR48IcLzFmIwc0Z)
+
 Cette application a été créée pour gérer les ventes de la librairie tenue par des bénévoles lors du festival de bandes dessinées BD’Art de Rive de Gier (42800). Elle permet de réaliser les ventes en scannant les code-barres des albums, d'éditer des tickets de paiements, et de calculer les sommes à reverser aux auteurs en fin de festival.
 
 Elle est composée de 5 onglets: _Ventes, Albums, Auteurs, Paramètres_, _Base de données en ligne_.
@@ -152,9 +164,7 @@ Dans la partie inférieure de l’onglet, on trouve des totaux, réactualisés e
 
 ### Effectuer une vente
 
-Démonstration en vidéo:
-
-[![Ventes d'albums avec BdArtLibrairie](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FT-WgNIMz5gM%3Fsi%3DR94rVZp-fehJbP-f)](https://youtu.be/T-WgNIMz5gM?si=R94rVZp-fehJbP-f)
+[Démonstration en vidéo](#vidéo-effectuer-une-vente)
 
 Cliquer sur le bouton _Nouvelle vente_.
 Si la case _Ne pas imprimer les tickets_ est décochée dans les paramètres et si l’imprimante n’est pas montée correctement, un message d’erreur va s’afficher:
@@ -266,9 +276,7 @@ Trois méthodes possibles:
 
 2. par le menu _Fichier->Exporter fichier Albums_. Un nouveau fichier texte _csv_ sera créé et il contiendra les albums de tous les auteurs, ou seulement ceux de l'auteur sélectionné dans le filtre auteurs. Le nom du fichier est:
 ```Albums_export.csv```</BR>
-Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique. Démonstration en vidéo:
-
-[![BdArtLibrairie: importer dans Calc](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2FtsIu6D2fprg%3Fsi%3Dxd3K8CdfglOXEkkF)](https://youtu.be/tsIu6D2fprg?si=xd3K8CdfglOXEkkF)
+Ce fichier comporte des champs supplémentaires permettant d'en exploiter les données dans un tableur, avec un tableau croisé dynamique. [Démonstration en vidéo](#vidéo-importer-dans-calc)
 
 3. comme précédemment, mais à la fin de l'export, si coché dans les paramètres, **LibreOffice Base** est lancé et la base de donnée _BdArtLib.odb_ est chargée et ouverte sur un formulaire</BR>
 L'import des fichiers est réalisé automatiquement et un message confirme qu'il a bien été effectué:
@@ -284,9 +292,7 @@ En cas d'erreur signalé par **LibreOffice Base**, il est possible qu'une mise �
 
 ![Ventes_auteurs](images/markdown/ventes_auteur.png)
 
-Démonstration en vidéo:
-
-[![BdArtLibrairie: bilan des ventes](https://markdown-videos-api.jorgenkh.no/url?url=https%3A%2F%2Fyoutu.be%2F18BzmP9LxMQ%3Fsi%3DzjR48IcLzFmIwc0Z)](https://youtu.be/18BzmP9LxMQ?si=zjR48IcLzFmIwc0Z)
+[Démonstration en vidéo](#vidéo-imprimer-le-bilan-des-ventes)
 
 ## Onglet Paramètres
 
@@ -440,6 +446,9 @@ Pour l'accès à la clé USB sur Linux, on recherche dans le fichier _/proc/moun
 Modifier la valeur dans la zone texte correspondante pour mettre à jour le point de montage qui apparait par défaut.
 
 ## Notes de version
+
+- **3.2.1115.0**
+  - Lors de la suppression d'un auteur, ses albums présents sont également supprimés.
 
 - **3.2.1108.0**
   - Ajout de l'onglet _Base de données en ligne_ permettant d'importer les albums de différents auteurs.

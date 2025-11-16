@@ -784,8 +784,8 @@ namespace BdArtLibrairie
             TreePath chemin;
             TreePath[] chemins;
             chemins = trvAuteurs.Selection.GetSelectedRows();
-            string strMsg = string.Empty;
-            Int16 nIdAuteur, nNbAlbums=0;
+            string strMsg = string.Empty, strCode;
+            Int16 nIdAuteur, nNbAlbums=0, nNbAlbumsVendus;
 
             // si aucune ligne sélectionnée
             if (chemins.Length == 0)
@@ -805,7 +805,9 @@ namespace BdArtLibrairie
                     nNbAlbums++;
                 if (nNbAlbums == 0)
                 {
-                    datas.SupprimerAuteur(iter, nIdAuteur);                    
+                    datas.SupprimerAuteur(iter, nIdAuteur);
+                    InitCbListeAuteurs();
+                    datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
                     datas.EnregistrerFichierAuteurs(ref strMsg);
                     if (strMsg != string.Empty)
                     {
@@ -816,7 +818,56 @@ namespace BdArtLibrairie
                         Global.AfficheInfo(ref txtInfo, "Les auteurs ont été mis à jour", Global.eCssClasses.InfoColorBlue);
                 }
                 else
-                    Global.ShowMessage("Suppression Auteur", "Cet auteur ne peut pas être supprimé car il possède " + nNbAlbums.ToString() + " albums", this);
+                {
+                    if (Global.Confirmation(this, "Suppression Auteur", "Avant de supprimer cet auteur, ses " + nNbAlbums.ToString() + " albums présents seront supprimés. Voulez-vous continuer ?" + Environment.NewLine) == false)
+                        return;
+                    // on vérifie d'abord si des albums ont déjà été vendus
+                    nNbAlbumsVendus = 0;
+                    foreach (DataRow row in datas.dtTableAlbums.Select("nIdAuteur=" + nIdAuteur.ToString()))
+                    {
+                        strCode = row["strIsbnEan"].ToString();
+                        foreach(DataRow rowV in datas.dtTableVentes.Select("strIsbnEan='" + strCode + "'"))
+                            nNbAlbumsVendus++;
+                    }
+                    if (nNbAlbumsVendus > 0)
+                    {
+                        strMsg = "Impossible de supprimer les albums car certains sont présents dans les ventes." + Environment.NewLine;
+                        strMsg += "Veuillez réinitialiser les ventes avant de poursuivre.";
+                        Global.ShowMessage("Suppression album", strMsg, this);
+                    }
+                    else
+                    {
+                        // suppression des albums
+                        foreach (DataRow row in datas.dtTableAlbums.Select("nIdAuteur=" + nIdAuteur.ToString()))
+                        {
+                            strCode = row["strIsbnEan"].ToString();
+                            datas.SupprimerAlbum(iter, strCode);
+                        }
+                        datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                        strMsg = string.Empty;
+                        datas.EnregistrerFichierAlbums(ref strMsg);
+                        if (strMsg != string.Empty)
+                        {
+                            Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                            Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des albums. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
+                        }
+                        else
+                        {
+                            datas.SupprimerAuteur(iter, nIdAuteur);
+                            InitCbListeAuteurs();
+                            datas.DoFiltreDtTableAlbums(cbListeAuteurs.ActiveText, cbListeLieuVente.ActiveText, chkAFacturer.Active);
+                            strMsg = string.Empty;
+                            datas.EnregistrerFichierAuteurs(ref strMsg);
+                            if (strMsg != string.Empty)
+                            {
+                                Global.ShowMessage("BdArtLibrairie, enregistrer fichiers:", strMsg, this);
+                                Global.AfficheInfo(ref txtInfo, "Problème lors de la mise à jour des auteurs. Vérifier le fichier", Global.eCssClasses.InfoColorRed);
+                            }
+                            else
+                                Global.AfficheInfo(ref txtInfo, "Les auteurs et les albums ont été mis à jour", Global.eCssClasses.InfoColorBlue);
+                        }
+                    }
+                }
             }
         }
 
